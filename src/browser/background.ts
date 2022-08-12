@@ -4,7 +4,9 @@ chrome.action.onClicked.addListener(() => {
         {
             focused: true,
             type: "popup",
-            url: "index.html"
+            url: "index.html",
+            width: 600,
+            height: 400
         }
     )
 })

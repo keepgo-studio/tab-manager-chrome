@@ -9,7 +9,7 @@
     ],
 
     "background": {
-        "service_worker": "browser/background.js"
+        "service_worker": "background.js"
     },
 
     "action": {
