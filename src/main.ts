@@ -1,5 +1,6 @@
 import App from "./app/app"
 
+
 // on start event handler
 window.onload = () => {
     new App();
@@ -9,3 +10,4 @@ window.onload = () => {
 window.onclose = () => {
 
 }
+

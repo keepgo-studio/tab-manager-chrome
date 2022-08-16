@@ -5,7 +5,13 @@
     "manifest_version": 3,
     
     "permissions": [
-        "activeTab"
+        "activeTab",
+        "tabs",
+        "storage"
+    ],
+
+    "host_permissions": [
+        "<all_urls>"
     ],
 
     "background": {
