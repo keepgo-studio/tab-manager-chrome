@@ -1,13 +1,20 @@
+var isOpened = false
+var id: number | undefined;
+
 // when extension icon clicked
 chrome.action.onClicked.addListener(() => {
   // open web
-  chrome.windows.create({
-    focused: true,
-    type: "popup",
-    url: "index.html",
-    width: 600,
-    height: 400,
-  });
+  if (!isOpened) {
+      chrome.windows.create({
+        focused: true,
+        type: "popup",
+        url: "index.html",
+        width: 600,
+        height: 400,
+      }, (window) => { id = window!.id });
+
+      isOpened = true;
+  }
 });
 
 //
@@ -21,7 +28,11 @@ chrome.runtime.onInstalled.addListener(() => {
 
 });
 
-chrome.windows.onRemoved.addListener(() => {})
+chrome.windows.onRemoved.addListener((windowId) => {
+    if (windowId === id) {
+        isOpened = false;
+    }
+})
 
 chrome.windows.onCreated.addListener(() => {})
 
