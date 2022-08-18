@@ -1,7 +1,11 @@
 var isOpened = false
 var id: number | undefined;
 
-// when extension icon clicked
+var diagnol = 517.7
+var width = 344;
+var height = Math.round(Math.sqrt(Math.pow(width, 2) + Math.pow(diagnol, 2)))
+
+// invoke app init(=constructor)
 chrome.action.onClicked.addListener(() => {
   // open web
   if (!isOpened) {
@@ -9,8 +13,10 @@ chrome.action.onClicked.addListener(() => {
         focused: true,
         type: "popup",
         url: "index.html",
-        width: 600,
-        height: 400,
+        width,
+        height,
+        left:20,
+        top:20
       }, (window) => { id = window!.id });
 
       isOpened = true;
