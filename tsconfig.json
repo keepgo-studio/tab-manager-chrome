@@ -8,6 +8,11 @@
        "rootDir": "src",
        "outDir": "dist/js",
        "noEmitOnError": true,
-       "typeRoots": [ "node_modules/@types" ]
+       "typeRoots": [ 
+         "node_modules/@types",
+         "./src/types" 
+      ],
+       "experimentalDecorators": true,
+       "moduleResolution": "node"
     }
  }
