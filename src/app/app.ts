@@ -1,5 +1,6 @@
 import "./components/Navbar";
-import "./components/Footer";
+import "./components/Search";
+import "./components/ChromeWindowList";
 import { Contoller } from "./core/Controller";
 import { CurrentWindowView } from "./view/CurrentWindowView";
 import { CurrentWindowModel } from "./model/CurrentWindowModel";
@@ -7,56 +8,56 @@ import { SaveWindowView } from "./view/SaveWindowView";
 import { SaveWindowModel } from "./model/SaveWindowModel";
 
 class App {
-    private target: HTMLElement;
-    private currentController: Contoller;
-    private saveController: Contoller;
+  private currentController: Contoller;
+  private saveController: Contoller;
 
-    constructor() {
-        this.currentController = new Contoller(
-            new CurrentWindowView,
-            new CurrentWindowModel
-        )
+  constructor() {
+    this.currentController = new Contoller(
+      new CurrentWindowView(),
+      new CurrentWindowModel()
+    );
 
-        this.saveController = new Contoller(
-            new SaveWindowView,
-            new SaveWindowModel
-        )
-        this.target = document.body;
-        this.render();
-    }
+    this.saveController = new Contoller(
+      new SaveWindowView(),
+      new SaveWindowModel()
+    );
 
-    async createWindow(window: ChromeWindow) {
+    this.render();
+  }
 
-    }
-    
-    async createTab() {}
+  async createWindow(window: ChromeWindow) {}
 
-    async removeWindow() {}
+  async createTab() {}
 
-    async moveTab() {}
+  async removeWindow() {}
 
-    async removeTab() {}
+  async moveTab() {}
 
-    async updateTab() {}
+  async removeTab() {}
 
-    async saveWindow() {}
+  async updateTab() {}
 
-    async removeSaveWindow() {}
+  async saveWindow() {}
 
-    async searchTab() {}
+  async removeSaveWindow() {}
 
-    render() {
-        this.target.innerHTML = `
-            <app-navbar></app-navbar>
+  async searchTab() {}
 
-            <main>
-                <current-window-view></current-window-view>
-                <save-window-view></save-window-view>
-            </main>
-
-            <app-footer></app-footer>
-        `;
-    }
+  render() {
+     document.body.innerHTML = `
+        <app-navbar></app-navbar>
+        
+        <main>
+          <chrome-window-list>
+            <current-window-view></current-window-view>
+            
+            <save-window-view></save-window-view>
+            
+            <search-component></search-component>
+          </chrome-window-list>
+        </main>
+      `;
+  }
 }
 
 export default App;

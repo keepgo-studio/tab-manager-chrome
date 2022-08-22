@@ -12,6 +12,7 @@
          "node_modules/@types",
          "./src/types" 
       ],
+
        "experimentalDecorators": true,
        "moduleResolution": "node"
     }

@@ -3,10 +3,13 @@ const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   mode: "production",
+
+  watch: process.env.WATCH === "true" ? true : false,
+  
   entry: {
     background: path.resolve(__dirname, "..", "src", "background.ts"),
     contentScript: path.resolve(__dirname, "..", "src", "content-script.ts"),
-    main: path.resolve(__dirname, "..", "src", "main.ts")
+    main: path.resolve(__dirname, "..", "src", "main.ts"),
   },
 
   output: {
@@ -15,9 +18,7 @@ module.exports = {
   },
 
   resolve: {
-    modules: [
-      "node_modules",
-    ],
+    modules: ["node_modules"],
 
     extensions: [".ts", ".js"],
   },
@@ -38,4 +39,3 @@ module.exports = {
     }),
   ],
 };
-

@@ -1,19 +1,17 @@
 import App from "./app/App";
 
-const app = new App();
+export const app = new App();
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  
-  const { command, data } = message;
+chrome.runtime.onMessage.addListener(
+  ({ message, data }: MessageForm, sender, sendResponse) => {
 
-  // error
-  if (command === "CREATE_WINDOW") {
-    // app.createWindow(data);
-
-  } else if ("") {
-
+    if (message === "CREATE_WINDOW") {
+      app.createWindow(data.window!);
+    } else if ("") {
+      
+    }
   }
-});
+);
 
 // on start event handler
 window.onload = () => {
@@ -21,6 +19,4 @@ window.onload = () => {
 };
 
 // on end event handler
-window.onclose = () => {
-
-};
+window.onclose = () => {};

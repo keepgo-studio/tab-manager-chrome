@@ -15,18 +15,17 @@ chrome.runtime.onInstalled.addListener(() => {
     */
 });
 
-chrome.windows.onCreated.addListener((window) => {
-  /*
-    if extension not opened how to handle connection error?
-  */
-	if (window.id !== extensionWindowId && isOpened)
-		chrome.runtime.sendMessage({
-      command:"CREATE_WINDOW",
-      data: window
-    });
-  /*
+chrome.windows.onCreated.addListener((window: ChromeWindow) => {
+  if (window.id !== extensionWindowId && isOpened) {
+    const message:MessageForm = {
+      message: "CREATE_WINDOW",
+      data: {
+        window
+      }
+    }
 
-  */
+    chrome.runtime.sendMessage(message);
+  }
 
 });
 
@@ -46,12 +45,11 @@ chrome.tabs.onUpdated.addListener(() => {});
 
 // invoke app init(=constructor)
 chrome.action.onClicked.addListener((tab) => {
-
-	// open web
+  // open web
   if (!isOpened) {
-		chrome.windows.create(
-			{
-				focused: true,
+    chrome.windows.create(
+      {
+        focused: true,
         type: "panel",
         url: "index.html",
         width,
@@ -60,7 +58,7 @@ chrome.action.onClicked.addListener((tab) => {
         top: 20,
       },
       (window) => {
-				extensionWindowId = window!.id;
+        extensionWindowId = window!.id;
       }
     );
 
