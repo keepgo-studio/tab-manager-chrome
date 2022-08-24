@@ -1,5 +1,3 @@
-export {}
-
 /*
   only for type aliasing chrome API
 */
@@ -10,3 +8,5 @@ declare global {
 
   type ChromeTab = chrome.tabs.Tab;
 }
+
+export {}
