@@ -21,8 +21,6 @@ declare global {
   interface SaveWindow extends ChromeWindow {
     category: string
   }
-
-  var GlobalCurrentWindowList: CurrentWindow[];
 }
 
 export {};
