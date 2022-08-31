@@ -1,7 +1,7 @@
 import { css, html, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { Component } from "../core/Component";
-import { getPathName, moveHistory } from "../utils/location";
+import { getPathName, moveHistory } from "../../utils/location";
 
 @customElement("app-navbar")
 class Navbar extends Component {
@@ -14,8 +14,6 @@ class Navbar extends Component {
         moveHistory(
           getPathName() === "index.html" ? "saved.html" : "index.html"
         );
-
-        console.log(getPathName())
       },
     },
     {

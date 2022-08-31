@@ -1,5 +1,5 @@
 import { css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property } from "lit/decorators.js";
 import { Component } from "../core/Component";
 
 @customElement('current-tab-container')

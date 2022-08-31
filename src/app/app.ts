@@ -3,48 +3,110 @@ import "./components/Search";
 import "./components/ChromeWindowMain";
 import "./components/CurrentTabContainer";
 import "./components/SaveTabContainer";
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators.js";
+import { interpret } from "xstate";
+import { CurrentWindowMachine } from "../machine/CurrentWindowMachine";
 
-class App {
+@customElement("app-")
+class App extends LitElement {
+  private _machine;
+
+  @property()
+  _currentWindowList: CurrentWindow[];
+
   constructor() {
+    super();
+    this._currentWindowList = [];
 
-    this.render();
+    this._machine = interpret(CurrentWindowMachine)
+      .onTransition((state) => {
+        /* 
+          need to fix : list update fired twice.
+            it looks like the 'after type' event make an error...
+            but don't know why since I think after event didn't do
+            anything at all :(
+        */
+        if (state.changed) {
+          this._currentWindowList = state.context.data;
+
+          console.log(this._currentWindowList);
+        }
+      })
+      .start();
   }
 
-  async createWindow(window: ChromeWindow) {}
+  createWindow(win: ChromeWindow) {
+    this._machine.send({
+      type: "chrome event occur",
+      data: { win },
+      command: ChromeEventType.CREATE_WINDOW,
+    });
+  }
 
-  async createTab() {}
+  createTab(tab: ChromeTab) {
+    this._machine.send({
+      type: "chrome event occur",
+      data: { tab, windowId: tab.windowId },
+      command: ChromeEventType.CREATE_TAB,
+    });
+  }
 
-  async removeWindow() {}
+  removeWindow(windowId: number) {
+    this._machine.send({
+      type: "chrome event occur",
+      data: { windowId },
+      command: ChromeEventType.REMOVE_WINDOW,
+    });
+  }
 
-  async moveTab() {}
+  moveTab(
+    windowId: number,
+    moveInfo: { fromIndex: number; toIndex: number }
+  ) {
+    this._machine.send({
+      type: "chrome event occur",
+      data: { windowId, moveInfo },
+      command: ChromeEventType.MOVE_TAB
+    })
+  }
 
-  async removeTab() {}
+  removeTab(tabId: number, windowId: number) {
+    this._machine.send({
+      type: "chrome event occur",
+      data: { windowId, tabId },
+      command: ChromeEventType.REMOVE_TAB,
+    });
+  }
 
-  async updateTab() {}
+  updateTab(tab: ChromeTab) {
+    this._machine.send({
+      type: "chrome event occur",
+      data: { tab },
+      command: ChromeEventType.UPDATE_TAB,
+    });
+  }
 
-  async saveWindow() {}
+  saveWindow() {}
 
-  async removeSaveWindow() {}
+  removeSaveWindow() {}
 
-  async searchTab() {}
+  searchTab() {}
 
   render() {
-     document.body.innerHTML = `
-        <app-navbar></app-navbar>
-        
-        <main>
-          
-          <chrome-window-main>
+    return html`
+      <app-navbar></app-navbar>
 
-            <current-tab-container></current-tab-container>
-            
-            <save-tab-container></save-tab-container>
-            
-          </chrome-window-main>
+      <main>
+        <chrome-window-main>
+          <current-tab-container></current-tab-container>
 
-          <search-component></search-component>
-        </main>
-      `;
+          <save-tab-container></save-tab-container>
+        </chrome-window-main>
+
+        <search-component></search-component>
+      </main>
+    `;
   }
 }
 

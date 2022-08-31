@@ -1,8 +1,15 @@
 declare global {
   
   interface BackgroundData {
-    window: ChromeWindow;
-    tab: ChromeTab
+    win: ChromeWindow;
+    tab: ChromeTab;
+    tabId: number,
+    windowId: number,
+    
+    moveInfo: {
+      fromIndex: number,
+      toIndex: number
+    }
   }
 
   interface MessageForm {
@@ -20,6 +27,20 @@ declare global {
   
   interface SaveWindow extends ChromeWindow {
     category: string
+  }
+
+  interface StorageSaveForm {
+    key: string,
+    window: CurrentWindow
+  }
+
+  const enum ChromeEventType {
+    REMOVE_TAB = "REMOVE_TAB",
+    REMOVE_WINDOW = "REMOVE_WINDOW",
+    CREATE_TAB = "CREATE_TAB",
+    CREATE_WINDOW = "CREATE_WINDOW",
+    UPDATE_TAB = "UPDATE_TAB",
+    MOVE_TAB = "MOVE_TAB"
   }
 }
 
