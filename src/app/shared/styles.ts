@@ -46,17 +46,16 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
+a {
+  text-decoration: none;
+  color: inherit;
+}
 `;
 
 const globalCss = css`
   :root{
     --dark-mode-background: #333333;
     --light-mode-background: #F9F9F9;
-  }
-
-  html, body {
-    width: 100%;
-    height: 100%;
   }
 
   main search-component{

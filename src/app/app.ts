@@ -3,7 +3,7 @@ import "./components/Search";
 import "./components/ChromeWindowMain";
 import "./components/CurrentTabContainer";
 import "./components/SaveTabContainer";
-import { html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { interpret } from "xstate";
 import { CurrentWindowMachine } from "../machine/CurrentWindowMachine";
@@ -13,7 +13,7 @@ class App extends LitElement {
   private _machine;
 
   @property()
-  _currentWindowList: CurrentWindow[];
+  _currentWindowList: CurrentWindow[] = [];
 
   constructor() {
     super();
@@ -30,7 +30,7 @@ class App extends LitElement {
         if (state.changed) {
           this._currentWindowList = state.context.data;
 
-          console.log(this._currentWindowList);
+          // console.log(this._currentWindowList);
         }
       })
       .start();
@@ -60,15 +60,12 @@ class App extends LitElement {
     });
   }
 
-  moveTab(
-    windowId: number,
-    moveInfo: { fromIndex: number; toIndex: number }
-  ) {
+  moveTab(windowId: number, moveInfo: { fromIndex: number; toIndex: number }) {
     this._machine.send({
       type: "chrome event occur",
       data: { windowId, moveInfo },
-      command: ChromeEventType.MOVE_TAB
-    })
+      command: ChromeEventType.MOVE_TAB,
+    });
   }
 
   removeTab(tabId: number, windowId: number) {
@@ -99,7 +96,9 @@ class App extends LitElement {
 
       <main>
         <chrome-window-main>
-          <current-tab-container></current-tab-container>
+          <current-tab-container
+            .currentWindowList=${this._currentWindowList}
+          ></current-tab-container>
 
           <save-tab-container></save-tab-container>
         </chrome-window-main>

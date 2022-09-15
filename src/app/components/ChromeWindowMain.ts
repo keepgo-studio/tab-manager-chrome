@@ -10,11 +10,10 @@ class ChromeWindowIndex extends Component {
       ${super.styles}
 
       .container {
-        margin: 1rem;
-        border-radius: 7px;
-        background-color: #F6FAFF;
-        box-shadow: 0 1px 8px 4px rgba(0, 0, 0, 0.05);
+        padding: 1rem;
+        height: calc(100vh - 65px);
       }
+      
     `
   };
 

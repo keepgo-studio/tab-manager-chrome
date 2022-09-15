@@ -206,7 +206,7 @@ export const CurrentWindowMachine =
               (chromeTab) => chromeTab.id === tab?.id
             );
 
-            context.data[windowIdx].tabs.splice(tabIdx, 1, tab!);
+            context.data[windowIdx].tabs[tabIdx] = tab!;
           }
         },
 

@@ -1,37 +1,36 @@
 declare global {
-  
   interface BackgroundData {
     win: ChromeWindow;
     tab: ChromeTab;
-    tabId: number,
-    windowId: number,
-    
+    tabId: number;
+    windowId: number;
+
     moveInfo: {
-      fromIndex: number,
-      toIndex: number
-    }
+      fromIndex: number;
+      toIndex: number;
+    };
   }
 
   interface MessageForm {
-    readonly message: string,
-    readonly data: Partial<BackgroundData>
+    readonly message: string;
+    readonly data: Partial<BackgroundData>;
   }
-  
+
   interface CurrentTab extends ChromeTab {
-    textContent: string
+    textContent: string;
   }
-  
+
   interface CurrentWindow extends ChromeWindow {
-    tabs: ChromeTab[]
+    tabs: ChromeTab[];
   }
-  
+
   interface SaveWindow extends ChromeWindow {
-    category: string
+    category: string;
   }
 
   interface StorageSaveForm {
-    key: string,
-    window: CurrentWindow
+    key: string;
+    window: CurrentWindow;
   }
 
   const enum ChromeEventType {
@@ -40,7 +39,7 @@ declare global {
     CREATE_TAB = "CREATE_TAB",
     CREATE_WINDOW = "CREATE_WINDOW",
     UPDATE_TAB = "UPDATE_TAB",
-    MOVE_TAB = "MOVE_TAB"
+    MOVE_TAB = "MOVE_TAB",
   }
 }
 

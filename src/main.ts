@@ -1,14 +1,12 @@
 import App from "./app/App";
-
 // on start event handler
 
 const app = new App();
 
 chrome.runtime.onMessage.addListener(
   ({ message, data }: MessageForm, sender, sendResponse) => {
-    
-    console.log("[main.ts]:",message)
-    
+    console.log("[main.ts]:", message);
+
     if (message === ChromeEventType.CREATE_WINDOW) {
       const { win } = data;
 
@@ -36,3 +34,7 @@ chrome.runtime.onMessage.addListener(
     }
   }
 );
+
+window.addEventListener('click-from-extension', () => {
+  console.log('clicked');
+})

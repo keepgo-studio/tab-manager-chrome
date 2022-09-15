@@ -9,6 +9,7 @@ console.log("background is running");
 
 var isOpened = false;
 var extensionWindowId: number | undefined;
+var extensionTabId: number | undefined;
 
 var diagnol = 517.7;
 var width = 344;
@@ -65,17 +66,13 @@ chrome.windows.onRemoved.addListener((windowId) => {
 
 chrome.tabs.onCreated.addListener((tab) => {
   // Notice, that the onCreate does not guarantee that the tab has fully loaded.
-  if (extensionWindowId !== tab.windowId) {
-    
-    if (isOpened) {
-      const message: MessageForm = {
-        message: ChromeEventType.CREATE_TAB,
-        data: { tab },
-      };
+  if (extensionWindowId !== tab.windowId && isOpened) {
+    const message: MessageForm = {
+      message: ChromeEventType.CREATE_TAB,
+      data: { tab },
+    };
 
-      chrome.runtime.sendMessage(message);
-    }
-
+    chrome.runtime.sendMessage(message);
   }
 });
 
@@ -86,44 +83,41 @@ chrome.tabs.onMoved.addListener((_, moveInfo) => {
   if (isOpened) {
     const message: MessageForm = {
       message: ChromeEventType.MOVE_TAB,
-      data: { moveInfo, windowId }
-    }
-
-    chrome.runtime.sendMessage(message);
-  }
-});
-
-chrome.tabs.onRemoved.addListener((tabId, { isWindowClosing, windowId}) => {
-  if (windowId === extensionWindowId) return;
-
-  if (isOpened && !isWindowClosing) {
-    const message: MessageForm = {
-      message: ChromeEventType.REMOVE_TAB,
-      data: { windowId, tabId }
+      data: { moveInfo, windowId },
     };
 
     chrome.runtime.sendMessage(message);
   }
 });
 
+chrome.tabs.onRemoved.addListener((tabId, { isWindowClosing, windowId }) => {
+  if (windowId === extensionWindowId) return;
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if(changeInfo.status !== 'complete') return;
+  if (isOpened && !isWindowClosing) {
+    const message: MessageForm = {
+      message: ChromeEventType.REMOVE_TAB,
+      data: { windowId, tabId },
+    };
 
-  if (isOpened && extensionWindowId !== tab.windowId) {
-      const message: MessageForm = {
-        message: ChromeEventType.UPDATE_TAB,
-        data: { tab },
-      };
-
-      chrome.runtime.sendMessage(message);
+    chrome.runtime.sendMessage(message);
   }
 });
 
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status !== "complete") return;
 
+  if (isOpened && extensionWindowId !== tab.windowId) {
+    const message: MessageForm = {
+      message: ChromeEventType.UPDATE_TAB,
+      data: { tab },
+    };
+
+    chrome.runtime.sendMessage(message);
+  }
+});
 
 // invoke app init(=constructor)
-chrome.action.onClicked.addListener(() => {
+chrome.action.onClicked.addListener((tab) => {
   // open web
   if (!isOpened) {
     chrome.windows.create(
@@ -138,9 +132,9 @@ chrome.action.onClicked.addListener(() => {
       },
       (window) => {
         extensionWindowId = window!.id;
+
+        isOpened = true;
       }
     );
-
-    isOpened = true;
   }
 });
