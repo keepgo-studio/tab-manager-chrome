@@ -1,10 +1,3 @@
-import {
-  findDataLocal,
-  getDataLocal,
-  removeDataLocal,
-  setDataLocal,
-} from "./utils/chrome-api";
-
 console.log("background is running");
 
 var isOpened = false;
@@ -17,17 +10,22 @@ var height = Math.round(Math.sqrt(Math.pow(width, 2) + Math.pow(diagnol, 2)));
 width += 16;
 
 // when extension installed, only once
-chrome.runtime.onInstalled.addListener(() => {});
+chrome.runtime.onInstalled.addListener(() => {
 
-chrome.windows.onCreated.addListener(async (win: ChromeWindow) => {
-  if (win.id !== extensionWindowId) {
+});
+
+chrome.windows.onCreated.addListener((win: ChromeWindow) => {
+  if (win.id && win.id !== extensionWindowId) {
+
     if (isOpened) {
-      const message: MessageForm = {
-        message: ChromeEventType.CREATE_WINDOW,
-        data: { win },
-      };
-
-      chrome.runtime.sendMessage(message);
+      chrome.windows.get(win.id, { populate: true }, (justCreatedWindow) => {
+        const message: MessageForm = {
+          message: ChromeEventType.CREATE_WINDOW,
+          data: { win: justCreatedWindow },
+        };
+  
+        chrome.runtime.sendMessage(message);
+      });
     }
 
     // setDataLocal({
@@ -66,7 +64,10 @@ chrome.windows.onRemoved.addListener((windowId) => {
 
 chrome.tabs.onCreated.addListener((tab) => {
   // Notice, that the onCreate does not guarantee that the tab has fully loaded.
-  if (extensionWindowId !== tab.windowId && isOpened) {
+  if (tab.windowId && extensionWindowId !== tab.windowId ) {
+
+    if (!isOpened) return;
+
     const message: MessageForm = {
       message: ChromeEventType.CREATE_TAB,
       data: { tab },
@@ -104,7 +105,7 @@ chrome.tabs.onRemoved.addListener((tabId, { isWindowClosing, windowId }) => {
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status !== "complete") return;
+  // if (changeInfo.status !== "complete") return;
 
   if (isOpened && extensionWindowId !== tab.windowId) {
     const message: MessageForm = {

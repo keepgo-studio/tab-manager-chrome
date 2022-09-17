@@ -1,7 +1,4 @@
-import App from "./app/App";
-// on start event handler
-
-const app = new App();
+import App from "./app/app";
 
 chrome.runtime.onMessage.addListener(
   ({ message, data }: MessageForm, sender, sendResponse) => {
@@ -10,31 +7,59 @@ chrome.runtime.onMessage.addListener(
     if (message === ChromeEventType.CREATE_WINDOW) {
       const { win } = data;
 
-      app.createWindow(win!);
+      App.createWindow(win!);
     } else if (message === ChromeEventType.REMOVE_WINDOW) {
       const { windowId } = data;
 
-      app.removeWindow(windowId!);
+      App.removeWindow(windowId!);
     } else if (message === ChromeEventType.CREATE_TAB) {
       const { tab } = data;
 
-      app.createTab(tab!);
+      App.createTab(tab!);
     } else if (message === ChromeEventType.UPDATE_TAB) {
       const { tab } = data;
 
-      app.updateTab(tab!);
+      App.updateTab(tab!);
     } else if (message === ChromeEventType.REMOVE_TAB) {
       const { tabId, windowId } = data;
 
-      app.removeTab(tabId!, windowId!);
+      App.removeTab(tabId!, windowId!);
     } else if (message === ChromeEventType.MOVE_TAB) {
       const { moveInfo, windowId, tabId } = data;
 
-      app.moveTab(windowId!, moveInfo!);
+      App.moveTab(windowId!, moveInfo!);
     }
   }
 );
 
-window.addEventListener('click-from-extension', () => {
-  console.log('clicked');
-})
+const eventsFromComponents = [
+  // from WindowNode
+  {
+    name: 'open-tab',
+    handler: (e: CustomEvent) => {
+      App.openTab(e.detail.tabId, e.detail.windowId);
+    }
+  },
+  {
+    name: 'close-window',
+    handler: (e: CustomEvent) => {
+      App.closeWindow(e.detail.windowId);
+    }
+  },
+]
+  
+window.onload = () => {
+  eventsFromComponents.forEach(eventObj => {
+    const { name, handler } = eventObj;
+
+    window.addEventListener(name, handler as EventListener);
+  });
+}
+
+window.onclose = () => {
+  eventsFromComponents.forEach(eventObj => {
+    const { name, handler } = eventObj;
+  
+    window.removeEventListener(name, handler as EventListener);
+  });
+}

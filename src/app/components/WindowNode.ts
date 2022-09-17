@@ -1,5 +1,5 @@
 import { css, html, PropertyValueMap } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, property, state, query } from "lit/decorators.js";
 import { repeat } from "lit/directives/repeat.js";
 import { Component } from "../core/Component";
 import { styleMap } from "lit/directives/style-map.js";
@@ -8,7 +8,9 @@ const OPENING_DURATION = 250; // ms
 
 @customElement("window-node")
 class WindowNode extends Component {
-  @property({ type: Array })
+  private _windowId = -1;
+
+  @property({ type: Array<CurrentTab> })
   tabList:CurrentTab[] = [];
 
   @state()
@@ -20,11 +22,22 @@ class WindowNode extends Component {
   @state()
   isHover = false;
 
+  @query('.node-container')
+  _nodeContainer!: Element;
+
   static get styles() {
     return css`
       ${super.styles}
 
+      .appear-animation {
+        transform: scale(1) !important;
+        opacity: 1 !important;
+      }
+
       .node-container{
+        transform: scale(0.5);
+        opacity: 0;
+
         background-color: #fff;
         border-radius: 7px;
         margin-bottom: 1rem;
@@ -131,7 +144,6 @@ class WindowNode extends Component {
         padding: 1rem;
         z-index: 1;
         background-color: #fff;
-        height: 160px;
         overflow-y: scroll;
 
         /* 
@@ -140,7 +152,10 @@ class WindowNode extends Component {
         */
         transition: ease ${OPENING_DURATION}ms;
 
-        width: 100%
+        width: 100%;
+        /*
+          you can find dynamic height in the function render()
+        */
       }
 
       .rest::-webkit-scrollbar {
@@ -191,14 +206,6 @@ class WindowNode extends Component {
       `;
   }
 
-  protected shouldUpdate(
-    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
-  ): boolean {
-    // const p1 = _changedProperties.get("tabList");
-    // return !(typeof p1 === "undefined" || p1.length < 1);
-    return true;
-  }
-
   private handleMouseEnter() {
     this.isHover = true;
   }
@@ -207,7 +214,12 @@ class WindowNode extends Component {
     this.isHover = false;
   }
   
-  private handleNodeClick() {
+  private handleButtonClick(e: Event) {
+    /** 
+     * prevent invoke handleNodeClick listener
+    */
+    e.stopPropagation();
+
     if (!this.isOpened) {
       this.isOpening = true;
 
@@ -224,26 +236,57 @@ class WindowNode extends Component {
 
   }
 
-  private handleCloseClick() {
-
+  private handleCloseClick(e: Event) {
+    window.dispatchEvent(new CustomEvent('close-window', {
+      detail: {
+        windowId: this._windowId,
+      }
+    }))
   }
 
   private handleSavedClick() {
     
   }
 
+  private handleNodeClick(e: Event) {
+    const targetNode = e.currentTarget as Element;
+
+    const tabId = Number.parseInt(targetNode.id);
+
+    window.dispatchEvent(new CustomEvent('open-tab', {
+      detail: {
+        windowId: this._windowId,
+        tabId: tabId,
+      }
+    }))
+  }
+
+  protected firstUpdated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
+    setTimeout(() => {
+      this._nodeContainer.classList.add('appear-animation');
+    }, 20);
+  }
 
   render() {
+    this._windowId = this.tabList[0].windowId;
+
     const shouldShowDialogStyle = { opacity: this.isHover ? "1" : "0", zIndex: this.isHover ? "999" : "0" };
     const shouldRotateButton = { transform: this.isOpening ? "rotate(45deg)" : "" };
     
-    const shouldShowRestNodes = { height: this.isOpening ? "232px" : "72px" };
+    const restNodesMaxHeight = ((this.tabList.length > 5) ? 5 : this.tabList.length) * 32;
+    const setRestHeight = { height: this.isOpening ? `${restNodesMaxHeight}px` : "72px" };
     const shouldShowRestNodesOpacity = { opacity: this.isOpened ? "1" : "0" };
     const shouldShowRestNodesDisplay = { display: this.isOpening ? "block" : "none" };
 
+    const shouldShowRestNodes = { height: this.isOpening ? `${restNodesMaxHeight + 72}px` : "72px" };
+
     const firstTab = this.tabList[0];
     const firstTabHtml = html`
-    <div class="first">
+    <div 
+      id="${firstTab.id}" 
+      class="first" 
+      @click=${this.handleNodeClick}
+    >
     
       <div class="first-fav-icon-container">
         <img src=${firstTab.favIconUrl}>
@@ -256,7 +299,7 @@ class WindowNode extends Component {
       </div>
 
       <div class="button-container"
-        @click=${this.handleNodeClick}
+        @click=${this.handleButtonClick}
       >
 
         <svg style=${ styleMap(shouldRotateButton) } width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -269,7 +312,8 @@ class WindowNode extends Component {
       <div class="rest"
         style=${styleMap({
           ...shouldShowRestNodesOpacity,
-          ...shouldShowRestNodesDisplay
+          ...shouldShowRestNodesDisplay,
+          ...setRestHeight
         })}
       >
 
@@ -277,7 +321,11 @@ class WindowNode extends Component {
         this.tabList,
         (tab) => tab.id,
         (tab, idx) => (idx > 0) ? html`
-          <div class="rest-tab-container">
+          <div 
+            id="${tab.id}" 
+            class="rest-tab-container"
+            @click=${this.handleNodeClick}
+            >
             <div class="rest-fav-icon-container">
               <img src=${tab.favIconUrl}>
             </div>
@@ -301,7 +349,7 @@ class WindowNode extends Component {
       <div class="dialog-container" 
         style=${ styleMap(shouldShowDialogStyle) }
         >
-        <svg class="close" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg @click=${this.handleCloseClick} class="close" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M18.3 5.70997C17.91 5.31997 17.28 5.31997 16.89 5.70997L12 10.59L7.10997 5.69997C6.71997 5.30997 6.08997 5.30997 5.69997 5.69997C5.30997 6.08997 5.30997 6.71997 5.69997 7.10997L10.59 12L5.69997 16.89C5.30997 17.28 5.30997 17.91 5.69997 18.3C6.08997 18.69 6.71997 18.69 7.10997 18.3L12 13.41L16.89 18.3C17.28 18.69 17.91 18.69 18.3 18.3C18.69 17.91 18.69 17.28 18.3 16.89L13.41 12L18.3 7.10997C18.68 6.72997 18.68 6.08997 18.3 5.70997Z" fill="black"/>
         </svg>
 

@@ -1,5 +1,5 @@
 import { LitElement } from "lit";
 
-export function consoleLitComponent(component: LitElement, msg:string) {
-    console.log(`[${component.tagName}]: ${msg}`);
+export function consoleLitComponent(component: LitElement, msg:any ) {
+    console.log(`[${component.tagName}]:`, msg);
 }

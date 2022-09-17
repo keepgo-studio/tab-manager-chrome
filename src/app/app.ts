@@ -3,81 +3,78 @@ import "./components/Search";
 import "./components/ChromeWindowMain";
 import "./components/CurrentTabContainer";
 import "./components/SaveTabContainer";
-import { css, CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { html, LitElement } from "lit";
+import { customElement, state } from "lit/decorators.js";
 import { interpret } from "xstate";
 import { CurrentWindowMachine } from "../machine/CurrentWindowMachine";
+import { consoleLitComponent } from "../utils/dev";
+
+const machine = interpret(CurrentWindowMachine);
 
 @customElement("app-")
 class App extends LitElement {
-  private _machine;
+  
+  @state()
+  currentWindowList: CurrentWindow[] = [] 
 
-  @property()
-  _currentWindowList: CurrentWindow[] = [];
+  @state()
+  currentEventOccurWindowId: number = -1;
 
   constructor() {
     super();
-    this._currentWindowList = [];
 
-    this._machine = interpret(CurrentWindowMachine)
-      .onTransition((state) => {
-        /* 
-          need to fix : list update fired twice.
-            it looks like the 'after type' event make an error...
-            but don't know why since I think after event didn't do
-            anything at all :(
-        */
-        if (state.changed) {
-          this._currentWindowList = state.context.data;
-
-          // console.log(this._currentWindowList);
+    machine.onTransition((state) => {
+       if (state.changed) {
+          this.currentWindowList = [ ...state.context.data ];
+          this.currentEventOccurWindowId = state.context.occurWindowId;
+          // console.log("[xstate]:", this.currentWindowList);
         }
       })
       .start();
   }
 
-  createWindow(win: ChromeWindow) {
-    this._machine.send({
+  static createWindow(win: ChromeWindow) {
+    machine.send({
       type: "chrome event occur",
       data: { win },
       command: ChromeEventType.CREATE_WINDOW,
     });
   }
 
-  createTab(tab: ChromeTab) {
-    this._machine.send({
+  static createTab(tab: ChromeTab) {
+    machine.send({
       type: "chrome event occur",
       data: { tab, windowId: tab.windowId },
       command: ChromeEventType.CREATE_TAB,
     });
   }
 
-  removeWindow(windowId: number) {
-    this._machine.send({
+  static removeWindow(windowId: number) {
+    machine.send({
       type: "chrome event occur",
       data: { windowId },
       command: ChromeEventType.REMOVE_WINDOW,
     });
   }
 
-  moveTab(windowId: number, moveInfo: { fromIndex: number; toIndex: number }) {
-    this._machine.send({
+  static moveTab(windowId: number, moveInfo: { fromIndex: number; toIndex: number }) {
+    machine.send({
       type: "chrome event occur",
       data: { windowId, moveInfo },
       command: ChromeEventType.MOVE_TAB,
     });
   }
 
-  removeTab(tabId: number, windowId: number) {
-    this._machine.send({
+  static removeTab(tabId: number, windowId: number) {
+    machine.send({
       type: "chrome event occur",
       data: { windowId, tabId },
       command: ChromeEventType.REMOVE_TAB,
     });
   }
 
-  updateTab(tab: ChromeTab) {
-    this._machine.send({
+  static updateTab(tab: ChromeTab) {
+    machine.send({
       type: "chrome event occur",
       data: { tab },
       command: ChromeEventType.UPDATE_TAB,
@@ -90,14 +87,40 @@ class App extends LitElement {
 
   searchTab() {}
 
+  static openTab(tabId: number, windowId: number) {
+    const leftMargin = 384;
+    const customWidth = window.screen.width - 384 - 20; // 20 is right margin of window
+    const customHeight = window.screen.height - 20;
+
+    chrome.windows.update(windowId, { 
+      focused: true,
+      top: 20,
+      left: leftMargin,
+      width: customWidth,
+      height: customHeight,
+      state: "normal"
+    }, (w) => {
+      if (w.id && w.state !== "normal") {
+        chrome.windows.update(w.id, { state: "normal" });
+      }
+      chrome.tabs.update(tabId, { active: true });
+    })
+  }
+
+  static closeWindow(windowId: number) {
+    chrome.windows.remove(windowId);
+  }
+
   render() {
+    // consoleLitComponent(this, 'render')
     return html`
       <app-navbar></app-navbar>
 
       <main>
         <chrome-window-main>
           <current-tab-container
-            .currentWindowList=${this._currentWindowList}
+            .currentWindowList=${this.currentWindowList}
+            .currentEventOccurWindowId=${this.currentEventOccurWindowId}
           ></current-tab-container>
 
           <save-tab-container></save-tab-container>

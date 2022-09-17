@@ -1,17 +1,22 @@
-import { css, html, PropertyValueMap } from "lit";
+import { css, html, PropertyDeclaration, PropertyValueMap } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { Component } from "../core/Component";
-import { map } from "lit/directives/map.js";
 import "./WindowNode";
+import { repeat } from "lit/directives/repeat.js";
 import { consoleLitComponent } from "../../utils/dev";
 
 @customElement("current-tab-container")
 class CurrentTabContainer extends Component {
-  @property({ type: Array })
-  currentWindowList: CurrentWindow[] = [];
-
   @property({ type: Boolean })
   shouldShowDialog: boolean = false;
+
+  @property({ type: Array<CurrentWindow> })
+  currentWindowList: CurrentWindow[] = [];
+
+  @property()
+  currentEventOccurWindowId = -1;
+
+  constructor() { super(); }
 
   static get styles() {
     return css`
@@ -38,35 +43,19 @@ class CurrentTabContainer extends Component {
     `;
   }
 
-  protected shouldUpdate(
-    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
-  ): boolean {
-    const p1 = _changedProperties.get("currentWindowList");
-
-    return !(typeof p1 === "undefined" || p1 === null);
-  }
-
-  mouseEnterHandler(e: Event) {
-    this.shouldShowDialog = true;
-    const target = e.currentTarget as Element;
-    target.classList.add('show');
-  }
-  
-  mouseLeaveHandler(e: Event) {
-    this.shouldShowDialog = false;
-    const target = e.currentTarget as Element;
-    target.classList.remove('show');
-  }
-
   render() {
+    if (this.currentWindowList === undefined) return html`<section></section>`
     
-    consoleLitComponent(this, 'render');
+    // consoleLitComponent(this, this.currentEventOccurWindowId);
 
     return html`
       <section>
-      ${map(
+      ${repeat(
         this.currentWindowList,
-        (currentWindow) => html`<window-node .tabList=${ currentWindow.tabs }></window-node>`
+        (currentWindow) => currentWindow.id,
+        (currentWindow) => html`
+        <window-node .tabList=${ currentWindow.tabs }></window-node>
+        `
       )}
       </section>
     `;

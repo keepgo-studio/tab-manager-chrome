@@ -11,6 +11,7 @@ export const CurrentWindowMachine =
     {
   context: {
     data: [] as CurrentWindow[],
+    occurWindowId: -1
   },
   tsTypes: {} as import("./CurrentWindowMachine.typegen").Typegen0,
   schema: {
@@ -158,6 +159,7 @@ export const CurrentWindowMachine =
             );
 
             context.data[windowIdx].tabs.splice(tabIdx, 1);
+            context.occurWindowId = windowId!;
           }
         },
 
@@ -167,6 +169,7 @@ export const CurrentWindowMachine =
           context.data = context.data.filter(
             (chromeWindow) => chromeWindow.id !== windowId
           );
+          context.occurWindowId = windowId!;
         },
 
         "create tab from target window": (context, event) => {
@@ -175,8 +178,11 @@ export const CurrentWindowMachine =
           const windowIdx = context.data.findIndex(
             (chromeWindow) => chromeWindow.id === windowId
           );
-
-          context.data[windowIdx].tabs.splice(tab!.index, 0, tab!);
+          
+          if(windowIdx !== -1) {
+            context.data[windowIdx].tabs.splice(tab!.index, 0, tab!);
+            context.occurWindowId = windowId!;
+          }
         },
 
         "create target window from list": (context, event) => {
@@ -192,6 +198,7 @@ export const CurrentWindowMachine =
           // })
           // ***TODO***
           context.data.push(newWindow);
+          context.occurWindowId = newWindow.id!;
         },
 
         "update tab from target window": (context, event) => {
@@ -207,6 +214,7 @@ export const CurrentWindowMachine =
             );
 
             context.data[windowIdx].tabs[tabIdx] = tab!;
+            context.occurWindowId = tab!.windowId;
           }
         },
 
@@ -224,6 +232,7 @@ export const CurrentWindowMachine =
             )[0];
 
             context.data[windowIdx].tabs.splice(moveInfo!.toIndex, 0, moveTab);
+            context.occurWindowId = windowId!;
           }
         },
       },
