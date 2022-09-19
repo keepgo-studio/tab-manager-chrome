@@ -46,6 +46,12 @@ const eventsFromComponents = [
       App.closeWindow(e.detail.windowId);
     }
   },
+  {
+    name: 'save-window',
+    handler: (e: CustomEvent) => {
+      App.saveWindow(e.detail.windowId);
+    }
+  }
 ]
   
 window.onload = () => {

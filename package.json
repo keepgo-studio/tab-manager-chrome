@@ -31,6 +31,7 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
+    "idb": "^7.0.2",
     "xstate": "^4.33.3"
   }
 }

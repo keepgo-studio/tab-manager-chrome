@@ -7,7 +7,6 @@ import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { interpret } from "xstate";
 import { CurrentWindowMachine } from "../machine/CurrentWindowMachine";
-import { consoleLitComponent } from "../utils/dev";
 
 const machine = interpret(CurrentWindowMachine);
 
@@ -81,7 +80,9 @@ class App extends LitElement {
     });
   }
 
-  saveWindow() {}
+  static saveWindow(windowId: number) {
+
+  }
 
   removeSaveWindow() {}
 
