@@ -3,48 +3,132 @@ import "./components/Search";
 import "./components/ChromeWindowMain";
 import "./components/CurrentTabContainer";
 import "./components/SaveTabContainer";
+import { html, LitElement } from "lit";
+import { customElement, state } from "lit/decorators.js";
+import { interpret } from "xstate";
+import { CurrentWindowMachine } from "../machine/CurrentWindowMachine";
+import { consoleLitComponent } from "../utils/dev";
 
-class App {
+const machine = interpret(CurrentWindowMachine);
+
+@customElement("app-")
+class App extends LitElement {
+  
+  @state()
+  currentWindowList: CurrentWindow[] = [] 
+
+  @state()
+  currentEventOccurWindowId: number = -1;
+
   constructor() {
+    super();
 
-    this.render();
+    machine.onTransition((state) => {
+       if (state.changed) {
+          this.currentWindowList = [ ...state.context.data ];
+          this.currentEventOccurWindowId = state.context.occurWindowId;
+          // console.log("[xstate]:", this.currentWindowList);
+        }
+      })
+      .start();
   }
 
-  async createWindow(window: ChromeWindow) {}
+  static createWindow(win: ChromeWindow) {
+    machine.send({
+      type: "chrome event occur",
+      data: { win },
+      command: ChromeEventType.CREATE_WINDOW,
+    });
+  }
 
-  async createTab() {}
+  static createTab(tab: ChromeTab) {
+    machine.send({
+      type: "chrome event occur",
+      data: { tab, windowId: tab.windowId },
+      command: ChromeEventType.CREATE_TAB,
+    });
+  }
 
-  async removeWindow() {}
+  static removeWindow(windowId: number) {
+    machine.send({
+      type: "chrome event occur",
+      data: { windowId },
+      command: ChromeEventType.REMOVE_WINDOW,
+    });
+  }
 
-  async moveTab() {}
+  static moveTab(windowId: number, moveInfo: { fromIndex: number; toIndex: number }) {
+    machine.send({
+      type: "chrome event occur",
+      data: { windowId, moveInfo },
+      command: ChromeEventType.MOVE_TAB,
+    });
+  }
 
-  async removeTab() {}
+  static removeTab(tabId: number, windowId: number) {
+    machine.send({
+      type: "chrome event occur",
+      data: { windowId, tabId },
+      command: ChromeEventType.REMOVE_TAB,
+    });
+  }
 
-  async updateTab() {}
+  static updateTab(tab: ChromeTab) {
+    machine.send({
+      type: "chrome event occur",
+      data: { tab },
+      command: ChromeEventType.UPDATE_TAB,
+    });
+  }
 
-  async saveWindow() {}
+  saveWindow() {}
 
-  async removeSaveWindow() {}
+  removeSaveWindow() {}
 
-  async searchTab() {}
+  searchTab() {}
+
+  static openTab(tabId: number, windowId: number) {
+    const leftMargin = 384;
+    const customWidth = window.screen.width - 384 - 20; // 20 is right margin of window
+    const customHeight = window.screen.height - 20;
+
+    chrome.windows.update(windowId, { 
+      focused: true,
+      top: 20,
+      left: leftMargin,
+      width: customWidth,
+      height: customHeight,
+      state: "normal"
+    }, (w) => {
+      if (w.id && w.state !== "normal") {
+        chrome.windows.update(w.id, { state: "normal" });
+      }
+      chrome.tabs.update(tabId, { active: true });
+    })
+  }
+
+  static closeWindow(windowId: number) {
+    chrome.windows.remove(windowId);
+  }
 
   render() {
-     document.body.innerHTML = `
-        <app-navbar></app-navbar>
-        
-        <main>
-          
-          <chrome-window-main>
+    // consoleLitComponent(this, 'render')
+    return html`
+      <app-navbar></app-navbar>
 
-            <current-tab-container></current-tab-container>
-            
-            <save-tab-container></save-tab-container>
-            
-          </chrome-window-main>
+      <main>
+        <chrome-window-main>
+          <current-tab-container
+            .currentWindowList=${this.currentWindowList}
+            .currentEventOccurWindowId=${this.currentEventOccurWindowId}
+          ></current-tab-container>
 
-          <search-component></search-component>
-        </main>
-      `;
+          <save-tab-container></save-tab-container>
+        </chrome-window-main>
+
+        <search-component></search-component>
+      </main>
+    `;
   }
 }
 

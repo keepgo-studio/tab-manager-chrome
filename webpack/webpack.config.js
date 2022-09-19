@@ -7,9 +7,9 @@ module.exports = {
   watch: process.env.WATCH === "true" ? true : false,
   
   entry: {
-    background: path.resolve(__dirname, "..", "src", "background.ts"),
-    contentScript: path.resolve(__dirname, "..", "src", "content-script.ts"),
-    main: path.resolve(__dirname, "..", "src", "main.ts"),
+    "background": path.resolve(__dirname, "..", "src", "background.ts"),
+    "content-script": path.resolve(__dirname, "..", "src", "content-script.ts"),
+    "main": path.resolve(__dirname, "..", "src", "main.ts"),
   },
 
   output: {
