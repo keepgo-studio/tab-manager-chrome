@@ -5,6 +5,7 @@ import { getPathName } from "../../utils/location";
 
 @customElement('chrome-window-main')
 class ChromeWindowMain extends Component {
+
   static get styles() {
     return css`
       ${super.styles}
@@ -13,7 +14,6 @@ class ChromeWindowMain extends Component {
         padding: 1rem;
         height: calc(100vh - 65px);
       }
-
     `
   };
 
