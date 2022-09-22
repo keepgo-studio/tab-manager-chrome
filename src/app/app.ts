@@ -7,22 +7,30 @@ import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { interpret } from "xstate";
 import { CurrentWindowMachine } from "../machine/CurrentWindowMachine";
+import { SavedWindowMachine } from "../machine/SavedWindowMachine";
+import db from "../indexedDB/db";
 
-const machine = interpret(CurrentWindowMachine);
+const currentWindowMachine = interpret(CurrentWindowMachine);
+const savedWindowMachine = interpret(SavedWindowMachine);
 
 @customElement("app-")
 class App extends LitElement {
   
   @state()
-  currentWindowList: CurrentWindow[] = [] 
+  currentWindowList: CurrentWindow[];
 
   @state()
   currentEventOccurWindowId: number = -1;
 
+  @state()
+  savedWindowList : CurrentWindow[];
+
   constructor() {
     super();
+    this.currentWindowList = [];
+    this.savedWindowList = [];
 
-    machine.onTransition((state) => {
+    currentWindowMachine.onTransition((state) => {
        if (state.changed) {
           this.currentWindowList = [ ...state.context.data ];
           this.currentEventOccurWindowId = state.context.occurWindowId;
@@ -30,10 +38,17 @@ class App extends LitElement {
         }
       })
       .start();
+
+    savedWindowMachine.onTransition((state) => {
+      // if (state.changed) {
+        console.log(state);
+      // }
+    })
+    .start();
   }
 
   static createWindow(win: ChromeWindow) {
-    machine.send({
+    currentWindowMachine.send({
       type: "chrome event occur",
       data: { win },
       command: ChromeEventType.CREATE_WINDOW,
@@ -41,7 +56,7 @@ class App extends LitElement {
   }
 
   static createTab(tab: ChromeTab) {
-    machine.send({
+    currentWindowMachine.send({
       type: "chrome event occur",
       data: { tab, windowId: tab.windowId },
       command: ChromeEventType.CREATE_TAB,
@@ -49,7 +64,7 @@ class App extends LitElement {
   }
 
   static removeWindow(windowId: number) {
-    machine.send({
+    currentWindowMachine.send({
       type: "chrome event occur",
       data: { windowId },
       command: ChromeEventType.REMOVE_WINDOW,
@@ -57,7 +72,7 @@ class App extends LitElement {
   }
 
   static moveTab(windowId: number, moveInfo: { fromIndex: number; toIndex: number }) {
-    machine.send({
+    currentWindowMachine.send({
       type: "chrome event occur",
       data: { windowId, moveInfo },
       command: ChromeEventType.MOVE_TAB,
@@ -65,7 +80,7 @@ class App extends LitElement {
   }
 
   static removeTab(tabId: number, windowId: number) {
-    machine.send({
+    currentWindowMachine.send({
       type: "chrome event occur",
       data: { windowId, tabId },
       command: ChromeEventType.REMOVE_TAB,
@@ -73,7 +88,7 @@ class App extends LitElement {
   }
 
   static updateTab(tab: ChromeTab) {
-    machine.send({
+    currentWindowMachine.send({
       type: "chrome event occur",
       data: { tab },
       command: ChromeEventType.UPDATE_TAB,

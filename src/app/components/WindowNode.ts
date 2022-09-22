@@ -231,7 +231,7 @@ class WindowNode extends Component {
 
       setTimeout(() => {
         this.isOpening = false;
-      }, OPENING_DURATION);
+      }, OPENING_DURATION / 2);
     }
 
   }

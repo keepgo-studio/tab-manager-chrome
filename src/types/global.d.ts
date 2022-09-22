@@ -11,6 +11,9 @@ declare global {
     };
   }
 
+  // needed interface for machines
+  interface TransactionData {}
+
   interface MessageForm {
     readonly message: string;
     readonly data: Partial<BackgroundData>;
@@ -40,6 +43,12 @@ declare global {
     CREATE_WINDOW = "CREATE_WINDOW",
     UPDATE_TAB = "UPDATE_TAB",
     MOVE_TAB = "MOVE_TAB",
+  }
+
+  const enum UserInteractionType {
+    OPEN_SAVED_WINDOW,
+    REMOVE_SAVED_WINDOW,
+    SAVE_WINDOW
   }
 }
 
