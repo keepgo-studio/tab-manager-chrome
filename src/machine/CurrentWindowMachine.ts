@@ -6,12 +6,13 @@ import { createMachine } from "xstate";
 */
 
 export const CurrentWindowMachine =
-  /** @xstate-layout N4IgpgJg5mDOIC5QGECuAndYB2AXA6gJbYQD2A7gLICGAxgBbFgB0AMqdRMVAMRnYtiAN1IBrFmkw4CxMlTqMBbDl2xQEw0rWq5CpbAG0ADAF1EoAA6lYhXfvMgAHogBsL5gFYA7AA4AjADMPi4ALAFGfiEATD4ANCAAnogBfu5eHuFeUSEAnG45flEAvkXxklh4RCQUNAxMypzcPGCYpOjMFgA2OgBmbQC2zOXSVXK1iizsjWoa2CLadoamDlY2iw7OCCFGIczRXgGhfn5GXjm+IfFJCH5eux5RRhFRXi4eb345ASVlGBUy1XkdSUUwgkGYACUwP1SEIwAAVagAIx4K2stj02A2iB8IT8zCiRxiOR8ryMASuiA8Hh8zC+2UCLkefh8px+IGGlVkNQU9VB4KhMLhowoqKQIFWGPs4s2uPxhLxOSMJMOjMpCA8ORyzDcTxcviM3lyLnZnIBY15IJU4OQWB0CORYss6PWMqpOV2uRZoRcHvOwXVLgCUWYZx8AQO5MCRh8xVKHL+I25QImDTBECGdtwYBF5CdEpdmOxGo9ewKwRCvtyvhcgdZBNCJJyUQ8uRjPlNia5gPGfOtGYAqhYIPbESi0Wsi26tiFdj4MlEcgv0rkcuqfFrPD5goFolEAq3vvGzbne1bOODCBBOmAeAx0KR+mAAARgOF4Z9aWgYCdSrHT6kjB1CN3lxfd3i8Px1WOUICSeWcolSRdmxCTspG7C1gUmftmEoWEHXHcVJVdUBNlnOcFyXYMVy1ddNxpHcAj3A8Qg8ND-lPS1sIvCA706awwF-EinEQQIvCA7Y8nCJ4Cl8DxoPJICzjyY0AiknYSnjbBSDBeBxRPZMz241QoCEqdSMQEIvGgsJmCMR4InsvJghcUl2KTHsuLTAVoXwsczOlCyEHOdw1MVTVQm3Ap1VyWlKy1NT7LxFxlXcjCeSw7yM0FfDcwC-8gv9ZgTg8QJAiCW4XkDFsy2pQplRjAJgzS80MtTfkM1tMBR2RfLi3nPZ0hibY3hCWNm3VVtdj8TVPiYwlqSYlrOMyjrM267M8qIwtApEhBDj2ZVtkQ1zjkrKDEkQO58VOXclXJSDqWWwyvLWocR2zfztsnXbNgAWlsx4XBm4lVzuazLpuZVaWDFlg1ZaG2WPLtWpTPseOYK8bz66c3lpIx9UXJqnmOO51xZZgmOOpiMgyStns81acLwuEvudH6Cr2v7gk8KJ90OHYyryKJoJiWlxMNMJDn1LI2OR9DUaMrKcaCv7jiAh5+ZSvEUmFmLCT2X1m1SIJfC+VD5Y4l7MrARxbBVvbIjOOzwwqiI5riSGTgp8SHgJ6lCQPLwGcwiYHf+3dea1wXdaZdVILshzCjGtxtzjEogA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGECuAndYB2AXA6gJbYQD2A7gLICGAxgBbFgB0AMqdRMVAMRnYtiAN1IBrFmkw4CxMlTqMBbDl2xQEw0rWq5CpbAG0ADAF1EoAA6lYhXfvMgAHogBsL5gFYA7AA4AjADMPi4ALAFGfiEATD4ANCAAnogBfu5eHuFeUSEAnG45flEAvkXxklh4RCQUNAxMypzcPGCYpOjMFgA2OgBmbQC2zOXSVXK1iizsjWoa2CLadoamDlY2iw7OCCFGIczRXgGhfn5GXjm+IfFJCH5eux5RRhFRXi4eb345ASVlGBUy1XkdSUUwgkGYACUwP1SEIwAAVagAIx4K2stj02A2iB8IT8zCiRxiOR8ryMASuiA8Hh8zC+2UCLkefh8px+IGGlVkNQU9VB4KhMLhowoqKQIFWGPs4s2uPxhLxOSMJMOjMpCA8ORyzDcTxcviM3lyLnZnIBY15IJU4OQWB0CORYss6PWMqpOV2uRZoRcHvOwXVLgCUWYZx8AQO5MCRh8xVKHL+I25QImDTBECGdtwYBF5CdEpdmOxGo9ewKwRCvtyvhcgdZBNCJJyUQ8uRjPlNia5gPGfOtGYAqhYIPbESi0Wsi26tiFdj4MlEcgv0rkcuqfFrPD5goFolEAq3vvGzbne1bOODCBBOmAeAx0KR+mAAARgOF4Z9aWgYCdSrHT6kjB1CN3lxfd3i8Px1WOUICSeWcolSRdmxCTspG7C1gUmftmCvG8eGIWxf1dUBZVOUMaXnF5DTCF51z8DxmHnekAjxYNIjQ-5T0tbCLwzShYQdcdxUlEinEQWc5wXJdgxXLV103SiXF3KJwJCDxOKTHseLTSA706awwGIqdSMQQIvCA7Y8nCJ4Cl8DxoPJICzjyY0AmsnYSnjbBSDBeBxRPZMz141QoGM6VTK2LxoLCZgjEeCJ4ryYIXFJTSMJ5LDdIzQVBLHcL-0i853HcxVNVCbcCnVXJaUrLV3PivEXGVdLzUy1N+Ry6FBNzAri39ZgTg8QJAiCW46MSVwWzLalCmVGMAmDVruKyzrMzAUdkT66d5z2dIYm2N4QljZt1VbXYGIKL5ojeDJUOPLs2pTPs+PW+1epEwsIvEhBDj2ZVtkQ1LjkrKDJoQO58VOXclXJSDqWWoKdLWocR2zfLPsnb7NgAWlix5lIeDdVzuaLwZOElmHY8MYls1kvER7TVpwvCjMxv9izeWkjH1RdFqeY47no2lWMB1iMjuk0HvQp7guy5gBLhDHnSxwqfpx4JPFUxbmrYz4mWgmJaQsmidf1LINOlrikeZvjtsinHjiAh590OHYRryKJqsJPZfQ9cDIlZKXfhllbUzARwiPZsTNkiM44vDMaIk+IJHJZUNDQJ6lCQPBmra0zCJnt9Xdy113dY9g3wcguKEsZBlggRrygA */
   createMachine(
     {
   context: {
-    data: [] as CurrentWindow[],
-    occurWindowId: -1
+    data: {} as CurrentWindowMapping,
+    occurWindowId: -1,
+    occurTabId: -1,
   },
   tsTypes: {} as import("./CurrentWindowMachine.typegen").Typegen0,
   schema: {
@@ -22,6 +23,7 @@ export const CurrentWindowMachine =
     },
 
     events: {} as
+      | { type: "init" , command: ChromeEventType }
       | {
           type: "chrome event occur";
           data: Partial<BackgroundData>;
@@ -110,6 +112,9 @@ export const CurrentWindowMachine =
                 target: "MoveTab",
               },
             ],
+            init: {
+              actions: "init app",
+            },
           },
         },
         MoveTab: {
@@ -146,93 +151,85 @@ export const CurrentWindowMachine =
           event.command === ChromeEventType.MOVE_TAB,
       },
       actions: {
+        "init app": () => {},
+
         "remove tab from target window": (context, event) => {
           const { tabId, windowId } = event.data;
 
-          const windowIdx = context.data.findIndex(
-            (chromeWindow) => chromeWindow.id === windowId
-          );
+          if (windowId && windowId in context.data) {
 
-          if (windowIdx !== -1) {
-            const tabIdx = context.data[windowIdx].tabs.findIndex(
+            const tabIdx = context.data[windowId].tabs.findIndex(
               (chromeTab) => chromeTab.id === tabId
             );
 
-            context.data[windowIdx].tabs.splice(tabIdx, 1);
+            context.data[windowId].tabs.splice(tabIdx, 1);
             context.occurWindowId = windowId!;
+            context.occurTabId = tabId!;
           }
         },
 
         "remove target window from list": (context, event) => {
           const { windowId } = event.data;
 
-          context.data = context.data.filter(
-            (chromeWindow) => chromeWindow.id !== windowId
-          );
-          context.occurWindowId = windowId!;
+          if (windowId) { 
+            delete context.data[windowId]; 
+            context.occurWindowId = windowId;
+          }
         },
 
         "create tab from target window": (context, event) => {
           const { tab, windowId } = event.data;
 
-          const windowIdx = context.data.findIndex(
-            (chromeWindow) => chromeWindow.id === windowId
-          );
-          
-          if(windowIdx !== -1) {
-            context.data[windowIdx].tabs.splice(tab!.index, 0, tab!);
-            context.occurWindowId = windowId!;
+          if (windowId) {
+            context.data[windowId].tabs.splice(tab!.index, 0, tab!);
+            context.occurWindowId = windowId;
+            context.occurTabId = tab!.id!;
           }
         },
 
         "create target window from list": (context, event) => {
           const { win } = event.data;
 
-          const newWindow = win as CurrentWindow;
-          if (typeof newWindow.tabs === "undefined") newWindow.tabs = [];
           // ***TODO***
           // need to add text content via content-script which based on Chrome API
           // newWindow.tabs = newWindow.tabs.map((tab) => {
 
           //   Object.assign(tab, { textContent: })
           // })
+          const newWindow = win as CurrentWindow;
+          if (typeof newWindow.tabs === "undefined") newWindow.tabs = [];
           // ***TODO***
-          context.data.push(newWindow);
+          context.data[newWindow.id!] = newWindow;
           context.occurWindowId = newWindow.id!;
         },
 
         "update tab from target window": (context, event) => {
           const { tab } = event.data;
+          const windowId = tab?.windowId;
 
-          const windowIdx = context.data.findIndex(
-            (chromeWindow) => chromeWindow.id === tab?.windowId
-          );
-
-          if (windowIdx !== -1) {
-            const tabIdx = context.data[windowIdx].tabs.findIndex(
+          if (windowId) {
+            const tabIdx = context.data[windowId].tabs.findIndex(
               (chromeTab) => chromeTab.id === tab?.id
             );
 
-            context.data[windowIdx].tabs[tabIdx] = tab!;
+            context.data[windowId].tabs[tabIdx] = tab!;
             context.occurWindowId = tab!.windowId;
+            context.occurTabId = tab.id!;
           }
         },
 
         "moving tab from target window": (context, event) => {
           const { windowId, moveInfo } = event.data;
 
-          const windowIdx = context.data.findIndex(
-            (chromeWindow) => chromeWindow.id === windowId
-          );
-
-          if (windowIdx !== -1) {
-            const moveTab = context.data[windowIdx].tabs.splice(
+          if (windowId) {
+            const moveTab = context.data[windowId].tabs.splice(
               moveInfo!.fromIndex,
               1
             )[0];
 
-            context.data[windowIdx].tabs.splice(moveInfo!.toIndex, 0, moveTab);
+            context.data[windowId].tabs.splice(moveInfo!.toIndex, 0, moveTab);
             context.occurWindowId = windowId!;
+            context.occurTabId = moveTab.id!;
           }
         },
       },
@@ -245,7 +242,9 @@ export const CurrentWindowMachine =
 
           // ***TODO***
           // need to add text content via content-script which based on Chrome API
-          context.data = [...result];
+          result.forEach(win => {
+            context.data[win.id!] = win;
+          })
           // ***TODO***
         },
       },

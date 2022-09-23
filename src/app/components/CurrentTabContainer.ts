@@ -3,27 +3,35 @@ import { customElement, property, state } from "lit/decorators.js";
 import { Component } from "../core/Component";
 import "./WindowNode";
 import { repeat } from "lit/directives/repeat.js";
-import { consoleLitComponent } from "../../utils/dev";
 
 @customElement("current-tab-container")
 class CurrentTabContainer extends Component {
-  @property({ type: Boolean })
-  shouldShowDialog: boolean = false;
-
   @property({ type: Array<CurrentWindow> })
-  currentWindowList: CurrentWindow[] = [];
+  currentWindowMap: CurrentWindowMapping;
 
   @property()
-  currentEventOccurWindowId = -1;
+  occurWindowId!: Array<number>;
 
-  constructor() { super(); }
+  @property()
+  occurTabId!: Array<number>;
+
+  @property()
+  commandType?: ChromeEventType | UserInteractionType;
+
+  @state()
+  shouldShowDialog: boolean = false;
+
+  constructor() {
+    super();
+    this.currentWindowMap = {};
+  }
 
   static get styles() {
     return css`
       ${super.styles}
 
       section {
-        background-color: #F6FAFF;
+        background-color: #f6faff;
         padding: 1rem;
         box-shadow: 0 1px 8px 4px rgba(0, 0, 0, 0.05);
         height: 100%;
@@ -36,28 +44,45 @@ class CurrentTabContainer extends Component {
       }
 
       section::-webkit-scrollbar-thumb {
-        background-color: #D9D9D9;
+        background-color: #d9d9d9;
         border-radius: 999px;
       }
-
     `;
   }
 
-  render() {
-    if (this.currentWindowList === undefined) return html`<section></section>`
-    
-    // consoleLitComponent(this, this.currentEventOccurWindowId);
+  protected shouldUpdate(
+    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
+  ): boolean {
+    if (
+      _changedProperties.has("commandType") &&
+      this.commandType === ChromeEventType.REMOVE_WINDOW
+    ) {
+      return false;
+    }
 
-    return html`
-      <section>
-      ${repeat(
-        this.currentWindowList,
-        (currentWindow) => currentWindow.id,
-        (currentWindow) => html`
-        <window-node .tabList=${ currentWindow.tabs }></window-node>
-        `
-      )}
-      </section>
-    `;
+    return true;
+  }
+
+  render() {
+    if (this.currentWindowMap === undefined) return html`<section></section>`;
+
+    const nodeHtml = repeat(
+      Object.values(this.currentWindowMap),
+      (win) => win.id,
+      (win) => html`
+        <window-node
+          .currentWindow=${win}
+          .occurTabId=${win.id === this.occurWindowId[0]
+            ? this.occurTabId[0]
+            : -1}
+          .occurWindowId=${win.id === this.occurWindowId[0]
+            ? this.occurWindowId
+            : -1}
+          .commnadType=${this.commandType}
+        ></window-node>
+      `
+    );
+
+    return html`<section>${nodeHtml}</section>`;
   }
 }

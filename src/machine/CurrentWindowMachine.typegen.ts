@@ -21,6 +21,7 @@ export interface Typegen0 {
   eventsCausingActions: {
     "create tab from target window": "chrome event occur";
     "create target window from list": "chrome event occur";
+    "init app": "init";
     "moving tab from target window": "chrome event occur";
     "remove tab from target window": "chrome event occur";
     "remove target window from list": "chrome event occur";

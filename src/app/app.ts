@@ -17,34 +17,61 @@ const savedWindowMachine = interpret(SavedWindowMachine);
 class App extends LitElement {
   
   @state()
-  currentWindowList: CurrentWindow[];
+  currentWindowMap: CurrentWindowMapping;
 
   @state()
-  currentEventOccurWindowId: number = -1;
+  occurWindowId: Array<number>;
+
+  @state()
+  occurTabId: Array<number>;
+
+  @state()
+  commandType?: ChromeEventType | UserInteractionType;
+
+  @state()
+  occurSavedWindowId?: number;
 
   @state()
   savedWindowList : CurrentWindow[];
 
   constructor() {
     super();
-    this.currentWindowList = [];
+    this.currentWindowMap = {};
+    this.occurWindowId = [-1];
+    this.occurTabId = [-1];
     this.savedWindowList = [];
 
     currentWindowMachine.onTransition((state) => {
        if (state.changed) {
-          this.currentWindowList = [ ...state.context.data ];
-          this.currentEventOccurWindowId = state.context.occurWindowId;
-          // console.log("[xstate]:", this.currentWindowList);
+          const { data, occurWindowId, occurTabId } = state.context;
+
+          if (state.event.type === 'chrome event occur' || state.event.type === 'init') {
+            this.commandType = state.event.command;
+          }
+
+          this.occurWindowId = [occurWindowId];
+          this.occurTabId = [occurTabId];
+          
+          this.currentWindowMap = { ...data };
+          
+          // console.log("[xstate]:", this.currentWindowMap);
         }
       })
       .start();
 
     savedWindowMachine.onTransition((state) => {
       // if (state.changed) {
-        console.log(state);
+      //   console.log(state);
       // }
     })
     .start();
+  }
+
+  static init() {
+    currentWindowMachine.send({
+      type: "init",
+      command: ChromeEventType.INIT
+    });
   }
 
   static createWindow(win: ChromeWindow) {
@@ -96,7 +123,7 @@ class App extends LitElement {
   }
 
   static saveWindow(windowId: number) {
-
+    // savedWindowMachine.send()
   }
 
   removeSaveWindow() {}
@@ -123,8 +150,13 @@ class App extends LitElement {
     })
   }
 
-  static closeWindow(windowId: number) {
-    chrome.windows.remove(windowId);
+  static closeWindow(firstTabId: number) {
+    /**
+     * since I made removing animation for WindowNode which requires that REMOVE_TAB
+     * event should fire earlier than REMOVE_WINDOW, I use chrome.tabs.remove() rather
+     * than chrome.windows.remove().
+     */
+    chrome.tabs.remove(firstTabId);
   }
 
   render() {
@@ -135,8 +167,10 @@ class App extends LitElement {
       <main>
         <chrome-window-main>
           <current-tab-container
-            .currentWindowList=${this.currentWindowList}
-            .currentEventOccurWindowId=${this.currentEventOccurWindowId}
+            .currentWindowMap=${this.currentWindowMap}
+            .occurWindowId=${this.occurWindowId}
+            .occurTabId=${this.occurTabId}
+            .commandType=${this.commandType}
           ></current-tab-container>
 
           <save-tab-container></save-tab-container>

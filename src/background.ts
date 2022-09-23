@@ -10,20 +10,17 @@ var height = Math.round(Math.sqrt(Math.pow(width, 2) + Math.pow(diagnol, 2)));
 width += 16;
 
 // when extension installed, only once
-chrome.runtime.onInstalled.addListener(() => {
-
-});
+chrome.runtime.onInstalled.addListener(() => {});
 
 chrome.windows.onCreated.addListener((win: ChromeWindow) => {
   if (win.id && win.id !== extensionWindowId) {
-
     if (isOpened) {
       chrome.windows.get(win.id, { populate: true }, (justCreatedWindow) => {
         const message: MessageForm = {
           message: ChromeEventType.CREATE_WINDOW,
           data: { win: justCreatedWindow },
         };
-  
+
         chrome.runtime.sendMessage(message);
       });
     }
@@ -64,8 +61,7 @@ chrome.windows.onRemoved.addListener((windowId) => {
 
 chrome.tabs.onCreated.addListener((tab) => {
   // Notice, that the onCreate does not guarantee that the tab has fully loaded.
-  if (tab.windowId && extensionWindowId !== tab.windowId ) {
-
+  if (tab.windowId && extensionWindowId !== tab.windowId) {
     if (!isOpened) return;
 
     const message: MessageForm = {
@@ -105,7 +101,7 @@ chrome.tabs.onRemoved.addListener((tabId, { isWindowClosing, windowId }) => {
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  // if (changeInfo.status !== "complete") return;
+  if (changeInfo.status !== "complete") return;
 
   if (isOpened && extensionWindowId !== tab.windowId) {
     const message: MessageForm = {
@@ -137,5 +133,16 @@ chrome.action.onClicked.addListener((tab) => {
         isOpened = true;
       }
     );
+  }
+});
+
+chrome.windows.onBoundsChanged.addListener((win) => {
+  if (isOpened && extensionWindowId === win.id) {
+    const message: MessageForm = {
+      message: ChromeEventType.INIT,
+      data: { extensionWidth: width, extensionHeight: height },
+    };
+
+    chrome.runtime.sendMessage(message);
   }
 });

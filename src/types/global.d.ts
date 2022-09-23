@@ -9,13 +9,16 @@ declare global {
       fromIndex: number;
       toIndex: number;
     };
+
+    extensionWidth: number;
+    extensionHeight: number;
   }
 
   // needed interface for machines
   interface TransactionData {}
 
   interface MessageForm {
-    readonly message: string;
+    readonly message: ChromeEventType | UserInteractionType;
     readonly data: Partial<BackgroundData>;
   }
 
@@ -36,19 +39,24 @@ declare global {
     window: CurrentWindow;
   }
 
+  interface CurrentWindowMapping {
+    [windowId: number]: CurrentWindow
+  }
+
   const enum ChromeEventType {
-    REMOVE_TAB = "REMOVE_TAB",
-    REMOVE_WINDOW = "REMOVE_WINDOW",
-    CREATE_TAB = "CREATE_TAB",
-    CREATE_WINDOW = "CREATE_WINDOW",
-    UPDATE_TAB = "UPDATE_TAB",
-    MOVE_TAB = "MOVE_TAB",
+    INIT="INIT",
+    REMOVE_TAB="REMOVE_TAB",
+    REMOVE_WINDOW="REMOVE_WINDOW",
+    CREATE_TAB="CREATE_TAB",
+    CREATE_WINDOW="CREATE_WINDOW",
+    UPDATE_TAB="UPDATE_TAB",
+    MOVE_TAB="MOVE_TAB",
   }
 
   const enum UserInteractionType {
-    OPEN_SAVED_WINDOW,
-    REMOVE_SAVED_WINDOW,
-    SAVE_WINDOW
+    OPEN_SAVED_WINDOW="OPEN_SAVED_WINDOW",
+    REMOVE_SAVED_WINDOW="REMOVE_SAVED_WINDOW",
+    SAVE_WINDOW="SAVE_WINDOW"
   }
 }
 
