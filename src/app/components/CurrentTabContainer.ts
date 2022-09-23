@@ -1,8 +1,9 @@
-import { css, html, PropertyDeclaration, PropertyValueMap } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { css, html, PropertyValueMap } from "lit";
+import { customElement, property, query, state } from "lit/decorators.js";
 import { Component } from "../core/Component";
 import "./WindowNode";
 import { repeat } from "lit/directives/repeat.js";
+import { getPathName } from "../../utils/location";
 
 @customElement("current-tab-container")
 class CurrentTabContainer extends Component {
@@ -36,6 +37,7 @@ class CurrentTabContainer extends Component {
         box-shadow: 0 1px 8px 4px rgba(0, 0, 0, 0.05);
         height: 100%;
         overflow: scroll;
+        transition: ease 300ms;
 
         width: 316px;
       }
@@ -49,6 +51,7 @@ class CurrentTabContainer extends Component {
         background-color: #d9d9d9;
         border-radius: 999px;
       }
+
     `;
   }
 

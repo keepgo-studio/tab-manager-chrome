@@ -1,5 +1,5 @@
 export function moveHistory(path:string) {
-  window.history.replaceState({}, '', path);
+  window.history.pushState({}, '', path);
 }
 
 export function getPathName() {

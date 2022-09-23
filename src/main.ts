@@ -56,7 +56,7 @@ const eventsFromComponents = [
     handler: (e: CustomEvent) => {
       App.saveWindow(e.detail.win);
     }
-  }
+  },
 ]
   
 window.onload = () => {

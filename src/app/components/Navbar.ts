@@ -14,6 +14,8 @@ class Navbar extends Component {
         moveHistory(
           getPathName() === "index.html" ? "saved.html" : "index.html"
         );
+
+        window.dispatchEvent(new Event('popstate'));
       },
     },
     {
@@ -25,7 +27,9 @@ class Navbar extends Component {
     {
       id: "profile",
       path: "./img/person_round-light.png",
-      clickHandler: () => {},
+      clickHandler: () => {
+        alert('will be updated');
+      },
     },
   ];
 
@@ -85,11 +89,8 @@ class Navbar extends Component {
     const menu = this.icons.map(
       ({ id, path, clickHandler }) =>
         html`
-          <div id=${id}>
-            <img
-              .src="${path}"
-              @click="${clickHandler}"
-            />
+          <div id=${id} @click="${clickHandler}">
+            <img .src="${path}" />
           </div>
         `
     );
