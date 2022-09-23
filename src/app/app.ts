@@ -2,7 +2,7 @@ import "./components/Navbar";
 import "./components/Search";
 import "./components/ChromeWindowMain";
 import "./components/CurrentTabContainer";
-import "./components/SaveTabContainer";
+import "./components/SavedTabContainer";
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { interpret } from "xstate";
@@ -18,28 +18,28 @@ class App extends LitElement {
   
   @state()
   currentWindowMap: CurrentWindowMapping;
-
   @state()
   occurWindowId: Array<number>;
-
   @state()
   occurTabId: Array<number>;
-
+  
   @state()
-  commandType?: ChromeEventType | UserInteractionType;
-
+  savedWindowMap : CurrentWindowMapping;
   @state()
   occurSavedWindowId?: number;
 
   @state()
-  savedWindowList : CurrentWindow[];
+  commandType?: ChromeEventType | UserInteractionType;
 
   constructor() {
     super();
     this.currentWindowMap = {};
     this.occurWindowId = [-1];
     this.occurTabId = [-1];
-    this.savedWindowList = [];
+
+    this.savedWindowMap = {};
+
+    db.open();
 
     currentWindowMachine.onTransition((state) => {
        if (state.changed) {
@@ -60,9 +60,18 @@ class App extends LitElement {
       .start();
 
     savedWindowMachine.onTransition((state) => {
-      // if (state.changed) {
-      //   console.log(state);
-      // }
+      if (state.changed) {
+        const { data, occurWindowId } = state.context;
+
+        this.savedWindowMap = { ...state.context.data };
+        this.occurSavedWindowId = occurWindowId;
+
+        // console.log("[xstate]:", state.context);
+
+        if (state.event.type === "user interaction occur") {
+          this.commandType = state.event.command;
+        }
+      }
     })
     .start();
   }
@@ -122,8 +131,12 @@ class App extends LitElement {
     });
   }
 
-  static saveWindow(windowId: number) {
-    // savedWindowMachine.send()
+  static saveWindow(win: CurrentWindow) {
+    savedWindowMachine.send({
+      type: "user interaction occur",
+      data: { win },
+      command: UserInteractionType.SAVE_WINDOW
+    })
   }
 
   removeSaveWindow() {}
@@ -164,20 +177,22 @@ class App extends LitElement {
     return html`
       <app-navbar></app-navbar>
 
-      <main>
-        <chrome-window-main>
-          <current-tab-container
-            .currentWindowMap=${this.currentWindowMap}
-            .occurWindowId=${this.occurWindowId}
-            .occurTabId=${this.occurTabId}
-            .commandType=${this.commandType}
-          ></current-tab-container>
+      <chrome-window-main>
+        <current-tab-container
+          .currentWindowMap=${this.currentWindowMap}
+          .occurWindowId=${this.occurWindowId}
+          .occurTabId=${this.occurTabId}
+          .commandType=${this.commandType}
+        ></current-tab-container>
 
-          <save-tab-container></save-tab-container>
-        </chrome-window-main>
-
+        <saved-tab-container
+          .savedWindowMap=${this.savedWindowMap}
+          .occurWindowId=${this.occurSavedWindowId}
+          .commandType=${this.commandType}
+        ></saved-tab-container>
+          
         <search-component></search-component>
-      </main>
+      </chrome-window-main>
     `;
   }
 }

@@ -1,19 +1,16 @@
-import { css, html, PropertyDeclaration, PropertyValueMap } from "lit";
+import { css, html, PropertyValueMap } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { Component } from "../core/Component";
 import "./WindowNode";
 import { repeat } from "lit/directives/repeat.js";
 
-@customElement("current-tab-container")
-class CurrentTabContainer extends Component {
+@customElement("saved-tab-container")
+class SavedTabContainer extends Component {
   @property()
-  currentWindowMap: CurrentWindowMapping;
+  savedWindowMap: CurrentWindowMapping;
 
   @property()
-  occurWindowId!: Array<number>;
-
-  @property()
-  occurTabId!: Array<number>;
+  occurWindowId?: number;
 
   @property()
   commandType?: ChromeEventType | UserInteractionType;
@@ -23,7 +20,7 @@ class CurrentTabContainer extends Component {
 
   constructor() {
     super();
-    this.currentWindowMap = {};
+    this.savedWindowMap = {};
   }
 
   static get styles() {
@@ -31,12 +28,12 @@ class CurrentTabContainer extends Component {
       ${super.styles}
 
       section {
-        background-color: #f6faff;
+        background-color: rgba(254, 204, 157, 0.15);
         padding: 1rem;
         box-shadow: 0 1px 8px 4px rgba(0, 0, 0, 0.05);
         height: 100%;
         overflow: scroll;
-
+        
         width: 316px;
       }
 
@@ -52,36 +49,18 @@ class CurrentTabContainer extends Component {
     `;
   }
 
-  protected shouldUpdate(
-    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
-  ): boolean {
-    if (
-      _changedProperties.has("commandType") &&
-      this.commandType === ChromeEventType.REMOVE_WINDOW
-    ) {
-      return false;
-    }
-
-    return true;
-  }
-
   render() {
-    if (this.currentWindowMap === undefined) return html`<section></section>`;
+    if (this.savedWindowMap === undefined) return html`<section></section>`;
 
     const nodeHtml = repeat(
-      Object.values(this.currentWindowMap),
+      Object.values(this.savedWindowMap),
       (win) => win.id,
       (win) => html`
         <window-node
           .currentWindow=${win}
-          .occurTabId=${win.id === this.occurWindowId[0]
-            ? this.occurTabId[0]
-            : -1}
-          .occurWindowId=${win.id === this.occurWindowId[0]
-            ? this.occurWindowId
-            : -1}
+          .occurWindowId=${win.id === this.occurWindowId? this.occurWindowId : -1}
           .commnadType=${this.commandType}
-          mode="current"
+          mode="saved"
         ></window-node>
       `
     );

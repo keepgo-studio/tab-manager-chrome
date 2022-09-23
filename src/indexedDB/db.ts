@@ -14,7 +14,7 @@ class DBHandler {
     constructor() {}
 
     async open() {
-        this._db = await openDB<TabManagerDB>('tab-manager-db', 1, {
+        return this._db = await openDB<TabManagerDB>('tab-manager-db', 1, {
             upgrade(db) {
                 db.createObjectStore('saved-window', { autoIncrement: true });
             },

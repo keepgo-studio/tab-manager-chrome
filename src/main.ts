@@ -54,7 +54,7 @@ const eventsFromComponents = [
   {
     name: 'save-window',
     handler: (e: CustomEvent) => {
-      App.saveWindow(e.detail.windowId);
+      App.saveWindow(e.detail.win);
     }
   }
 ]

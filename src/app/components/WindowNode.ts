@@ -9,6 +9,9 @@ const OPENING_DURATION = 250; // ms
 @customElement("window-node")
 class WindowNode extends Component {
 
+  @property()
+  mode!:string;
+
   @property({ type: Object })
   currentWindow!: CurrentWindow;
 
@@ -117,7 +120,18 @@ class WindowNode extends Component {
       }
 
       .first-fav-icon-container {
+        position: relative;
         padding: 20px;
+      }
+      
+      .first-fav-icon-container .mode-decorator {
+        position: absolute;
+        top:0;
+        left:0;
+        width: 7px;
+        height: 100%;
+        background-color: #FECC9D;
+        border-radius: 7px 0 0 7px;
       }
 
       .first-fav-icon-container img {
@@ -260,38 +274,50 @@ class WindowNode extends Component {
   }
 
   private handleCloseClick(e: Event) {
-    window.dispatchEvent(
-      new CustomEvent("close-window", {
-        detail: {
-          firstTabId: this.currentWindow.tabs[0].id,
-        },
-      })
-    );
+
+    if (this.mode === "current") {
+      window.dispatchEvent(
+        new CustomEvent("close-window", {
+          detail: {
+            firstTabId: this.currentWindow.tabs[0].id,
+          },
+        })
+      );
+    } else {
+
+    }
+    
   }
 
   private handleSavedClick() {
-    window.dispatchEvent(
-      new CustomEvent("save-window", {
-        detail: {
-          windowId: this.currentWindow.id,
-        },
-      })
-    );
+    if (this.mode === "current") {
+      window.dispatchEvent(
+        new CustomEvent("save-window", {
+          detail: {
+            win: this.currentWindow,
+          },
+        })
+      );
+    } else {
+
+    }
   }
 
   private handleNodeClick(e: Event) {
-    const targetNode = e.currentTarget as Element;
-
-    const tabId = Number.parseInt(targetNode.id);
-
-    window.dispatchEvent(
-      new CustomEvent("open-tab", {
-        detail: {
-          windowId: this.currentWindow.id,
-          tabId: tabId,
-        },
-      })
-    );
+    if (this.mode === "current") {
+      const targetNode = e.currentTarget as Element;
+  
+      const tabId = Number.parseInt(targetNode.id);
+  
+      window.dispatchEvent(
+        new CustomEvent("open-tab", {
+          detail: {
+            windowId: this.currentWindow.id,
+            tabId: tabId,
+          },
+        })
+      );
+    }
   }
 
   protected firstUpdated(
@@ -352,6 +378,7 @@ class WindowNode extends Component {
         @click=${this.handleNodeClick}
       >
         <div class="first-fav-icon-container">
+          ${this.mode === "current"? '' : html`<div class="mode-decorator"></div>`}
           <img src=${firstTab.favIconUrl} />
         </div>
   
