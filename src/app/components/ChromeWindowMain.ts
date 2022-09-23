@@ -13,6 +13,15 @@ class ChromeWindowMain extends Component {
       .container {
         padding: 1rem;
         height: calc(100vh - 65px);
+
+        /* set relative for current-tab-container and saved-tab-container */
+        position: relative;
+        display: flex;
+        overflow-x: hidden;
+      }
+
+      ::slotted(saved-tab-container) {
+        margin-left: 2rem;
       }
     `
   };

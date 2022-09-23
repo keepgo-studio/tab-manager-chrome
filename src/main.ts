@@ -4,7 +4,12 @@ chrome.runtime.onMessage.addListener(
   ({ message, data }: MessageForm, sender, sendResponse) => {
     console.log("[main.ts]:", message);
 
-    if (message === ChromeEventType.CREATE_WINDOW) {
+    if (message === ChromeEventType.INIT) {
+      const { extensionWidth, extensionHeight } = data;
+
+      window.resizeTo(extensionWidth!, extensionHeight!);
+      App.init();
+    } else if (message === ChromeEventType.CREATE_WINDOW) {
       const { win } = data;
 
       App.createWindow(win!);
@@ -43,9 +48,15 @@ const eventsFromComponents = [
   {
     name: 'close-window',
     handler: (e: CustomEvent) => {
-      App.closeWindow(e.detail.windowId);
+      App.closeWindow(e.detail.firstTabId);
     }
   },
+  {
+    name: 'save-window',
+    handler: (e: CustomEvent) => {
+      App.saveWindow(e.detail.win);
+    }
+  }
 ]
   
 window.onload = () => {
@@ -54,6 +65,8 @@ window.onload = () => {
 
     window.addEventListener(name, handler as EventListener);
   });
+
+  App.init();
 }
 
 window.onclose = () => {
