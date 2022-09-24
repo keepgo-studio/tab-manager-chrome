@@ -7,6 +7,7 @@ export interface Typegen0 {
   };
   invokeSrcNameMap: {
     "get all saved windows from Indexed DB": "done.invoke.SavedWindowMachine.Loading:invocation[0]";
+    "removing saved window from Indexed DB": "done.invoke.SavedWindowMachine.Lodaed.delete:invocation[0]";
     "saving window to Indexed DB": "done.invoke.SavedWindowMachine.Lodaed.saved:invocation[0]";
   };
   missingImplementations: {
@@ -18,6 +19,7 @@ export interface Typegen0 {
   eventsCausingActions: {};
   eventsCausingServices: {
     "get all saved windows from Indexed DB": "xstate.init";
+    "removing saved window from Indexed DB": "user interaction occur";
     "saving window to Indexed DB": "user interaction occur";
   };
   eventsCausingGuards: {

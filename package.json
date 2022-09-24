@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "idb": "^7.0.2",
+    "three-dots": "^0.2.3",
     "xstate": "^4.33.3"
   }
 }

@@ -4,7 +4,7 @@ import "./components/ChromeWindowMain";
 import "./components/CurrentTabContainer";
 import "./components/SavedTabContainer";
 import { html, LitElement } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { customElement, query, state } from "lit/decorators.js";
 import { interpret } from "xstate";
 import { CurrentWindowMachine } from "../machine/CurrentWindowMachine";
 import { SavedWindowMachine } from "../machine/SavedWindowMachine";
@@ -63,10 +63,10 @@ class App extends LitElement {
       if (state.changed) {
         const { data, occurWindowId } = state.context;
 
-        this.savedWindowMap = { ...state.context.data };
+        this.savedWindowMap = { ...data };
         this.occurSavedWindowId = occurWindowId;
 
-        // console.log("[xstate]:", state.context);
+        // console.log("[xstate]:", state.context, this.savedWindowMap);
 
         if (state.event.type === "user interaction occur") {
           this.commandType = state.event.command;
@@ -131,18 +131,6 @@ class App extends LitElement {
     });
   }
 
-  static saveWindow(win: CurrentWindow) {
-    savedWindowMachine.send({
-      type: "user interaction occur",
-      data: { win },
-      command: UserInteractionType.SAVE_WINDOW
-    })
-  }
-
-  removeSaveWindow() {}
-
-  searchTab() {}
-
   static openTab(tabId: number, windowId: number) {
     const leftMargin = 384;
     const customWidth = window.screen.width - 384 - 20; // 20 is right margin of window
@@ -157,20 +145,66 @@ class App extends LitElement {
       state: "normal"
     }, (w) => {
       if (w.id && w.state !== "normal") {
-        chrome.windows.update(w.id, { state: "normal" });
+        chrome.windows.update(w.id, { 
+          state: "normal",
+          top: 20,
+          left: leftMargin,
+          width: customWidth,
+          height: customHeight,
+         });
       }
       chrome.tabs.update(tabId, { active: true });
     })
   }
 
-  static closeWindow(firstTabId: number) {
+  static closeWindow(isWindowOrTab: string, id: number) {
+    if (isWindowOrTab === "window") {
+      chrome.windows.remove(id);
+    }
     /**
      * since I made removing animation for WindowNode which requires that REMOVE_TAB
      * event should fire earlier than REMOVE_WINDOW, I use chrome.tabs.remove() rather
-     * than chrome.windows.remove().
+     * than chrome.windows.remove(). --> only if window has only one tab.
      */
-    chrome.tabs.remove(firstTabId);
+    else if (isWindowOrTab === "tab") {
+      chrome.tabs.remove(id);
+    }
   }
+
+  static saveWindow(win: CurrentWindow) {
+    savedWindowMachine.send({
+      type: "user interaction occur",
+      data: { win },
+      command: UserInteractionType.SAVE_WINDOW
+    })
+  }
+
+  static removeSavedWindow(windowId: number) {
+    savedWindowMachine.send({
+      type: "user interaction occur",
+      data: { windowId },
+      command: UserInteractionType.REMOVE_SAVED_WINDOW
+    })
+  }
+  
+  static openSavedWindow(win: CurrentWindow) {
+    const leftMargin = 384;
+    const customWidth = window.screen.width - 384 - 20; // 20 is right margin of window
+    const customHeight = window.screen.height - 20;
+
+    const tabUrls = win.tabs.map(tab => tab.url!);
+
+    chrome.windows.create({
+      focused: true,
+      top: 20,
+      left: leftMargin,
+      height: customHeight,
+      width: customWidth,
+      url: tabUrls,
+    })
+  }
+  
+  static searchTab() {}
 
   render() {
     // consoleLitComponent(this, 'render')

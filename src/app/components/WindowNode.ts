@@ -1,3 +1,4 @@
+import { ThreeDotModes } from "./ThreeDot";
 import { css, html, PropertyValueMap } from "lit";
 import { customElement, property, state, query } from "lit/decorators.js";
 import { repeat } from "lit/directives/repeat.js";
@@ -113,15 +114,51 @@ class WindowNode extends Component {
         padding: 1px 6px 1px 4px;
         border-radius: 0 999px 999px 0;
       }
+      
+      /* 
+        close svg css for "save" mode 
+      */
+      .dialog-container-save-mode {
+        position: absolute;
+        top: 0;
+        right: 0;
+        transform: translateY(-50%);
+        border-radius: 999px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        align-items: center;
+        background: #fff;
+        box-shadow: 0 2px 6px 1px rgba(0, 0, 0, 0.1);
+        transition: ease 100ms;
+      }
+
+      .dialog-container-save-mode .close-save-mode {
+        width: 13px;
+        height: 13px;
+        padding: 2px;
+        border-radius: 999px;
+      }
+      .dialog-container-save-mode svg:hover {
+        background-color: rgba(0, 0, 0, 0.2);
+      }
+
 
       .first {
         display: grid;
         grid-template-columns: 72px auto 30px;
+        height: 72px;
       }
 
       .first-fav-icon-container {
         position: relative;
         padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        /* should set z-index so .mode-decorator can show even the .rest opened */
+        z-index: 999;
       }
       
       .first-fav-icon-container .mode-decorator {
@@ -132,6 +169,7 @@ class WindowNode extends Component {
         height: 100%;
         background-color: #FECC9D;
         border-radius: 7px 0 0 7px;
+        transition: ease 300ms;
       }
 
       .first-fav-icon-container img {
@@ -279,12 +317,20 @@ class WindowNode extends Component {
       window.dispatchEvent(
         new CustomEvent("close-window", {
           detail: {
+            windowId: this.currentWindow.id,
+            tabsLength: this.currentWindow.tabs.length,
             firstTabId: this.currentWindow.tabs[0].id,
           },
         })
       );
     } else {
-
+      window.dispatchEvent(
+        new CustomEvent("remove-saved-window", {
+          detail: {
+            windowId: this.currentWindow.id
+          }
+        })
+      )
     }
     
   }
@@ -298,8 +344,6 @@ class WindowNode extends Component {
           },
         })
       );
-    } else {
-
     }
   }
 
@@ -314,6 +358,14 @@ class WindowNode extends Component {
           detail: {
             windowId: this.currentWindow.id,
             tabId: tabId,
+          },
+        })
+      );
+    } else if (this.mode === "saved") {
+      window.dispatchEvent(
+        new CustomEvent("open-saved-window", {
+          detail: {
+            win: this.currentWindow
           },
         })
       );
@@ -342,6 +394,8 @@ class WindowNode extends Component {
   render() {
     if (typeof this.currentWindow.id === "undefined") return html``;
     
+    const windowNodeDefaultHeight = 72;
+
     const shouldShowDialogStyle = {
       opacity: this.isHover ? "1" : "0",
       zIndex: this.isHover ? "999" : "0",
@@ -356,7 +410,7 @@ class WindowNode extends Component {
         ? maxCount
         : this.currentWindow.tabs.length) * 32;
     const setRestHeight = {
-      height: this.isOpening ? `${restNodesMaxHeight}px` : "72px",
+      height: this.isOpening ? `${restNodesMaxHeight}px` : `${windowNodeDefaultHeight}px`,
     };
     const shouldShowRestNodesOpacity = { opacity: this.isOpened ? "1" : "0" };
     const shouldShowRestNodesDisplay = {
@@ -364,9 +418,14 @@ class WindowNode extends Component {
     };
 
     const shouldShowRestNodes = {
-      height: this.isOpening ? `${restNodesMaxHeight + 72}px` : "72px",
+      height: this.isOpening ? `${restNodesMaxHeight + 72}px` : `${windowNodeDefaultHeight}px`,
     };
 
+    // for only save mode
+    const shouldStretchDecorator = {
+      height: `${windowNodeDefaultHeight + (this.isOpening ? restNodesMaxHeight : 0)}px`
+    }
+    // 
     
     let firstTabHtml;
     let restTabHtml;
@@ -378,8 +437,18 @@ class WindowNode extends Component {
         @click=${this.handleNodeClick}
       >
         <div class="first-fav-icon-container">
-          ${this.mode === "current"? '' : html`<div class="mode-decorator"></div>`}
-          <img src=${firstTab.favIconUrl} />
+          ${
+            this.mode === "current"? 
+            '' : html`
+            <div 
+              class="mode-decorator"
+              style=${styleMap(shouldStretchDecorator)}
+            ></div>
+            `}
+          ${firstTab.favIconUrl?
+          html`<img src="${firstTab.favIconUrl}" />`
+          :
+          html`<three-dot width=${5} height=${5} mode=${ThreeDotModes["dot-flashing"]}></three-dot>`}
         </div>
   
         <div class="first-text-container">
@@ -426,7 +495,10 @@ class WindowNode extends Component {
                       @click=${this.handleNodeClick}
                     >
                       <div class="rest-fav-icon-container">
-                        <img src=${tab.favIconUrl} />
+                      ${tab.favIconUrl?
+                        html`<img src=${tab.favIconUrl} />`
+                        :
+                        html`<three-dot width=${2} height=${2} mode=${ThreeDotModes["dot-flashing"]}></three-dot>`}
                       </div>
   
                       <div class="rest-text-container">
@@ -440,6 +512,57 @@ class WindowNode extends Component {
       `;
     }
     
+    const dialogHtml = (this.mode === "current") ? html`
+    <div class="dialog-container" style=${styleMap(shouldShowDialogStyle)}>
+      <svg
+        @click=${this.handleCloseClick}
+        class="close"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M18.3 5.70997C17.91 5.31997 17.28 5.31997 16.89 5.70997L12 10.59L7.10997 5.69997C6.71997 5.30997 6.08997 5.30997 5.69997 5.69997C5.30997 6.08997 5.30997 6.71997 5.69997 7.10997L10.59 12L5.69997 16.89C5.30997 17.28 5.30997 17.91 5.69997 18.3C6.08997 18.69 6.71997 18.69 7.10997 18.3L12 13.41L16.89 18.3C17.28 18.69 17.91 18.69 18.3 18.3C18.69 17.91 18.69 17.28 18.3 16.89L13.41 12L18.3 7.10997C18.68 6.72997 18.68 6.08997 18.3 5.70997Z"
+          fill="black"
+        />
+      </svg>
+
+      <svg
+        @click=${this.handleSavedClick}
+        class="saved"
+        width="18"
+        height="18"
+        viewBox="0 0 18 18"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M14 0H2C0.89 0 0 0.9 0 2V16C0 17.1 0.89 18 2 18H16C17.1 18 18 17.1 18 16V4L14 0ZM16 16H2V2H13.17L16 4.83V16ZM9 9C7.34 9 6 10.34 6 12C6 13.66 7.34 15 9 15C10.66 15 12 13.66 12 12C12 10.34 10.66 9 9 9ZM3 3H12V7H3V3Z"
+          fill="black"
+        />
+      </svg>
+    </div>
+    ` : html`
+    <div class="dialog-container-save-mode" style=${styleMap(shouldShowDialogStyle)}>
+      <svg
+        @click=${this.handleCloseClick}
+        class="close-save-mode"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M18.3 5.70997C17.91 5.31997 17.28 5.31997 16.89 5.70997L12 10.59L7.10997 5.69997C6.71997 5.30997 6.08997 5.30997 5.69997 5.69997C5.30997 6.08997 5.30997 6.71997 5.69997 7.10997L10.59 12L5.69997 16.89C5.30997 17.28 5.30997 17.91 5.69997 18.3C6.08997 18.69 6.71997 18.69 7.10997 18.3L12 13.41L16.89 18.3C17.28 18.69 17.91 18.69 18.3 18.3C18.69 17.91 18.69 17.28 18.3 16.89L13.41 12L18.3 7.10997C18.68 6.72997 18.68 6.08997 18.3 5.70997Z"
+          fill="black"
+        />
+      </svg>
+    </div>
+    `;
+
     return html`
       <div
         class="node-container"
@@ -447,37 +570,7 @@ class WindowNode extends Component {
         @mouseleave=${this.handleMouseLeave}
         style=${styleMap(shouldShowRestNodes)}
       >
-        <div class="dialog-container" style=${styleMap(shouldShowDialogStyle)}>
-          <svg
-            @click=${this.handleCloseClick}
-            class="close"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M18.3 5.70997C17.91 5.31997 17.28 5.31997 16.89 5.70997L12 10.59L7.10997 5.69997C6.71997 5.30997 6.08997 5.30997 5.69997 5.69997C5.30997 6.08997 5.30997 6.71997 5.69997 7.10997L10.59 12L5.69997 16.89C5.30997 17.28 5.30997 17.91 5.69997 18.3C6.08997 18.69 6.71997 18.69 7.10997 18.3L12 13.41L16.89 18.3C17.28 18.69 17.91 18.69 18.3 18.3C18.69 17.91 18.69 17.28 18.3 16.89L13.41 12L18.3 7.10997C18.68 6.72997 18.68 6.08997 18.3 5.70997Z"
-              fill="black"
-            />
-          </svg>
-
-          <svg
-            @click=${this.handleSavedClick}
-            class="saved"
-            width="18"
-            height="18"
-            viewBox="0 0 18 18"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M14 0H2C0.89 0 0 0.9 0 2V16C0 17.1 0.89 18 2 18H16C17.1 18 18 17.1 18 16V4L14 0ZM16 16H2V2H13.17L16 4.83V16ZM9 9C7.34 9 6 10.34 6 12C6 13.66 7.34 15 9 15C10.66 15 12 13.66 12 12C12 10.34 10.66 9 9 9ZM3 3H12V7H3V3Z"
-              fill="black"
-            />
-          </svg>
-        </div>
+        ${dialogHtml}
 
         ${this.currentWindow.tabs.length > 0 ? firstTabHtml : "" }
         ${this.currentWindow.tabs.length > 0 ? restTabHtml : "" }

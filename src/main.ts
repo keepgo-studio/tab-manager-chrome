@@ -48,7 +48,13 @@ const eventsFromComponents = [
   {
     name: 'close-window',
     handler: (e: CustomEvent) => {
-      App.closeWindow(e.detail.firstTabId);
+      const { windowId, tabsLength, firstTabId} = e.detail;
+
+      if (tabsLength === 1) {
+        App.closeWindow("tab", firstTabId);
+      } else {
+        App.closeWindow("window", windowId);
+      }
     }
   },
   {
@@ -57,11 +63,25 @@ const eventsFromComponents = [
       App.saveWindow(e.detail.win);
     }
   },
+  {
+    name: 'remove-saved-window',
+    handler: (e: CustomEvent) => {
+      App.removeSavedWindow(e.detail.windowId);
+    }
+  },
+  {
+    name: 'open-saved-window',
+    handler: (e: CustomEvent) => {
+      App.openSavedWindow(e.detail.win);
+    }
+  }
 ]
   
 window.onload = () => {
   eventsFromComponents.forEach(eventObj => {
     const { name, handler } = eventObj;
+
+    console.log("[main.ts]:", name.toUpperCase());
 
     window.addEventListener(name, handler as EventListener);
   });

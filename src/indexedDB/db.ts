@@ -26,9 +26,32 @@ class DBHandler {
     }
 
     async savingWindow(win: CurrentWindow) {
-        this._db.add('saved-window', win);
+        const transaction = this._db.transaction('saved-window', 'readwrite');
+
+        transaction.store.put(win, win.id);
+
+        transaction.done
+        	.then(() => {
+						console.log('[idb]: saving window complete')
+					})
+					.catch(() => {
+						console.error('[idb]: saving had failed')
+					});
     }
 
+		async removingWindow(windowId: number) {
+			const transaction = this._db.transaction('saved-window', 'readwrite');
+
+			transaction.store.delete(windowId);
+
+			transaction.done
+				.then(() => {
+					console.log('[idb]: saving window complete')
+				})
+				.catch(() => {
+					console.error('[idb]: saving had failed')
+				});
+		}
     close() {
         this._db.close();
     }

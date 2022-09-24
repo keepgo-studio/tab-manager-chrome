@@ -22,6 +22,10 @@ createMachine({
       
       "saving window to Indexed DB": {
         data: void;
+      },
+
+      "removing saved window from Indexed DB": {
+        data: void;
       }
     },
 
@@ -74,6 +78,9 @@ createMachine({
           },
         },
         delete: {
+          invoke: {
+            src: "removing saved window from Indexed DB"
+          },
           always: {
             target: "idle",
           },
@@ -125,9 +132,21 @@ createMachine({
     },
 
     "saving window to Indexed DB": async (context, event) => {
-      const { win } = event.data;
+      const win = event.data.win as CurrentWindow;
       
-      db.savingWindow(win as CurrentWindow);
+      db.savingWindow(win);
+
+      context.data[win.id!] = win;
+      context.occurWindowId = win.id!;
+    },
+
+    "removing saved window from Indexed DB": async (context, event) => {
+      const { windowId } = event.data;
+
+      db.removingWindow(windowId!);
+
+      delete context.data[windowId!];
+      context.occurWindowId = windowId!;
     }
   }
 });

@@ -55,18 +55,18 @@ class CurrentTabContainer extends Component {
     `;
   }
 
-  protected shouldUpdate(
-    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
-  ): boolean {
-    if (
-      _changedProperties.has("commandType") &&
-      this.commandType === ChromeEventType.REMOVE_WINDOW
-    ) {
-      return false;
-    }
+  // protected shouldUpdate(
+  //   _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
+  // ): boolean {
+  //   if (
+  //     _changedProperties.has("commandType") &&
+  //     this.commandType === ChromeEventType.REMOVE_WINDOW
+  //   ) {
+  //     return false;
+  //   }
 
-    return true;
-  }
+  //   return true;
+  // }
 
   render() {
     if (this.currentWindowMap === undefined) return html`<section></section>`;
