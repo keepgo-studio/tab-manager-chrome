@@ -1,5 +1,7 @@
 import App from "./app/app";
 
+window.document.title = chrome.runtime.getManifest().description!;
+
 chrome.runtime.onMessage.addListener(
   ({ message, data }: MessageForm, sender, sendResponse) => {
     console.log("[main.ts]:", message);
