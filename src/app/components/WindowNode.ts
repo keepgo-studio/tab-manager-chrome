@@ -4,6 +4,7 @@ import { customElement, property, state, query } from "lit/decorators.js";
 import { repeat } from "lit/directives/repeat.js";
 import { Component } from "../core/Component";
 import { styleMap } from "lit/directives/style-map.js";
+import { consoleLitComponent } from "../../utils/dev";
 
 const OPENING_DURATION = 250; // ms
 
@@ -19,7 +20,7 @@ class WindowNode extends Component {
   @property()
   commandType?: ChromeEventType | UserInteractionType;
   
-  @property({ hasChanged: (newVal, oldVal) => {
+  @property({ hasChanged: (newVal, _) => {
     if (newVal === -1) {
       return false
     } else {
@@ -28,7 +29,7 @@ class WindowNode extends Component {
   }})
   occurTabId!: number;
 
-  @property({ hasChanged: (newVal, oldVal) => {
+  @property({ hasChanged: (newVal, _) => {
     if (newVal === -1) {
       return false
     } else {
@@ -311,7 +312,7 @@ class WindowNode extends Component {
     }
   }
 
-  private handleCloseClick(e: Event) {
+  private handleCloseClick() {
 
     if (this.mode === "current") {
       window.dispatchEvent(
@@ -370,6 +371,18 @@ class WindowNode extends Component {
         })
       );
     }
+  }
+
+  private handleFaviconError(e:Event) {
+    consoleLitComponent(this, 'faviocn loadFailed');
+    
+    const elem = e.currentTarget as Element;
+    const newElem = document.createElement('three-dot');
+    newElem.setAttribute('width', '5');
+    newElem.setAttribute('height', '5');
+    newElem.setAttribute('mode', 'dot-flashing');
+
+    elem.parentNode!.replaceChild(newElem, elem);
   }
 
   protected firstUpdated(
@@ -446,7 +459,7 @@ class WindowNode extends Component {
             ></div>
             `}
           ${firstTab.favIconUrl?
-          html`<img src="${firstTab.favIconUrl}" />`
+          html`<img src="${firstTab.favIconUrl}" @error=${this.handleFaviconError}/>`
           :
           html`<three-dot width=${5} height=${5} mode=${ThreeDotModes["dot-flashing"]}></three-dot>`}
         </div>

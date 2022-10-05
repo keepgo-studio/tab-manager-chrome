@@ -202,6 +202,9 @@ export const CurrentWindowMachine =
 
           //   Object.assign(tab, { textContent: })
           // })
+
+          if (win?.type !== "normal") return;
+          
           const newWindow = win as CurrentWindow;
           if (typeof newWindow.tabs === "undefined") newWindow.tabs = [];
           // ***TODO***
@@ -217,7 +220,9 @@ export const CurrentWindowMachine =
             const tabIdx = context.data[windowId].tabs.findIndex(
               (chromeTab) => chromeTab.id === tab?.id
             );
-
+            
+            if (tabIdx === -1) return;
+            
             context.data[windowId].tabs[tabIdx] = tab!;
             context.occurWindowId = tab!.windowId;
             context.occurTabId = tab.id!;

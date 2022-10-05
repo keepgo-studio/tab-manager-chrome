@@ -7,6 +7,8 @@ declare global {
   type WindowType = chrome.windows.windowTypeEnum;
 
   type ChromeTab = chrome.tabs.Tab;
+
+  type RuntimePort = chrome.runtime.Port;
 }
 
 export {}

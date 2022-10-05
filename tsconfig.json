@@ -1,20 +1,23 @@
 {
     "compilerOptions": {
-       "strict": true,
-       "module": "es6",
-       "target": "es6",
-       "esModuleInterop": true,
-       "sourceMap": true,
-       "rootDir": "src",
-       "outDir": "dist/js",
-       "noEmitOnError": true,
-       "typeRoots": [ 
-         "node_modules/@types",
-         "./src/types" 
+      "strict": true,
+      "module": "es6",
+      "target": "es6",
+      "esModuleInterop": true,
+      "sourceMap": true,
+      "rootDir": "src",
+      "outDir": "dist/js",
+      "noEmitOnError": true,
+      "typeRoots": [ 
+      "node_modules/@types",
+      "./src/types" 
       ],
-
-       "experimentalDecorators": true,
-       "moduleResolution": "node"
+      "alwaysStrict": true,
+      "experimentalDecorators": true,
+      "moduleResolution": "node",
+      "noImplicitAny": true,
+      "noUnusedParameters": true,
+      "strictNullChecks": true,
     },
 
     "exclude": [

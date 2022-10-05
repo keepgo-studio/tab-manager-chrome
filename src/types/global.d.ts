@@ -13,7 +13,7 @@ declare global {
     extensionWidth: number;
     extensionHeight: number;
   }
-
+  
   // needed interface for machines
   interface TransactionData {}
 
@@ -51,6 +51,7 @@ declare global {
     CREATE_WINDOW="CREATE_WINDOW",
     UPDATE_TAB="UPDATE_TAB",
     MOVE_TAB="MOVE_TAB",
+    TERMINATE="TERMINATE"
   }
 
   const enum UserInteractionType {
