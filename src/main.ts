@@ -34,6 +34,10 @@ window.onload = () => {
       const { tab } = data;
 
       App.updateTab(tab!);
+    } else if (message === ChromeEventType.ACTIVE_CHANGED) {
+      const { tabId, windowId } = data;
+
+      App.activeChanged(tabId!, windowId!);
     } else if (message === ChromeEventType.REMOVE_TAB) {
       const { tabId, windowId } = data;
 
@@ -101,6 +105,7 @@ window.onload = () => {
     /**
      * retry connection if this window had disconnected with various reasons (e.g timeout)
      */
+    console.log("[main.ts]:", "reconnection");
     location.reload();
   })
 };

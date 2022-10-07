@@ -131,6 +131,14 @@ class App extends LitElement {
     });
   }
 
+  static activeChanged(tabId: number, windowId: number) {
+    currentWindowMachine.send({
+      type: "chrome event occur",
+      data: { tabId, windowId },
+      command: ChromeEventType.ACTIVE_CHANGED,
+    })
+  }
+
   static openTab(tabId: number, windowId: number) {
     const leftMargin = 384;
     const customWidth = window.screen.width - 384 - 20; // 20 is right margin of window
@@ -153,6 +161,7 @@ class App extends LitElement {
           height: customHeight,
          });
       }
+      
       chrome.tabs.update(tabId, { active: true });
     })
   }
@@ -201,6 +210,7 @@ class App extends LitElement {
       height: customHeight,
       width: customWidth,
       url: tabUrls,
+      state: "normal"
     })
   }
   
@@ -213,6 +223,7 @@ class App extends LitElement {
 
       <chrome-window-main>
         <current-tab-container
+          slot="current-tab"
           .currentWindowMap=${this.currentWindowMap}
           .occurWindowId=${this.occurWindowId}
           .occurTabId=${this.occurTabId}
@@ -220,13 +231,15 @@ class App extends LitElement {
         ></current-tab-container>
 
         <saved-tab-container
+          slot="saved-tab"
           .savedWindowMap=${this.savedWindowMap}
           .occurWindowId=${this.occurSavedWindowId}
           .commandType=${this.commandType}
         ></saved-tab-container>
-          
-        <search-component></search-component>
+
       </chrome-window-main>
+      
+      <search-component></search-component>
     `;
   }
 }

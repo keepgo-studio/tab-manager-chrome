@@ -85,6 +85,14 @@ chrome.tabs.onUpdated.addListener((_, changeInfo, tab) => {
   }
 });
 
+chrome.tabs.onActivated.addListener(activeInfo => {
+  const { tabId, windowId } = activeInfo;
+
+  if (frontPort && windowId !== frontWinId) {
+    sendMessage(ChromeEventType.ACTIVE_CHANGED, { tabId, windowId });
+  }
+})
+
 // invoke app init(=constructor)
 chrome.action.onClicked.addListener(() => {
   // open web

@@ -36,10 +36,10 @@ class CurrentTabContainer extends Component {
         padding: 1rem;
         box-shadow: 0 1px 8px 4px rgba(0, 0, 0, 0.05);
         height: 100%;
+        width: 100%;
         overflow: scroll;
         transition: ease 300ms;
-
-        width: 316px;
+        border-radius: 7px;
       }
 
       section::-webkit-scrollbar {

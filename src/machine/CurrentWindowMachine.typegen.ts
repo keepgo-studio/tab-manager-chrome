@@ -26,6 +26,7 @@ export interface Typegen0 {
     "remove tab from target window": "chrome event occur";
     "remove target window from list": "chrome event occur";
     "update tab from target window": "chrome event occur";
+    "update tab that is activated": "chrome event occur";
   };
   eventsCausingServices: {
     "get all windows by chrome api":
@@ -38,6 +39,7 @@ export interface Typegen0 {
     "is position moving tab": "chrome event occur";
     "is removing window": "chrome event occur";
     "is remvoing tab": "chrome event occur";
+    "is tab active changed": "chrome event occur";
     "is updating tab": "chrome event occur";
   };
   eventsCausingDelays: {};
@@ -48,6 +50,7 @@ export interface Typegen0 {
     | "Loaded.MoveTab"
     | "Loaded.RemoveTab"
     | "Loaded.RemoveWindow"
+    | "Loaded.UpdateActiveTab"
     | "Loaded.UpdateTab"
     | "Loaded.idle"
     | "Loading"
@@ -59,6 +62,7 @@ export interface Typegen0 {
           | "MoveTab"
           | "RemoveTab"
           | "RemoveWindow"
+          | "UpdateActiveTab"
           | "UpdateTab"
           | "idle";
       };

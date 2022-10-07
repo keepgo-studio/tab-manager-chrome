@@ -13,29 +13,31 @@ class ChromeWindowMain extends Component {
      * I have to set overflow hidden to body tag since the two tab container
      * is larger than 100vw.
      */
-    
     document.body.style.overflow = 'hidden';
   }
+  
   static get styles() {
     return css`
       ${super.styles}
+
+      main {
+        position: relative;
+        display: flex;
+        width: fit-content;
+        transition: ease 300ms;
+      }
 
       .container {
         padding: 1rem;
         height: calc(100vh - 65px);
         width: fit-content;
-        transition: ease 300ms;
-
-        /* set relative for current-tab-container and saved-tab-container */
-        position: relative;
-        display: flex;
-        overflow-x: hidden;
+        width: 100vw;
       }
 
-      ::slotted(saved-tab-container) {
-        margin-left: 2rem;
+      ::slotted(saved-tab-container),
+      ::slotted(current-tab-container) {
+        width: 100%;
       }
-
       .save-mode {
         transform: translateX(-50%);
       }
@@ -43,12 +45,12 @@ class ChromeWindowMain extends Component {
   };
 
   handleLocationChange() {
-    const container = this.renderRoot.querySelector('.container')!;
+    const main = this.renderRoot.querySelector('main')!;
 
     if (getPathName() === "index.html") {
-      container.classList.remove('save-mode');
+      main.classList.remove('save-mode');
     } else {
-      container.classList.add('save-mode');
+      main.classList.add('save-mode');
     }
   }
 
@@ -68,10 +70,16 @@ class ChromeWindowMain extends Component {
   _pathname: string = getPathName();
   
   render() {
+    
     return html`
-      <div class="container"> 
-        <slot></slot>
-      </div>
+      <main>
+        <div class="container">
+          <slot name="current-tab"></slot>
+        </div>
+        <div class="container">
+          <slot name="saved-tab"></slot>
+        </div>
+      </main>
     `;
   }
 }

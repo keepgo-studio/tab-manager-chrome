@@ -5,8 +5,263 @@ import { repeat } from "lit/directives/repeat.js";
 import { Component } from "../core/Component";
 import { styleMap } from "lit/directives/style-map.js";
 import { consoleLitComponent } from "../../utils/dev";
+import { AppConfirm } from "./AppConfirm";
 
 const OPENING_DURATION = 250; // ms
+
+const windowNodeCss = css`
+  .appear-animation {
+    transform: scale(1) !important;
+    opacity: 1 !important;
+  }
+
+  .node-container {
+    transform: scale(0.5);
+    opacity: 0;
+
+    background-color: #fff;
+    border-radius: 7px;
+    margin-bottom: 1rem;
+    transition: ease 300ms;
+    cursor: pointer;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 1px 6px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  .node-container:hover {
+    transform: scale(1.01);
+  }
+
+  .dialog-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translateY(-50%);
+    border-radius: 999px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    background: linear-gradient(
+      90deg,
+      rgb(255, 255, 255) 50%,
+      rgb(215, 255, 231) 50%
+    );
+    box-shadow: 0 2px 6px 1px rgba(0, 0, 0, 0.1);
+    transition: ease 100ms;
+  }
+
+  .dialog-container svg {
+    padding: 1px 4px;
+    height: 15px;
+  }
+
+  .dialog-container svg:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+
+  .dialog-container .close {
+    width: 13px;
+    padding: 1px 4px 1px 6px;
+    border-radius: 999px 0 0 999px;
+  }
+
+  .dialog-container .saved {
+    width: 10px;
+    padding: 1px 6px 1px 4px;
+    border-radius: 0 999px 999px 0;
+  }
+
+  /* 
+    close svg css for "save" mode 
+  */
+  .dialog-container-save-mode {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translateY(-50%);
+    border-radius: 999px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-items: center;
+    background: #fff;
+    box-shadow: 0 2px 6px 1px rgba(0, 0, 0, 0.1);
+    transition: ease 100ms;
+  }
+
+  .dialog-container-save-mode .close-save-mode {
+    width: 13px;
+    height: 13px;
+    padding: 2px;
+    border-radius: 999px;
+  }
+  .dialog-container-save-mode svg:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+
+
+  .first {
+    display: grid;
+    grid-template-columns: 72px auto 30px;
+    height: 72px;
+  }
+
+  .first-fav-icon-container {
+    position: relative;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* should set z-index so .mode-decorator can show even the .rest opened */
+    z-index: 999;
+  }
+
+  .first-fav-icon-container .mode-decorator {
+    position: absolute;
+    top:0;
+    left:0;
+    width: 7px;
+    height: 100%;
+    background-color: #FECC9D;
+    border-radius: 7px 0 0 7px;
+    transition: ease 300ms;
+  }
+
+  .first-fav-icon-container img {
+    width: 32px;
+    height: 32px;
+    display: block;
+  }
+
+  .first-text-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    width: auto;
+    padding-right: 1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .first-text-container h1 {
+    font-weight: bold;
+    padding: 2px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .first-text-container a {
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .button-container {
+    background-color: rgba(205, 205, 205, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .button-container svg {
+    transition: ease 300ms;
+  }
+
+  .rest {
+    position: absolute;
+    top: 72px;
+    left: 0;
+    padding: 1rem;
+    z-index: 1;
+    background-color: #fff;
+    overflow-y: scroll;
+
+    /* 
+      since showing rest tab list shouldn't faster than node's growing height,
+      so I set short trasnition duration. 
+    */
+    transition: ease ${OPENING_DURATION}ms;
+
+    width: 100%;
+    /*
+      you can find dynamic height in the function render()
+    */
+  }
+
+  .rest::-webkit-scrollbar {
+    width: 4px;
+    background-color: transparent;
+  }
+
+  .rest::-webkit-scrollbar-thumb {
+    background-color: #d9d9d9;
+    border-radius: 999px;
+  }
+
+  /* set margin bottom for tabs except for last child */
+  .rest-tab-container:not(:last-child) {
+    margin-bottom: 6px;
+  }
+
+  .rest-tab-container {
+    display: flex;
+    align-items: center;
+    padding: 4px 5px;
+    background-color: rgba(217, 217, 217, 0.3);
+    border-radius: 999px;
+    transition: ease 300ms;
+    pointer: cursor;
+    position:relative
+  }
+
+  .rest-tab-container:hover {
+    background-color: rgba(217, 217, 217, 0.8);
+  }
+
+  .rest-fav-icon-container {
+    margin: 0 10px;
+  }
+  .rest-fav-icon-container img {
+    width: 14px;
+    height: 14px;
+    display: block;
+  }
+
+  .rest-text-container {
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .rest-tab-container button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    width: 16px;
+    height: 16px;
+    border: none;
+    border-radius: 50%;
+    background-color: #000;
+    color: #fff;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    transition: ease 300ms;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .rest-tab-container[hover] button {
+    opacity: 1;
+    z-index: 999;
+  }
+`;
 
 @customElement("window-node")
 class WindowNode extends Component {
@@ -54,233 +309,12 @@ class WindowNode extends Component {
     return css`
       ${super.styles}
 
-      .appear-animation {
-        transform: scale(1) !important;
-        opacity: 1 !important;
-      }
-
-      .node-container {
-        transform: scale(0.5);
-        opacity: 0;
-
-        background-color: #fff;
-        border-radius: 7px;
-        margin-bottom: 1rem;
-        transition: ease 300ms;
-        cursor: pointer;
-        position: relative;
-        z-index: 10;
-        box-shadow: 0 1px 6px 2px rgba(0, 0, 0, 0.05);
-      }
-
-      .node-container:hover {
-        transform: scale(1.01);
-      }
-
-      .dialog-container {
-        position: absolute;
-        top: 0;
-        right: 0;
-        transform: translateY(-50%);
-        border-radius: 999px;
-        display: flex;
-        justify-content: space-evenly;
-        align-items: center;
-        background: linear-gradient(
-          90deg,
-          rgb(255, 255, 255) 50%,
-          rgb(215, 255, 231) 50%
-        );
-        box-shadow: 0 2px 6px 1px rgba(0, 0, 0, 0.1);
-        transition: ease 100ms;
-      }
-
-      .dialog-container svg {
-        padding: 1px 4px;
-        height: 15px;
-      }
-
-      .dialog-container svg:hover {
-        background-color: rgba(0, 0, 0, 0.2);
-      }
-
-      .dialog-container .close {
-        width: 13px;
-        padding: 1px 4px 1px 6px;
-        border-radius: 999px 0 0 999px;
-      }
-
-      .dialog-container .saved {
-        width: 10px;
-        padding: 1px 6px 1px 4px;
-        border-radius: 0 999px 999px 0;
-      }
-      
-      /* 
-        close svg css for "save" mode 
-      */
-      .dialog-container-save-mode {
-        position: absolute;
-        top: 0;
-        right: 0;
-        transform: translateY(-50%);
-        border-radius: 999px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        align-items: center;
-        background: #fff;
-        box-shadow: 0 2px 6px 1px rgba(0, 0, 0, 0.1);
-        transition: ease 100ms;
-      }
-
-      .dialog-container-save-mode .close-save-mode {
-        width: 13px;
-        height: 13px;
-        padding: 2px;
-        border-radius: 999px;
-      }
-      .dialog-container-save-mode svg:hover {
-        background-color: rgba(0, 0, 0, 0.2);
-      }
-
-
-      .first {
-        display: grid;
-        grid-template-columns: 72px auto 30px;
-        height: 72px;
-      }
-
-      .first-fav-icon-container {
-        position: relative;
-        padding: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        
-        /* should set z-index so .mode-decorator can show even the .rest opened */
-        z-index: 999;
-      }
-      
-      .first-fav-icon-container .mode-decorator {
-        position: absolute;
-        top:0;
-        left:0;
-        width: 7px;
-        height: 100%;
-        background-color: #FECC9D;
-        border-radius: 7px 0 0 7px;
-        transition: ease 300ms;
-      }
-
-      .first-fav-icon-container img {
-        width: 32px;
-        height: 32px;
-        display: block;
-      }
-
-      .first-text-container {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-evenly;
-      }
-
-      .first-text-container h1 {
-        font-weight: bold;
-        width: 170px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        padding: 2px 0;
-      }
-
-      .first-text-container a {
-        font-size: 12px;
-        width: 170px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .button-container {
-        background-color: rgba(205, 205, 205, 0.3);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .button-container svg {
-        transition: ease 300ms;
-      }
-
-      .rest {
-        position: absolute;
-        top: 72px;
-        left: 0;
-        padding: 1rem;
-        z-index: 1;
-        background-color: #fff;
-        overflow-y: scroll;
-
-        /* 
-          since showing rest tab list shouldn't faster than node's growing height,
-          so I set short trasnition duration. 
-        */
-        transition: ease ${OPENING_DURATION}ms;
-
-        width: 100%;
-        /*
-          you can find dynamic height in the function render()
-        */
-      }
-
-      .rest::-webkit-scrollbar {
-        width: 4px;
-        background-color: transparent;
-      }
-
-      .rest::-webkit-scrollbar-thumb {
-        background-color: #d9d9d9;
-        border-radius: 999px;
-      }
-
-      /* set margin bottom for tabs except for last child */
-      .rest-tab-container:not(:last-child) {
-        margin-bottom: 6px;
-      }
-
-      .rest-tab-container {
-        display: flex;
-        align-items: center;
-        padding: 4px 5px;
-        background-color: rgba(217, 217, 217, 0.3);
-        border-radius: 999px;
-        transition: ease 300ms;
-        pointer: cursor;
-      }
-
-      .rest-tab-container:hover {
-        background-color: rgba(217, 217, 217, 0.8);
-      }
-
-      .rest-fav-icon-container {
-        margin: 0 10px;
-      }
-      .rest-fav-icon-container img {
-        width: 14px;
-        height: 14px;
-        display: block;
-      }
-
-      .rest-text-container {
-        font-size: 12px;
-        width: 170px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
+      ${windowNodeCss}
     `;
+  }
+
+  constructor() {
+    super();
   }
 
   private handleMouseEnter() {
@@ -289,6 +323,22 @@ class WindowNode extends Component {
 
   private handleMouseLeave() {
     this.isHover = false;
+  }
+  
+  private handleRestMouseEnter(e: Event) {
+    const target = e.currentTarget as Element;
+
+    if (this.mode === "current") {
+      target.setAttribute('hover', '');
+    }
+  }
+
+  private handleRestMouseLeave(e: Event) {
+    const target = e.currentTarget as Element;
+
+    if (this.mode === "current") {
+      target.removeAttribute('hover');
+    }
   }
 
   private handleButtonClick(e: Event) {
@@ -312,9 +362,12 @@ class WindowNode extends Component {
     }
   }
 
-  private handleCloseClick() {
-
+  private async handleCloseClick() {
     if (this.mode === "current") {
+      const isConfirmed = await new AppConfirm('Are you really want to close this window?', 'closing window').show();
+
+      if (!isConfirmed) return;
+
       window.dispatchEvent(
         new CustomEvent("close-window", {
           detail: {
@@ -325,6 +378,10 @@ class WindowNode extends Component {
         })
       );
     } else {
+      const isConfirmed = await new AppConfirm('Are you really want to remove this window?', 'removing window').show();
+
+      if (!isConfirmed) return;
+
       window.dispatchEvent(
         new CustomEvent("remove-saved-window", {
           detail: {
@@ -336,8 +393,35 @@ class WindowNode extends Component {
     
   }
 
-  private handleSavedClick() {
+  private async handleTabCloseClick(e: Event) {
+    e.stopPropagation();
+
+    const target = e.currentTarget as Element;
+
+    const tabIndex = target.getAttribute('tab-index');
+
     if (this.mode === "current") {
+      const isConfirmed = await new AppConfirm('Are you really want to close this tab?', 'removing tab').show();
+
+      if (!isConfirmed) return;
+
+      window.dispatchEvent(
+        new CustomEvent("close-tab", {
+          detail: {
+            windowId: this.currentWindow.id,
+            tabIndex
+          }
+        })
+      )
+    }
+  }
+
+  private async handleSavedClick() {
+    if (this.mode === "current") {
+      const isConfirmed = await new AppConfirm('Are you really want to save this window?', 'saving window').show();
+
+      if (!isConfirmed) return;
+
       window.dispatchEvent(
         new CustomEvent("save-window", {
           detail: {
@@ -348,7 +432,7 @@ class WindowNode extends Component {
     }
   }
 
-  private handleNodeClick(e: Event) {
+  private async handleNodeClick(e: Event) {
     if (this.mode === "current") {
       const targetNode = e.currentTarget as Element;
   
@@ -363,6 +447,10 @@ class WindowNode extends Component {
         })
       );
     } else if (this.mode === "saved") {
+      const isConfirmed = await new AppConfirm('Are you really want to reopen this window?', 'reopneing window').show();
+
+      if (!isConfirmed) return;
+
       window.dispatchEvent(
         new CustomEvent("open-saved-window", {
           detail: {
@@ -383,6 +471,17 @@ class WindowNode extends Component {
     newElem.setAttribute('mode', 'dot-flashing');
 
     elem.parentNode!.replaceChild(newElem, elem);
+  }
+
+  private checkActivated(tabId: number) {
+    const colorIfActiveTab = {
+      color: "#3D73FF",
+    }
+    if (this.occurTabId === tabId) {
+      return styleMap(colorIfActiveTab);
+    } else {
+      return '';
+    }
   }
 
   protected firstUpdated(
@@ -434,12 +533,14 @@ class WindowNode extends Component {
       height: this.isOpening ? `${restNodesMaxHeight + 72}px` : `${windowNodeDefaultHeight}px`,
     };
 
+
     // for only save mode
     const shouldStretchDecorator = {
       height: `${windowNodeDefaultHeight + (this.isOpening ? restNodesMaxHeight : 0)}px`
     }
-    // 
-    
+
+
+    // consoleLitComponent(this, [this.occurTabId, this.occurWindowId])
     let firstTabHtml;
     let restTabHtml;
     if (this.currentWindow.tabs.length > 0) {
@@ -465,7 +566,7 @@ class WindowNode extends Component {
         </div>
   
         <div class="first-text-container">
-          <h1>${firstTab.title}</h1>
+          <h1 style=${this.checkActivated(firstTab.id!)} >${firstTab.title}</h1>
   
           <a>${firstTab.url}</a>
         </div>
@@ -506,6 +607,8 @@ class WindowNode extends Component {
                       id="${tab.id}"
                       class="rest-tab-container"
                       @click=${this.handleNodeClick}
+                      @mouseenter=${this.handleRestMouseEnter}
+                      @mouseleave=${this.handleRestMouseLeave}
                     >
                       <div class="rest-fav-icon-container">
                       ${tab.favIconUrl?
@@ -515,8 +618,11 @@ class WindowNode extends Component {
                       </div>
   
                       <div class="rest-text-container">
-                        <a>${tab.title}</a>
+                        <a style=${this.checkActivated(tab.id!)}>${tab.title}</a>
+
                       </div>
+                      
+                      <button tab-index=${idx} @click=${this.handleTabCloseClick}><p>X</p></button>
                     </div>
                   `
                 : ""

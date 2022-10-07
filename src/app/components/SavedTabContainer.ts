@@ -32,9 +32,11 @@ class SavedTabContainer extends Component {
         padding: 1rem;
         box-shadow: 0 1px 8px 4px rgba(0, 0, 0, 0.05);
         height: 100%;
+        width: 100%;
         overflow: scroll;
-        
-        width: 316px;
+        overflow: scroll;
+        transition: ease 300ms;
+        border-radius: 7px;
       }
 
       section::-webkit-scrollbar {
