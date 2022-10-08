@@ -109,6 +109,8 @@ chrome.action.onClicked.addListener(() => {
       },
       (win) => (frontWinId = win?.id)
     );
+  } else if (frontPort && frontWinId) {
+    chrome.windows.update(frontWinId, { focused: true });
   }
 });
 
