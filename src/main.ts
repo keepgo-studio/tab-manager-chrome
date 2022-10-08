@@ -60,6 +60,12 @@ window.onload = () => {
       },
     },
     {
+      name: "close-tab",
+      handler: (e: CustomEvent) => {
+        App.closeTab(e.detail.tabId);
+      },
+    },
+    {
       name: "close-window",
       handler: (e: CustomEvent) => {
         const { windowId, tabsLength, firstTabId } = e.detail;

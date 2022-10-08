@@ -166,6 +166,10 @@ class App extends LitElement {
     })
   }
 
+  static closeTab(tabId: number) {
+    chrome.tabs.remove(tabId);
+  }
+
   static closeWindow(isWindowOrTab: string, id: number) {
     if (isWindowOrTab === "window") {
       chrome.windows.remove(id);

@@ -398,7 +398,7 @@ class WindowNode extends Component {
 
     const target = e.currentTarget as Element;
 
-    const tabIndex = target.getAttribute('tab-index');
+    const tabId = parseInt(target.parentElement!.id);
 
     if (this.mode === "current") {
       const isConfirmed = await new AppConfirm('Are you really want to close this tab?', 'removing tab').show();
@@ -408,8 +408,7 @@ class WindowNode extends Component {
       window.dispatchEvent(
         new CustomEvent("close-tab", {
           detail: {
-            windowId: this.currentWindow.id,
-            tabIndex
+            tabId
           }
         })
       )
@@ -622,7 +621,7 @@ class WindowNode extends Component {
 
                       </div>
                       
-                      <button tab-index=${idx} @click=${this.handleTabCloseClick}><p>X</p></button>
+                      <button @click=${this.handleTabCloseClick}><p>X</p></button>
                     </div>
                   `
                 : ""
