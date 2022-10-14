@@ -2,6 +2,8 @@ import App from "./app/app";
 
 window.document.title = chrome.runtime.getManifest().description!;
 
+var userOuterHeight: number = 120;
+
 function connectToBack() {
   return chrome.runtime.connect({ name: "tab-manager" });
 }
@@ -13,7 +15,12 @@ window.onload = () => {
   port.onMessage.addListener(({ message, data }: MessageForm, _) => {
     console.log("[main.ts]:", message);
 
-    if (message === ChromeEventType.INIT) {
+    if (message === 'get outer height') {
+      const { outerHeight } = data;
+
+      userOuterHeight = outerHeight!;
+      console.log(userOuterHeight);
+    } else if (message === ChromeEventType.INIT) {
       const { extensionWidth, extensionHeight } = data;
 
       window.resizeTo(extensionWidth!, extensionHeight!);
@@ -56,7 +63,7 @@ window.onload = () => {
     {
       name: "open-tab",
       handler: (e: CustomEvent) => {
-        App.openTab(e.detail.tabId, e.detail.windowId);
+        App.openTab(e.detail.tabId, e.detail.windowId, userOuterHeight);
       },
     },
     {

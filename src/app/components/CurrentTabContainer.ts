@@ -71,6 +71,7 @@ class CurrentTabContainer extends Component {
   render() {
     if (this.currentWindowMap === undefined) return html`<section></section>`;
 
+    // console.log(this.occurTabId, this.occurWindowId)
     const nodeHtml = repeat(
       Object.values(this.currentWindowMap),
       (win) => win.id,
@@ -78,11 +79,11 @@ class CurrentTabContainer extends Component {
         <window-node
           .currentWindow=${win}
           .occurTabId=${win.id === this.occurWindowId[0]
-            ? this.occurTabId[0]
-            : -1}
+            ? this.occurTabId
+            : [-1]}
           .occurWindowId=${win.id === this.occurWindowId[0]
             ? this.occurWindowId
-            : -1}
+            : [-1]}
           .commnadType=${this.commandType}
           mode="current"
         ></window-node>

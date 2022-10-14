@@ -8,7 +8,7 @@ import { customElement, query, state } from "lit/decorators.js";
 import { interpret } from "xstate";
 import { CurrentWindowMachine } from "../machine/CurrentWindowMachine";
 import { SavedWindowMachine } from "../machine/SavedWindowMachine";
-import db from "../indexedDB/db";
+import { UserSettings } from "../store/local-storage";
 
 const currentWindowMachine = interpret(CurrentWindowMachine);
 const savedWindowMachine = interpret(SavedWindowMachine);
@@ -38,8 +38,6 @@ class App extends LitElement {
     this.occurTabId = [-1];
 
     this.savedWindowMap = {};
-
-    db.open();
 
     currentWindowMachine.onTransition((state) => {
        if (state.changed) {
@@ -74,6 +72,14 @@ class App extends LitElement {
       }
     })
     .start();
+
+    new UserSettings().getDarkMode().then(v => {
+      if (v) {
+        document.body.setAttribute('dark-mode', 'true');
+      } else {  
+        document.body.setAttribute('dark-mode', 'false');
+      }
+    });
   }
 
   static init() {
@@ -139,10 +145,11 @@ class App extends LitElement {
     })
   }
 
-  static openTab(tabId: number, windowId: number) {
-    const leftMargin = 384;
-    const customWidth = window.screen.width - 384 - 20; // 20 is right margin of window
-    const customHeight = window.screen.height - 20;
+  static openTab(tabId: number, windowId: number, _: number) {
+    const leftMargin = 423;
+    const customWidth = window.screen.width - 423 - 20; // 20 is right margin of window
+    const customHeight = window.screen.height - 40 ;
+    console.log(window.screen.height, customHeight);
 
     chrome.windows.update(windowId, { 
       focused: true,

@@ -24,18 +24,43 @@ function sendMessage(message: ChromeEventType, data: Partial<BackgroundData>) {
 }
 
 chrome.runtime.onConnect.addListener((port) => {
-  if (!frontPort) {
-    frontPort = port;
-  } else {
-    port.postMessage({message: ChromeEventType.TERMINATE});
-    port.disconnect();
+  console.log(port.name);
+  if (port.name === 'tab-manager') {
+    if (!frontPort) {
+      frontPort = port;
+    } else {
+      /**
+       * extension window can open more than one since user can execute Ctrl + t (reopen recent closed tab)
+       */
+      port.postMessage({message: ChromeEventType.TERMINATE});
+      port.disconnect();
+    }
+    frontPort.onDisconnect.addListener(() => (frontPort = undefined));
+  } else if (port.name === 'content-script') {
+    port.onMessage.addListener((msg, _) => {
+      const { message, data } = msg;
+      if (message === 'get address bar') {
+        console.log('content-script', msg, frontPort);
+        if (frontPort) {
+          frontPort.postMessage({ message: 'get outer height' , outerHeight: data })
+        }
+      }
+    })
   }
-
-  frontPort.onDisconnect.addListener(() => (frontPort = undefined));
+  
 });
 
 // when extension installed, only once
-chrome.runtime.onInstalled.addListener(() => {});
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.windows.create(
+    {
+      focused: true,
+      type: "normal",
+      url: "https://keepgo-studio.github.io/tab-manager-homepage/",
+      state: "maximized",
+    },
+  );
+});
 
 chrome.windows.onCreated.addListener((win: ChromeWindow) => {
   if (win.id && frontPort) {

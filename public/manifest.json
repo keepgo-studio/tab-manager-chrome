@@ -6,6 +6,7 @@
     
     "permissions": [
         "activeTab",
+        "storage",
         "tabs"
     ],
 
@@ -29,5 +30,12 @@
         "32": "img/favicon-32.png",
         "48": "img/favicon-48.png" ,
         "128": "img/favicon-128.png"
-    }
+    },
+
+    "content_scripts": [
+        {
+            "matches": ["https://keepgo-studio.github.io/tab-manager-homepage/"],
+            "js": ["content-script.js"]
+        }
+    ]
 }

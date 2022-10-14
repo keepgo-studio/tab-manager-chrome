@@ -57,6 +57,6 @@ class DBHandler {
     }
 }
 
-const db = new DBHandler;
+const db = new DBHandler();
 
 export default db;

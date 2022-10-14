@@ -12,13 +12,15 @@ declare global {
 
     extensionWidth: number;
     extensionHeight: number;
+
+    outerHeight: number;
   }
   
   // needed interface for machines
   interface TransactionData {}
 
   interface MessageForm {
-    readonly message: ChromeEventType | UserInteractionType;
+    readonly message: ChromeEventType | UserInteractionType | 'get outer height';
     readonly data: Partial<BackgroundData>;
   }
 

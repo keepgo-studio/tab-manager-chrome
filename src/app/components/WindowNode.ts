@@ -275,23 +275,11 @@ class WindowNode extends Component {
   @property()
   commandType?: ChromeEventType | UserInteractionType;
   
-  @property({ hasChanged: (newVal, _) => {
-    if (newVal === -1) {
-      return false
-    } else {
-      return true;
-    }
-  }})
-  occurTabId!: number;
+  @property({reflect: true})
+  occurTabId: Array<number> = [-1];
 
-  @property({ hasChanged: (newVal, _) => {
-    if (newVal === -1) {
-      return false
-    } else {
-      return true;
-    }
-  }})
-  occurWindowId!: number;
+  @property()
+  occurWindowId: Array<number> = [-1];
 
   @state()
   isOpening = false;
@@ -472,17 +460,6 @@ class WindowNode extends Component {
     elem.parentNode!.replaceChild(newElem, elem);
   }
 
-  private checkActivated(tabId: number) {
-    const colorIfActiveTab = {
-      color: "#3D73FF",
-    }
-    if (this.occurTabId === tabId) {
-      return styleMap(colorIfActiveTab);
-    } else {
-      return '';
-    }
-  }
-
   protected firstUpdated(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
   ): void {
@@ -532,6 +509,9 @@ class WindowNode extends Component {
       height: this.isOpening ? `${restNodesMaxHeight + 72}px` : `${windowNodeDefaultHeight}px`,
     };
 
+    const colorIfActiveTab = {
+      color: "#3D73FF !important",
+    }
 
     // for only save mode
     const shouldStretchDecorator = {
@@ -565,7 +545,7 @@ class WindowNode extends Component {
         </div>
   
         <div class="first-text-container">
-          <h1 style=${this.checkActivated(firstTab.id!)} >${firstTab.title}</h1>
+          <h1 style=${this.occurTabId[0] === firstTab.id ? styleMap(colorIfActiveTab) : ''} >${firstTab.title}</h1>
   
           <a>${firstTab.url}</a>
         </div>
@@ -617,7 +597,7 @@ class WindowNode extends Component {
                       </div>
   
                       <div class="rest-text-container">
-                        <a style=${this.checkActivated(tab.id!)}>${tab.title}</a>
+                        <a style=${this.occurTabId[0] === tab.id ? styleMap(colorIfActiveTab) : ''}>${tab.title}</a>
 
                       </div>
                       

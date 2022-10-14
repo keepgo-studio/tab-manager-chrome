@@ -23,6 +23,5 @@
     "exclude": [
       "node_modules",
       "src/utils/utils.ts",
-      "src/utils/chrome-api.ts"
     ]
  }

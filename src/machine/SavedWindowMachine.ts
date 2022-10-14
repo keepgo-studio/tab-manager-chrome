@@ -1,5 +1,5 @@
 import { createMachine } from "xstate";
-import db from "../indexedDB/db";
+import db from "../store/indexed-db";
 /*
   guard -> ALL CAPITAL
   state -> CamleSpace
