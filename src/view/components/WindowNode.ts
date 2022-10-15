@@ -4,7 +4,7 @@ import { customElement, property, state, query } from "lit/decorators.js";
 import { repeat } from "lit/directives/repeat.js";
 import { Component } from "../core/Component";
 import { styleMap } from "lit/directives/style-map.js";
-import { consoleLitComponent } from "../../utils/dev";
+import { consoleLitComponent } from "../../utils/utils";
 import { AppConfirm } from "./AppConfirm";
 
 const OPENING_DURATION = 250; // ms

@@ -1,26 +1,16 @@
-import App from "./app/app";
+import App from "./view/app";
+import { connectToBack, setDocumentTitle } from "./utils/utils";
 
-window.document.title = chrome.runtime.getManifest().description!;
-
-var userOuterHeight: number = 120;
-
-function connectToBack() {
-  return chrome.runtime.connect({ name: "tab-manager" });
-}
+setDocumentTitle(chrome.runtime.getManifest().description!);
 
 window.onload = () => {
   // connect to worker
-  let port = connectToBack();
+  let port = connectToBack('front');
 
   port.onMessage.addListener(({ message, data }: MessageForm, _) => {
     console.log("[main.ts]:", message);
 
-    if (message === 'get outer height') {
-      const { outerHeight } = data;
-
-      userOuterHeight = outerHeight!;
-      console.log(userOuterHeight);
-    } else if (message === ChromeEventType.INIT) {
+    if (message === ChromeEventType.INIT) {
       const { extensionWidth, extensionHeight } = data;
 
       window.resizeTo(extensionWidth!, extensionHeight!);
