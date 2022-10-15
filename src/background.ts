@@ -52,14 +52,14 @@ chrome.runtime.onConnect.addListener((port) => {
 
 // when extension installed, only once
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.windows.create(
-    {
-      focused: true,
-      type: "normal",
-      url: "https://keepgo-studio.github.io/tab-manager-homepage/",
-      state: "maximized",
-    },
-  );
+  // chrome.windows.create(
+  //   {
+  //     focused: true,
+  //     type: "normal",
+  //     url: "https://keepgo-studio.github.io/tab-manager-homepage/",
+  //     state: "maximized",
+  //   },
+  // );
 });
 
 chrome.windows.onCreated.addListener((win: ChromeWindow) => {
