@@ -31,15 +31,30 @@ class CurrentTabContainer extends Component {
     return css`
       ${super.styles}
 
+      :host{
+        position:relative;
+      }
+
       section {
         background-color: #f6faff;
-        padding: 1rem;
+        padding: 1rem 1rem 0 1rem;
         box-shadow: 0 1px 8px 4px rgba(0, 0, 0, 0.05);
         height: 100%;
         width: 100%;
-        overflow: scroll;
+        overflow-y: scroll;
         transition: ease 300ms;
         border-radius: 7px;
+        position: relative;
+      }
+
+      .gradient {
+        background: linear-gradient(0deg, #F6FAFF 30%, rgba(246, 250, 255, 0) 100%);
+        height: 1.5rem;
+        width: 100%;
+        position: absolute;
+        bottom:0;
+        left:-4px;
+        z-index: 10;
       }
 
       section::-webkit-scrollbar {
@@ -86,10 +101,14 @@ class CurrentTabContainer extends Component {
             : [-1]}
           .commnadType=${this.commandType}
           mode="current"
-        ></window-node>
+        >
+        </window-node>
       `
     );
 
-    return html`<section>${nodeHtml}</section>`;
+    return html`
+    <section>${nodeHtml}</section>
+    <div class="gradient"></div>
+    `;
   }
 }
