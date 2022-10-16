@@ -1,34 +1,35 @@
 declare global {
-  interface BackData {
+  interface IBackData {
     win: ChromeWindow;
     tab: ChromeTab;
     tabId: number;
     windowId: number;
     extensionWidth: number;
     extensionHeight: number;
-    outerHeight: number;
     moveInfo: {
       fromIndex: number;
       toIndex: number;
     };
   }
 
-  interface FrontData {
+  interface IFrontData {
     win: ChromeWindow;
     tabId: number;
     windowId: number;
     tabsLength: number;
     firstTabId: number;
+    message: string;
   }
 
   interface IPortMessage {
     readonly type: ChromeEventType | AppEventType;
-    readonly data: Partial<BackData>;
+    readonly data: Partial<IBackData>;
   }
 
   interface IFrontMessage {
-    readonly type: UsersEventType | FrontMessageType;
-    readonly data: Partial<BackData>;
+    sender: string,
+    readonly type: UsersEventType | MessageEventType;
+    readonly data: Partial<IFrontData>;
   }
 
   const enum AppEventType {
@@ -52,7 +53,7 @@ declare global {
     OPEN_SAVED_WINDOW="OPEN_SAVED_WINDOW",
     DELETE_SAVED_WINDOW="DELETE_SAVED_WINDOW",
   }
-  const enum FrontMessageType {
+  const enum MessageEventType {
     SUCCESS,
     FAILED
   }

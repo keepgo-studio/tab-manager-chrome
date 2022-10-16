@@ -23,9 +23,13 @@
   "homepage": "https://github.com/keepgo-studio/tab-manager-chrome#readme",
   "devDependencies": {
     "@types/chrome": "^0.0.193",
+    "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
+    "css-loader": "^6.7.1",
     "lit": "^2.3.1",
     "prettier": "2.7.1",
+    "sass": "^1.55.0",
+    "sass-loader": "^13.1.0",
     "ts-loader": "^9.3.1",
     "typescript": "^4.7.4",
     "webpack": "^5.74.0",

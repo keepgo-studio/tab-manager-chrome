@@ -1,6 +1,6 @@
 import { CSSResult, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { Component } from "../core/Component";
+import { Component } from "../../core/Component.core";
 import { getPathName } from "../../utils/location";
 
 @customElement('chrome-window-main')

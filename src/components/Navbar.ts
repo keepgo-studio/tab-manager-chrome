@@ -1,6 +1,6 @@
 import { css, html, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { Component } from "../core/Component";
+import { Component } from "../../core/Component";
 import { getPathName, moveHistory } from "../../utils/utils";
 
 @customElement("app-navbar")

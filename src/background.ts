@@ -1,3 +1,5 @@
+import { getSize } from "./utils/utils";
+
 console.log("background is running");
 
 /**
@@ -8,16 +10,17 @@ var frontPort: RuntimePort | undefined;
 var frontWinId: number | undefined;
 const EXTENSION_ID = chrome.runtime.id;
 
-var diagnol = 517.7;
-var frontWidth = 367;
-var frontHeight = Math.round(
-  Math.sqrt(Math.pow(frontWidth, 2) + Math.pow(diagnol, 2))
-);
-frontWidth += 16;
+interface UserInfo {
+  "dark-mode": boolean;
+  "outer-height": number;
+  "size-mode": "mini" | "tablet" | "side";
+}
 
-function sendMessage(message: ChromeEventType, data: Partial<BackgroundData>) {
-  const msg: MessageForm = {
-    message,
+const { frontWidth, frontHeight } = getSize('mini');
+
+function sendMessage(type: ChromeEventType | AppEventType, data: Partial<BackData>) {
+  const msg: IPortMessage = {
+    type,
     data,
   };
   frontPort!.postMessage(msg)
@@ -32,7 +35,7 @@ chrome.runtime.onConnect.addListener((port) => {
       /**
        * extension window can open more than one since user can execute Ctrl + t (reopen recent closed tab)
        */
-      port.postMessage({message: ChromeEventType.TERMINATE});
+      port.postMessage({type: AppEventType.TERMINATE});
       port.disconnect();
     }
     frontPort.onDisconnect.addListener(() => (frontPort = undefined));
@@ -65,21 +68,21 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.windows.onCreated.addListener((win: ChromeWindow) => {
   if (win.id && frontPort) {
     chrome.windows.get(win.id, { populate: true }, (justCreatedWindow) => {
-      sendMessage(ChromeEventType.CREATE_WINDOW, { win: justCreatedWindow });
+      sendMessage(ChromeEventType.WINDOW_CREATED, { win: justCreatedWindow });
     });
   }
 });
 
 chrome.windows.onRemoved.addListener((windowId) => {
   if (frontPort) {
-    sendMessage(ChromeEventType.REMOVE_WINDOW, { windowId });
+    sendMessage(ChromeEventType.WINDOW_CLOSED, { windowId });
   }
 });
 
 chrome.tabs.onCreated.addListener((tab) => {
   // Notice, that the onCreate does not guarantee that the tab has fully loaded.
   if (frontPort) {
-    sendMessage(ChromeEventType.CREATE_TAB, { tab });
+    sendMessage(ChromeEventType.TAB_CREATED, { tab });
   }
 });
 
@@ -87,7 +90,7 @@ chrome.tabs.onMoved.addListener((_, moveInfo) => {
   if (frontPort) {
     const { windowId } = moveInfo;
 
-    sendMessage(ChromeEventType.MOVE_TAB, { moveInfo, windowId });
+    sendMessage(ChromeEventType.TAB_MOVED, { moveInfo, windowId });
   }
 });
 
@@ -95,10 +98,10 @@ chrome.tabs.onRemoved.addListener((tabId, { isWindowClosing, windowId }) => {
   if (!frontPort) return;
 
   if (isWindowClosing) {
-    sendMessage(ChromeEventType.REMOVE_WINDOW, { windowId, tabId });
+    sendMessage(ChromeEventType.WINDOW_CLOSED, { windowId, tabId });
   }
   else {
-    sendMessage(ChromeEventType.REMOVE_TAB, { windowId, tabId });
+    sendMessage(ChromeEventType.TAB_CLOSED, { windowId, tabId });
   }
 });
 
@@ -106,7 +109,7 @@ chrome.tabs.onUpdated.addListener((_, changeInfo, tab) => {
   if (frontPort && !tab.url?.match(EXTENSION_ID)) {
     if (changeInfo.status !== "complete") return;
 
-    sendMessage(ChromeEventType.UPDATE_TAB, { tab });
+    sendMessage(ChromeEventType.TAB_UPDATED, { tab });
   }
 });
 
@@ -141,7 +144,7 @@ chrome.action.onClicked.addListener(() => {
 
 chrome.windows.onBoundsChanged.addListener((win) => {
   if (frontPort && win.id === frontWinId) {
-    sendMessage(ChromeEventType.INIT, {
+    sendMessage(AppEventType.INIT, {
       extensionWidth: frontWidth,
       extensionHeight: frontHeight,
     });

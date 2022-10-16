@@ -29,7 +29,7 @@ class App extends LitElement {
   occurSavedWindowId?: number;
 
   @state()
-  commandType?: ChromeEventType | UserInteractionType;
+  commandType?: ChromeEventType | UsersEventType;
 
   constructor() {
     super();
@@ -85,7 +85,7 @@ class App extends LitElement {
   static init() {
     currentWindowMachine.send({
       type: "init",
-      command: ChromeEventType.INIT
+      command: AppEventType.INIT
     });
   }
 
@@ -195,7 +195,7 @@ class App extends LitElement {
     savedWindowMachine.send({
       type: "user interaction occur",
       data: { win },
-      command: UserInteractionType.SAVE_WINDOW
+      command: UsersEventType.SAVE_WINDOW
     })
   }
 
@@ -203,7 +203,7 @@ class App extends LitElement {
     savedWindowMachine.send({
       type: "user interaction occur",
       data: { windowId },
-      command: UserInteractionType.REMOVE_SAVED_WINDOW
+      command: UsersEventType.REMOVE_SAVED_WINDOW
     })
   }
   

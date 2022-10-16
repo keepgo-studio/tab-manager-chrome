@@ -1,6 +1,6 @@
 import { css, html, PropertyValueMap } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { Component } from "../core/Component";
+import { Component } from "../../core/Component";
 import "./WindowNode";
 import { repeat } from "lit/directives/repeat.js";
 

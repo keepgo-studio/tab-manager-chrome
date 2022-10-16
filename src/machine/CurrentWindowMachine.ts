@@ -6,7 +6,7 @@ import { createMachine } from "xstate";
 */
 
 export const CurrentWindowMachine =
-  /** @xstate-layout N4IgpgJg5mDOIC5QGECuAndYB2AXA6gJbYQD2A7gLICGAxgBbFgB0AMqdRMVAMRnYtiAN1IBrFmkw4CxMlTqMBbDl2xQEw0rWq5CpbAG0ADAF1EoAA6lYhXfvMgAHogBsL5gFYA7AA4AjADMPi4ALAFGfiEATD4ANCAAnogBfu5eHuFeUSEAnG45flEAvkXxklh4RCQUNAxMypzcPGCYpOjMFgA2OgBmbQC2zOXSVXK1iizsjWoa2CLadoamDlY2iw7OCCFGIczRXgGhfn5GXjm+IfFJCH5eux5RRhFRXi4eb345ASVlGBUy1XkdSUUwgkGYACUwP1SEIwAAVagAIx4K2stj02A2iB8IT8zCiRxiOR8ryMASuiA8Hh8zC+2UCLkefh8px+IGGlVkNQU9VB4KhMLhowoqKQIFWGPs4s2uPxhLxOSMJMOjMpCA8ORyzDcTxcviM3lyLnZnIBY15IJU4OQWB0CORYss6PWMqpOV2uRZoRcHvOwXVLgCUWYZx8AQO5MCRh8xVKHL+I25QImDTBECGdtwYBF5CdEpdmOxGo9ewKwRCvtyvhcgdZBNCJJyUQ8uRjPlNia5gPGfOtGYAqhYIPbESi0Wsi26tiFdj4MlEcgv0rkcuqfFrPD5goFolEAq3vvGzbne1bOODCBBOmAeAx0KR+mAAARgOF4Z9aWgYCdSrHT6kjB1CN3lxfd3i8Px1WOUICSeWcolSRdmxCTspG7C1gUmftmCvG8eGIWxf1dUBZVOUMaXnF5DTCF51z8DxmHnekAjxYNIjQ-5T0tbCLwzShYQdcdxUlEinEQWc5wXJdgxXLV103SiXF3KJwJCDxOKTHseLTcEhxHbMAEFaF0OEx3zUSp1InFW1DN4PWU-dzluaDlRDLxyVZB5m2VE1jy7c0eSw3SIDvTprDAYirPEm4IyA7Y8nCJ4Cl8DxXPCUMtUbINEp2Ep42wUgwXgcUT2TM9eNUKAoulayti8aCwmYIxHgiFq8mCFxSU0jCgtTfkM0FQSxxq-86vOdwAg9T5NVCbcCnVXJaUrLUppavEXGVHrApTPs+MhaFBNzUbi39ZgTg8QJAiCW46MSVwWzLalCmVGMAmDbbuOCgbMzAUdkRO6d5z2dIYm2N4QljZt1VbXYGIKL5ojeDJUP89CdoqkLfvtY6RMLWqYsOPZlW2RCuuOSsoPuhA7nxU5dyVclIOpT7yp0n79P+pFAbqgBaJrHmUh4N1XO4Gupk4SWYdjwxiZLWS8VntO+nC8MivHJwJzY3lpIx9UXd6nmOO56NpVjSdYjIUb8350a+-qcIEsyAY1v9i154JPFU97NrYz4mWgmJaQ8miff1LINLRri2ZV-bOaMkzCGd7nXbEzYl21Rcw3SHd3qiaCD0YvWDwKVV-aVzCHb4nmYt544gIefdDh2K68nz6mkb2X0PWDVtu9nCu+vqMBHCI1Pos2SIzma8MboiT4glcllQ0NQXqUJA9FajrTK6YGvNjr1ivab33W4D6nIOa1rIgeO4aL8fKiiAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGECuAndYB2AXA6gJbYQD2A7gLICGAxgBbFgB0AMqdRMVAMRnYtiAN1IBrFmkw4CxMlTqMBbDl2xQEw0rWq5CpbAG0ADAF1jJxKAAOpWIV37LIAB6IArACYANCACeiABYAgE5mIw8jSICAdgA2NwAOAEYEtwBfNJ9JLDwiEgoaBiZlTm4eMExSdGYrABsdADMqgFtmbOk8uULFFnZStQ1sEW0HQ1NzJxs7UadXBGiPAOZo5JSVgGYQhOikn38EBPWwiMijAKM3TcuMrIwcmXz5IqU+iEhmACUwZtIhMAAVagAIx4EyQICm9j02Fm7hWzASwSMsUi0QCsXWRmie0QSTxSxSsWimOiwWJwViNxA7VysgKCmKr3eXx+f06FFBpkmtihjnBczc8MRyNR6MxRJxB2CCWYhIWcUiSICHipNIeXQZLxU72QWB0AOBnIs4MhM35cJlwpRWLFyOCkqSkVisoSRI8wSSwQ9biMSVVdw6dKePRKbwgbT1uDA7PIRu502hsIQgstSOtaIxdodAXWMrlF2JQVzwX9Ulpj26jO14YAqlYIPrASCwdYeWbQAKhWnRZnYva-IhSUYXbFYq7PR51tKEqX7jHK1rOO9CBBamAeAx0KRmmAAARgP54XdaWgYFsQtuJ80IDx9hFIwVJXO5gKXB1JUcjhYo4JuT1k2dAwrTVemrZgVzXDd6C3Hd90PXBj1oU90AMJJjVbBM+Q7RBb1CYVH2fBJX3WSVf2HOUPA8RFtixGdMmpANyw1Z5QKXcMIPXTdtz3A9pEQ5CDA8dCL0wmFr1w+8CyfQ4iLfAcEEdRIv0WEI+0uaJAKY+kWNDZdV046DuLgviTzPdZhNNK9sJvO98J2QjiOzJEvxRNE4nWFV6LVecQN09j9KgmCePg-izwCCzLywlwcNsh97Jkxz5KIjwRzHJIQnCcJ1k09VtJDJl-MgrjYN4o9TJQtwItEpMJLs6SXzk-ZpJSuU+0dT0-xynydIK8CAuK4KTKQs9Yiq3kxOs2q4vq2SSPkpIPDRL8YjcaVBTcdIvMY3LgyrNi+sg4h7HPSyormbYHV9JJmHWS4glid0jASDw3EpLayx2hdWLDZhKF+A1my5E1Iom6Lky7EUbV7fsmvWTEv2JBIznStEuqDL6-OYOsGyjABBWhdD+Js42B6rrxTST01tbF5solrXWiTxMSxHY6NuD7uvy6sN1qWwwBOkGk0dDxrsLd1lQ2vEMXfD9mBROGiKfDYSypbBSDeeBwW89HfNebh43GpMYmzYdMsidYP0Z780eAnqwJZf6mwN9swaJaJlmSSjgiozFf3fLFjidBb0QSZ7NvZucdbt-aHbZINnas13ondlYFvdH2jD9pKPUDi4kZ9KdkRt5iuf23UwEbYEE7OxA3Y9tPvcOTO3FIr1c9W2IAlddZR2LvK9p+8v9RjavQbmOvU69jOs6anNrrN0dkYeoxsveyPbdLn7scroFR6TCfPfTpuZ8HQ4wn-CliSJDbw4Yjmo83vS1z3682+CV8qIWlEYmeuamvxBElwpzEixB5VeEcgIlwHu8P6RMq6k0NteA+Ddp4t3mmAwOwckiJHcmzO+68oGLi3vWfU+NCYAxftZZBU9j5oKaiLNwucHqyQWqkPuu0iGQEoWDKcko+xLDNliTwSNXwaTXpA-uSgwDOHsNwuYeJKKylereZU6w4hehls6eWuZWaTldOwr6cjEAAFoYYmMYdKU4VjrEBAyBkIAA */
   createMachine(
     {
   context: {
@@ -14,134 +14,134 @@ export const CurrentWindowMachine =
     occurWindowId: -1,
     occurTabId: -1,
   },
-  tsTypes: {} as import("./CurrentWindowMachine.typegen").Typegen0,
+  tsTypes: {} as import('./CurrentWindowMachine.typegen').Typegen0,
   schema: {
     services: {} as {
-      "get all windows by chrome api": {
+      'get all windows by chrome api': {
         data: void;
       };
     },
 
     events: {} as
-      | { type: "init"; command: ChromeEventType }
+      | { type: 'init'; command: ChromeEventType }
       | {
-          type: "chrome event occur";
+          type: 'chrome event occur';
           data: Partial<BackgroundData>;
           command: ChromeEventType;
         }
-      | { type: "close" },
+      | { type: 'close' },
   },
   predictableActionArguments: true,
-  id: "CurrentWindowMachine",
-  initial: "Loading",
+  id: 'CurrentWindowMachine',
+  initial: 'Loading',
   states: {
     Loading: {
       invoke: {
-        src: "get all windows by chrome api",
+        src: 'get all windows by chrome api',
         onDone: [
           {
-            target: "Loaded",
+            target: 'Loaded',
           },
         ],
         onError: [
           {
-            target: "Loading",
+            target: 'Loading',
             internal: false,
           },
         ],
       },
     },
     Loaded: {
-      initial: "idle",
+      initial: 'idle',
       states: {
         RemoveTab: {
-          entry: "remove tab from target window",
+          entry: 'remove tab from target window',
           always: {
-            target: "idle",
+            target: 'idle',
           },
         },
         RemoveWindow: {
-          entry: "remove target window from list",
+          entry: 'remove target window from list',
           always: {
-            target: "idle",
+            target: 'idle',
           },
         },
         CreateTab: {
-          entry: "create tab from target window",
+          entry: 'create tab from target window',
           always: {
-            target: "idle",
+            target: 'idle',
           },
         },
         CreateWindow: {
-          entry: "create target window from list",
+          entry: 'create target window from list',
           always: {
-            target: "idle",
+            target: 'idle',
           },
         },
         UpdateTab: {
-          entry: "update tab from target window",
+          entry: 'update tab from target window',
           always: {
-            target: "idle",
+            target: 'idle',
           },
         },
         idle: {
           on: {
-            "chrome event occur": [
+            'chrome event occur': [
               {
-                cond: "is remvoing tab",
-                target: "RemoveTab",
+                target: 'RemoveTab',
+                cond: 'is remvoing tab',
               },
               {
-                cond: "is removing window",
-                target: "RemoveWindow",
+                target: 'RemoveWindow',
+                cond: 'is removing window',
               },
               {
-                cond: "is creating tab",
-                target: "CreateTab",
+                target: 'CreateTab',
+                cond: 'is creating tab',
               },
               {
-                cond: "is creating window",
-                target: "CreateWindow",
+                target: 'CreateWindow',
+                cond: 'is creating window',
               },
               {
-                cond: "is updating tab",
-                target: "UpdateTab",
+                target: 'UpdateTab',
+                cond: 'is updating tab',
               },
               {
-                cond: "is position moving tab",
-                target: "MoveTab",
+                target: 'MoveTab',
+                cond: 'is position moving tab',
               },
               {
-                cond: "is tab active changed",
-                target: "UpdateActiveTab",
+                target: 'UpdateActiveTab',
+                cond: 'is tab active changed',
               },
             ],
             init: {
-              actions: "init app",
+              actions: 'init app',
             },
           },
         },
         MoveTab: {
-          entry: "moving tab from target window",
+          entry: 'moving tab from target window',
           always: {
-            target: "idle",
+            target: 'idle',
           },
         },
         UpdateActiveTab: {
-          entry: "update tab that is activated",
+          entry: 'update tab that is activated',
           always: {
-            target: "idle",
+            target: 'idle',
           },
         },
       },
       on: {
         close: {
-          target: "exit",
+          target: 'exit',
         },
       },
     },
     exit: {
-      type: "final",
+      type: 'final',
     },
   },
 },

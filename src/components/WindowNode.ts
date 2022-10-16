@@ -2,7 +2,7 @@ import { ThreeDotModes } from "./ThreeDot";
 import { css, html, PropertyValueMap } from "lit";
 import { customElement, property, state, query } from "lit/decorators.js";
 import { repeat } from "lit/directives/repeat.js";
-import { Component } from "../core/Component";
+import { Component } from "../../core/Component";
 import { styleMap } from "lit/directives/style-map.js";
 import { consoleLitComponent } from "../../utils/utils";
 import { AppConfirm } from "./AppConfirm";
@@ -273,7 +273,7 @@ class WindowNode extends Component {
   currentWindow!: CurrentWindow;
 
   @property()
-  commandType?: ChromeEventType | UserInteractionType;
+  commandType?: ChromeEventType | UsersEventType;
   
   @property({reflect: true})
   occurTabId: Array<number> = [-1];
