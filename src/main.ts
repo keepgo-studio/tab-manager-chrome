@@ -1,6 +1,7 @@
 import App from "./app";
-import { connectToBack, setDocumentTitle } from "./utils/utils";
+import { setDocumentTitle } from "./utils/utils";
 import { FrontRouter, PortRouter } from "./router";
+import { connectToBack } from "./utils/browser-api";
 
 setDocumentTitle(chrome.runtime.getManifest().description ?? 'tab-manager');
 

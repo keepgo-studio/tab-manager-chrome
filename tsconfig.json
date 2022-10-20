@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
       "strict": true,
-      "module": "es6",
+      "module": "CommonJS",
       "target": "es6",
       "esModuleInterop": true,
       "sourceMap": true,
@@ -22,6 +22,6 @@
 
     "exclude": [
       "node_modules",
-      "src/utils/utils.ts",
+      "./src/**/*.test.ts"
     ]
  }

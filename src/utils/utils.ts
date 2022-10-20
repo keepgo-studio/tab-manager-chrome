@@ -25,10 +25,6 @@ export function getPathName() {
   return window.location.pathname.split(/\//)[1];
 }
 
-export function connectToBack(name: string) {
-  return chrome.runtime.connect({ name });
-}
-
 export function getSize(mode: 'mini' | 'tablet' | 'side') {
   let diagnol = 0;
   let frontWidth = 0;

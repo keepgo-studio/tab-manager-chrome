@@ -1,7 +1,9 @@
+
+
 import { userSettings } from './store/local-storage';
 
 /**
- * app class is managing 
+ * app class is managing routes endpoints and attach components to index.html
  */
 export default class App {
   private _main: Element;
@@ -38,7 +40,7 @@ export default class App {
     this._search = this._main.querySelector('app-search')!;
     this._message = this._main.querySelector('app-message')!;
 
-    document.appendChild(this._main);
+    document.body.appendChild(this._main);
 
     // userSettings.addChangeHandler((changes: { [x: string]: any; }) => {
     //   if (changes['dark-mode']) {
