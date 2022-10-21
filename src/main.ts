@@ -14,10 +14,11 @@ window.onload = () => {
   const pr = new PortRouter(app, port);
   const fr = new FrontRouter(app);
 
-  pr.active();
+  pr.activeAppEvent();
+  pr.activeChromeEvent();
+  
   fr.activeMessageEvent();
   fr.activeUserEvent();
-  fr.activeHistoryEvent();
 
   port.onDisconnect.addListener(() => {
     /**

@@ -19,10 +19,11 @@ declare global {
     tabsLength: number;
     firstTabId: number;
     message: string;
+    mode: AppMode;
   }
 
   interface IPortMessage {
-    readonly type: ChromeEventType | AppEventType;
+    readonly type: ChromeEventType;
     readonly data: Partial<IBackData>;
   }
 
@@ -46,6 +47,7 @@ declare global {
     ACTIVE_CHANGED="ACTIVE_CHANGED",
   }
   const enum UsersEventType {
+    CHANGE_MODE="CHANGE_MODE",
     OPEN_TAB="OPEN_TAB",
     CLOSE_TAB="CLOSE_TAB",
     CLOSE_WINDOW="CLOSE_WINDOW",

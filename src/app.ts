@@ -1,20 +1,28 @@
-
+import './views/navbar/Navbar.styled';
+import './views/main/Main.styled';
+import './views/tab-list/TabList.styled';
 
 import { userSettings } from './store/local-storage';
 
 /**
  * app class is managing routes endpoints and attach components to index.html
  */
+
+export const FRONT_EVENT_NAME = 'from-main';
+
+interface IElemMap {
+  navbar: Element;
+  appMain: Element;
+  currentTabList: Element;
+  savedTabList: Element;
+  search: Element;
+  message: Element;
+}
+
 export default class App {
   private _main: Element;
-  private _navbar: Element;
-  private _appMain: Element;
-  private _currentTabList: Element;
-  private _savedTabList: Element;
-  private _search: Element;
-  private _message: Element;
 
-  private eventName = 'from-main';
+  public elemMap: IElemMap;
 
   constructor() {
     this._main = document.createElement('main');
@@ -23,9 +31,9 @@ export default class App {
     <app-navbar></app-navbar>
 
     <app-main>
-      <app-current-tab-list slot="current-tab"></app-current-tab-list>
+      <app-tab-list .mode="normal" slot="current-tab"></app-tab-list>
 
-      <app-saved-tab-list slot="saved-tab"></app-saved-tab-list>
+      <app-tab-list .mode="saved" slot="saved-tab"></app-tab-list>
     </app-main>
     
     <app-search></app-search>
@@ -33,76 +41,34 @@ export default class App {
     <app-message></app-message>
   `;
 
-    this._navbar = this._main.querySelector('app-navbar')!;
-    this._appMain = this._main.querySelector('app-main')!;
-    this._currentTabList = this._main.querySelector('app-current-tab-list')!;
-    this._savedTabList = this._main.querySelector('app-saved-tab-list')!;
-    this._search = this._main.querySelector('app-search')!;
-    this._message = this._main.querySelector('app-message')!;
+    this.elemMap = {
+      navbar: this._main.querySelector('app-navbar')!,
+      appMain: this._main.querySelector('app-main')!,
+      currentTabList: this._main.querySelector('app-current-tab-list')!,
+      savedTabList: this._main.querySelector('app-saved-tab-list')!,
+      search: this._main.querySelector('app-search')!,
+      message: this._main.querySelector('app-message')!,
+    };
 
     document.body.appendChild(this._main);
-
-    // userSettings.addChangeHandler((changes: { [x: string]: any; }) => {
-    //   if (changes['dark-mode']) {
-    //     this.sendToAll(
-    //       'dark-mode',
-    //       this._navbar,
-    //       this._appMain,
-    //       this._currentTabList,
-    //       this._savedTabList,
-    //       this._search,
-    //       this._message
-    //     );
-    //   }
-    // })
   }
 
-  sendToAll(type: string, ...allElem: Element[]) {
-    allElem.forEach((elem) => {
-      elem.dispatchEvent(
-        new CustomEvent(this.eventName, {
-          detail: {
-            type,
-          },
-        })
-      );
-    });
-  }
-
-  sendToCurrentTabList(type: ChromeEventType, data: Partial<IBackData>) {
-    this._currentTabList.dispatchEvent(
-      new CustomEvent(this.eventName, {
-        detail: {
-          type,
-          data,
-        },
+  sendTo(
+    elem: Element,
+    msg: IPortMessage | IFrontMessage
+  ) {
+    elem.dispatchEvent(
+      new CustomEvent(FRONT_EVENT_NAME, {
+        detail: msg,
       })
     );
   }
 
-  sendToSavedTabList(type: UsersEventType, data: Partial<IFrontData>) {
-    this._savedTabList.dispatchEvent(
-      new CustomEvent(this.eventName, {
-        detail: {
-          type,
-          data,
-        },
-      })
-    );
+  closeApp() {
+    window.close();
   }
 
-  sendToMessage(type: MessageEventType, data: Partial<IFrontData>) {
-    this._message.dispatchEvent(
-      new CustomEvent(this.eventName, {
-        detail: {
-          type,
-          data,
-        },
-      })
-    );
-  }
-
-  sendToMain() {
-    this._appMain.dispatchEvent(new CustomEvent(this.eventName));
+  resizeApp(width: number, height: number) {
+    window.resizeTo(width, height);
   }
 }

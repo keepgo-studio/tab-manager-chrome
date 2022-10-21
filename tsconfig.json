@@ -1,27 +1,29 @@
 {
-    "compilerOptions": {
-      "strict": true,
-      "module": "CommonJS",
-      "target": "es6",
-      "esModuleInterop": true,
-      "sourceMap": true,
-      "rootDir": "src",
-      "outDir": "dist/js",
-      "noEmitOnError": true,
-      "typeRoots": [ 
+  "compilerOptions": {
+    "strict": true,
+    "module": "es6",
+    "target": "es6",
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "rootDir": "src",
+    "outDir": "dist/js",
+    "noEmitOnError": true,
+    "typeRoots": [ 
       "node_modules/@types",
-      "./src/types" 
-      ],
-      "alwaysStrict": true,
-      "experimentalDecorators": true,
-      "moduleResolution": "node",
-      "noImplicitAny": true,
-      "noUnusedParameters": true,
-      "strictNullChecks": true,
-    },
+      "./src/types"
+    ],
+    "alwaysStrict": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "noUnusedParameters": true,
+    "strictNullChecks": true,
+  },
 
-    "exclude": [
-      "node_modules",
-      "./src/**/*.test.ts"
-    ]
+  "include": ["./src"],
+  "exclude": [
+    "node_modules",
+    "./src/**/*.test.ts",
+    "test"
+  ]
  }

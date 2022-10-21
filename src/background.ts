@@ -18,7 +18,7 @@ interface UserInfo {
 
 const { frontWidth, frontHeight } = getSize('mini');
 
-function sendMessage(type: ChromeEventType | AppEventType, data: Partial<BackData>) {
+function sendMessage(type: ChromeEventType, data: Partial<IBackData>) {
   const msg: IPortMessage = {
     type,
     data,
@@ -144,9 +144,12 @@ chrome.action.onClicked.addListener(() => {
 
 chrome.windows.onBoundsChanged.addListener((win) => {
   if (frontPort && win.id === frontWinId) {
-    sendMessage(AppEventType.INIT, {
-      extensionWidth: frontWidth,
-      extensionHeight: frontHeight,
+    frontPort.postMessage({
+      type: AppEventType.INIT,
+      data: {
+        extensionWidth: frontWidth,
+        extensionHeight: frontHeight,
+      }
     });
   }
 });

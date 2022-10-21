@@ -1,4 +1,4 @@
-import { ThreeDotModes } from "./ThreeDot";
+import { ThreeDotModes } from "./components/ThreeDot";
 import { css, html, PropertyValueMap } from "lit";
 import { customElement, property, state, query } from "lit/decorators.js";
 import { repeat } from "lit/directives/repeat.js";

@@ -1,6 +1,6 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 
-interface TabManagerDB extends DBSchema {
+interface ITabManagerDB extends DBSchema {
   'saved-window': {
     key: number;
     value: CurrentWindow;
@@ -8,12 +8,12 @@ interface TabManagerDB extends DBSchema {
 }
 
 class DBHandler {
-  private _db!: IDBPDatabase<TabManagerDB>;
+  private _db!: IDBPDatabase<ITabManagerDB>;
 
   constructor() {}
 
   async open() {
-    return (this._db = await openDB<TabManagerDB>('tab-manager-db', 1, {
+    return (this._db = await openDB<ITabManagerDB>('tab-manager-db', 1, {
       upgrade(db) {
         db.createObjectStore('saved-window', { autoIncrement: true });
       },
@@ -24,7 +24,7 @@ class DBHandler {
     return await this._db.getAll('saved-window');
   }
 
-  async savingWindow(win: CurrentWindow): Promise<boolean> {
+  async savingWindow(win: CurrentWindow) {
     const transaction = this._db.transaction('saved-window', 'readwrite');
 
     transaction.store.put(win, win.id);
@@ -32,15 +32,14 @@ class DBHandler {
     return await transaction.done
       .then(() => {
         console.log('[idb]: saving window complete');
-        return true;
       })
-      .catch(() => {
+      .catch(err => {
         console.error('[idb]: saving had failed');
-        return false;
+        throw err;
       });
   }
 
-  async removingWindow(windowId: number): Promise<boolean> {
+  async removingWindow(windowId: number) {
     const transaction = this._db.transaction('saved-window', 'readwrite');
 
     transaction.store.delete(windowId);
@@ -48,11 +47,10 @@ class DBHandler {
     return transaction.done
       .then(() => {
         console.log('[idb]: saving window complete');
-        return true;
       })
-      .catch(() => {
+      .catch(err => {
         console.error('[idb]: saving had failed');
-        return false;
+        throw err;
       });
   }
   close() {

@@ -45,3 +45,7 @@ export function getSize(mode: 'mini' | 'tablet' | 'side') {
   frontWidth += 16;
   return { frontWidth, frontHeight };
 }
+
+export function arrayToMap(list: Array<any>): Object {
+  return list.reduce((acc:CurrentWindowMapping,curr)=> (acc[curr.id!]=curr,acc), {});
+}

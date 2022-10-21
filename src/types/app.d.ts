@@ -19,6 +19,11 @@ declare global {
   interface CurrentWindowMapping {
     [windowId: number]: CurrentWindow
   }
+
+  const enum AppMode {
+    NORMAL,
+    SAVE
+  }
 }
 
 export {};
