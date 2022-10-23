@@ -3,9 +3,9 @@ import { css, html, PropertyValueMap, unsafeCSS } from 'lit';
 import { customElement, property, state, query } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { EventlessComponent } from '../../../core/Component.core';
-
 import { styleMap } from 'lit/directives/style-map.js';
-import styles from './Tab.scss';
+
+import styles from './TabList.scss';
 
 
 @customElement('app-tab')

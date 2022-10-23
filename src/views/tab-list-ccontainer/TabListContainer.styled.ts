@@ -1,26 +1,32 @@
-import { css, html, PropertyValueMap, unsafeCSS } from 'lit';
+import { css, html, unsafeCSS } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { EventComponent } from '../../core/Component.core';
 import { repeat } from 'lit/directives/repeat.js';
 import { interpret } from 'xstate';
 import { currentTabListMachine } from '../../machine/current-tab-list.machine';
-import styles from "./TabList.scss";
 import { savedTabListMachine } from '../../machine/saved-tab-list.machine';
+
+import styles from "./TabListContainer.scss";
 
 const currentService = interpret(currentTabListMachine);
 const savedService = interpret(savedTabListMachine);
 
 
-@customElement('app-tab-list')
-class TabList extends EventComponent {
+@customElement('app-tab-list-container')
+class TabListContainer extends EventComponent {
   receivedPortMessage?: IPortMessage | undefined;
   receivedFrontMessage?: IFrontMessage | undefined;
 
   frontMessageHandler({ detail }: CustomEvent<IFrontMessage>): void {
     const { type, data } = detail;
 
-
+    savedService.send({
+      type: 'Request data',
+      command: type as UsersEventType,
+      data
+    })
   }
+
   portMessageHandler({ detail }: CustomEvent<IPortMessage>): void {
     const { type, data } = detail;
 

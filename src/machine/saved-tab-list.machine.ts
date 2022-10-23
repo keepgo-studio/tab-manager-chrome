@@ -17,7 +17,7 @@ const dbMachine =
       | {
           type: 'Request' | 'xstate.init';
           command: UsersEventType | undefined;
-          data: IFrontData;
+          data: Partial<IFrontData>;
         }
       | { type: 'Open' },
   },
@@ -89,7 +89,7 @@ const dbMachine =
             } else if (event.command === UsersEventType.DELETE_SAVED_WINDOW) {
               const { windowId } = event.data;
   
-              await db.removingWindow(windowId);
+              await db.removingWindow(windowId!);
             }
           }
 
@@ -121,8 +121,8 @@ export const savedTabListMachine =
         },
 
         events: {} as
+          | { type: 'Request data'; command: UsersEventType | undefined ; data: Partial<IFrontData>}
           | { type: 'Close app' }
-          | { type: 'Request data'; command: UsersEventType | undefined }
           | { type: 'Open db server' },
       },
       initial: 'idle',
@@ -175,7 +175,7 @@ export const savedTabListMachine =
       actions: {
         'send open command': send({ type: 'Open' }, { to: 'db-machine' }),
         'send command': send(
-          (_, event) => ({ type: 'Request', command: event.command }),
+          (_, event) => ({ type: 'Request', command: event.command, data: event.data}),
           { to: 'db-machine' }
         ),
         'Receive data': (context, event) =>  {

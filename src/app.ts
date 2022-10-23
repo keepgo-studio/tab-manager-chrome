@@ -1,6 +1,6 @@
 import './views/navbar/Navbar.styled';
 import './views/main/Main.styled';
-import './views/tab-list/TabList.styled';
+import './views/tab-list-ccontainer/TabListContainer.styled';
 
 import { userSettings } from './store/local-storage';
 
@@ -31,9 +31,9 @@ export default class App {
     <app-navbar></app-navbar>
 
     <app-main>
-      <app-tab-list .mode="normal" slot="current-tab"></app-tab-list>
+      <app-tab-list-container .mode="normal" slot="current-tab"></app-tab-list-container>
 
-      <app-tab-list .mode="saved" slot="saved-tab"></app-tab-list>
+      <app-tab-list-container .mode="saved" slot="saved-tab"></app-tab-list-container>
     </app-main>
     
     <app-search></app-search>
@@ -44,7 +44,7 @@ export default class App {
     this.elemMap = {
       navbar: this._main.querySelector('app-navbar')!,
       appMain: this._main.querySelector('app-main')!,
-      currentTabList: this._main.querySelector('app-current-tab-list')!,
+      currentTabList: this._main.querySelector('app-tab-list-container')!,
       savedTabList: this._main.querySelector('app-saved-tab-list')!,
       search: this._main.querySelector('app-search')!,
       message: this._main.querySelector('app-message')!,
@@ -53,10 +53,7 @@ export default class App {
     document.body.appendChild(this._main);
   }
 
-  sendTo(
-    elem: Element,
-    msg: IPortMessage | IFrontMessage
-  ) {
+  sendTo(elem: Element, msg: IPortMessage | IFrontMessage) {
     elem.dispatchEvent(
       new CustomEvent(FRONT_EVENT_NAME, {
         detail: msg,
