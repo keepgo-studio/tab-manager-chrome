@@ -21,74 +21,6 @@
   transform: scale(1.01);
 }
 
-.dialog-container {
-  position: absolute;
-  top: 0;
-  right: 0;
-  transform: translateY(-50%);
-  border-radius: 999px;
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  background: linear-gradient(
-    90deg,
-    rgb(255, 255, 255) 50%,
-    rgb(215, 255, 231) 50%
-  );
-  box-shadow: 0 2px 6px 1px rgba(0, 0, 0, 0.1);
-  transition: ease 100ms;
-}
-
-.dialog-container svg {
-  padding: 1px 4px;
-  height: 15px;
-}
-
-.dialog-container svg:hover {
-  background-color: rgba(0, 0, 0, 0.2);
-}
-
-.dialog-container .close {
-  width: 13px;
-  padding: 1px 4px 1px 6px;
-  border-radius: 999px 0 0 999px;
-}
-
-.dialog-container .saved {
-  width: 10px;
-  padding: 1px 6px 1px 4px;
-  border-radius: 0 999px 999px 0;
-}
-
-/* 
-  close svg css for "save" mode 
-*/
-.dialog-container-save-mode {
-  position: absolute;
-  top: 0;
-  right: 0;
-  transform: translateY(-50%);
-  border-radius: 999px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  align-items: center;
-  background: #fff;
-  box-shadow: 0 2px 6px 1px rgba(0, 0, 0, 0.1);
-  transition: ease 100ms;
-}
-
-.dialog-container-save-mode .close-save-mode {
-  width: 13px;
-  height: 13px;
-  padding: 2px;
-  border-radius: 999px;
-}
-.dialog-container-save-mode svg:hover {
-  background-color: rgba(0, 0, 0, 0.2);
-}
-
-
 .first {
   display: grid;
   grid-template-columns: 72px auto 30px;
@@ -101,7 +33,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   /* should set z-index so .mode-decorator can show even the .rest opened */
   z-index: 999;
 }
