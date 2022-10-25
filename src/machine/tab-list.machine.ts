@@ -2,7 +2,7 @@ import { ActorRef, createMachine, spawn } from "xstate";
 
 
 export const tabListMachine = 
-/** @xstate-layout N4IgpgJg5mDOIC5QBUCGAjABAGwJawBdMBXXAOgBl8iBjbAe1kjPoAcwA7XDqAYgA9CqAmDKoAZiIBOACgCsABgUBKXmix5CJclS11GzNp25QA2goC6iUK0a4Cueh2sh+iAMwB2ABxkATACcAIwAbAEh7gHeAX5+cp4ANCAAnoghQXJkIdkhciEALAru3oruAL5lSeo41NqUtfpMECzsHJC8ALb0xEyc0uZWSCC2sPaOzkNuCF6+gaHhkdGx8UmpCNmeWTlywUFxQQcVVRg1WqT1egxNZAAS9ABuYFKd3UzYYKiPAy4jY04uUxm-mCYQiURicUSKUQnmyZEUSiU3jCCj8nnyRxA1U0RHOuloV2Yd0ezwASmAuo9MAQTjjvkNfg5-pM0t4FPD8kFPH4Qp4FJ4+QE5KtEAF3PkyN53NLOWi9kF3H5MdjanjakY2s0NSYBEIRGJJE95EpVCqzjp1a1DK0TPSbHYmRNQIDPAEsnk0flPMVIuiRQgMhLEUo5KG0XIvRjKljaaqLVoNdbOO0uj0wH0nnbhg7xgCPK73SFPd6pQE-dCEH4FJkArWywoDvkm0Uo8cNHGLkRE81iU8Xmn3p8wFnGbmWdMC7ki+iS778v73AoJVLpQdvIK8iFlbHzZ3MN3bg8++TKWBqTuCCOc8znaygmQAgoItWl54gt58iF-V73GRQtk5Fib0gnyOJt3bc1eA1K9RkdPMEFA-14glPx8lrEpANDGIgnA05cVwXhGmHSwfmvJ1XEQRCKwOPx4RXOQvC9KJQPKTEOHoCA4BcM18L3IitRtHhSNgsdb0rCMyG9cIl3fdF3B2dx-XSEI-22AoihKIpcJxOp8UwfiWmTCBhL+cipgYzJ10UfJvFsvxkS9JTgjo6V7IiApigCbSOz0gzeykEy4PHHkazkKUwxKN9FWFCs+XZaVXLFBUQiXbzd18wljIZMj4KrFSpJSzl13yeSxSQnktgA9xpy9QI0t4vSD21ITspEm8KPElSghk7w4h5YJ+UU6iJIREMw08CM33q3TLSMwzNUC0SOoYzY-EiadYjWyIYrWWI3RBMEIilEI2Tkaa1QTK0eyPALWtM3LeTIRVAmlIs5Hfbwgn9NbfBydT3AyBjFVbGMIIa2aFruoKxKrXxuqKvqwm670lMyYNUQFCIBS8c7yAAETAd4RCy+02rMxASlork3zCyJUW8b82UlBKgjFE6TqXLdox47RFvaqYAFovwrAXUIqCogA */
+/** @xstate-layout N4IgpgJg5mDOIC5QBUCGAjABAGwJawBdMBXXAOgBl8iBjbAe1kjIGEHZcA7KAYgA9CqAmDKoAZsIBOACgDMABnkBKHmix5CJclU11GzNoy5QA2vIC6iUAAcjBXPU5WQfRLIDsADjIAmAJwAjABsfkGyfp5+Pj4ArO4ANCAAnohBATFkQVlBMUEALPKynjGFAL6liWo41FqUNXpMEKzskDwAtvTETGCcUmaWSCC2HPaOzq4IHt7+waHhkdFxiSkIWe6Z2TGBAbEBe+WVGNWapHW6LU0AEvQAbmCS7Z1M2GCod-3Ow7ijToMTU75AiEwhEorEEslEO4smQSopFJ4QvIfO48gcQFUNERTjpaBcyNc7g8AEpgDp3TAEI5Yj6DL4-capTzyWF5ALuHxBdzydzcvwxZaIPyyPJkTyyCVslE7AKyHzozE1HE1ejWHrMADyas4xn4gmEogk9zkihUipO2hV2s12uMtJsdgcv1A-3cfkyuRReXcRXCqMFCHSovhihiYZRMW9aIqGOpSstmlV6qaWuTjy6YB6fQsn0dYz+bjdHqCXp94r8-shCB88gyfnrFfkezyLcK0cO6njZyISc4zEJ93Tz1e7xzdLzzpchfdORLqLLfryAYUovFEr2nj5uSCCrjFu7mF7-dug9J5LAlL3BHtQwnjNWngCZD88jCtfk3oCnjyQQD3tkZDBFkMTRD6AR5LEu6dhaPC9je9JOveEEBnEoo+Hk9bFCBYZRAEUHHNiuA8A0YDwXeBYIMhVZ7D4sJrjEHjehEEGyOUMacPQEBwM45qEQeJFNIYHDcLmIyIRRsSij6oQfl+qKyFssgBmkQSAZs+SFMUZQxrxtS4pgAnNPoECid84kuogDEZJuJR5J49k+Ii3rKYEdESo5YT5EUfj4Vien1PiA6SKZDISTkz4xOK4bFO4sqxAG3IshK7nCrKQQfr5Xb6QJIXmVO1avmQ0npWym55ApwooZyGzARpRQlKxOlXv5ibWimtoieOYn5hZ1a5IBsmeLEnKBDySnUZGsIhmGIHuJGsWZfu+lHu1ya5T1+UMesPjhHO0Q7eEApVtE7pAiCYTikEzIxItfHLW1BInsFXVmRtEycuscr+BKJYxF+j4Bjt3jZHV6QMXK7axtBd1WmtL2hb1NbeAEg3DSEKM+spGQhrW4ZzVGt21AAImALzCCZ8N5RMxS0eysWReEyKeH+zJislATCldV0fjuTXQ1o62ThMAC0v5VsLO3Pg2fgtt66HYe4bGlEAA */
 createMachine({
   tsTypes: {} as import('./tab-list.machine.typegen').Typegen0,
   schema: {
@@ -10,6 +10,10 @@ createMachine({
       shouldShowDialog: boolean;
       isOpened: boolean;
     },
+  },
+  context: {
+    shouldShowDialog: false,
+    isOpened: false
   },
   predictableActionArguments: true,
   on: {
@@ -25,18 +29,18 @@ createMachine({
   initial: 'List closed',
   states: {
     'List closed': {
-      initial: 'opening',
+      initial: 'Closing',
       states: {
-        opening: {
+        Closing: {
           after: {
-            '500': {
-              target: '#Tab list ui.List closed.opened',
+            '300': {
+              target: '#Tab list ui.List closed.Closed',
               actions: [],
               internal: false,
             },
           },
         },
-        opened: {
+        Closed: {
           on: {
             mouseenter: {
               target: 'Hover',
@@ -47,7 +51,7 @@ createMachine({
         Hover: {
           on: {
             mouseleave: {
-              target: 'opened',
+              target: 'Closed',
               actions: 'Hide dialog',
             },
             'Remove tab list': {
@@ -58,18 +62,18 @@ createMachine({
       },
     },
     'List opened': {
-      initial: 'opening',
+      initial: 'Opening',
       states: {
-        opening: {
+        Opening: {
           after: {
-            '500': {
-              target: '#Tab list ui.List opened.opened',
+            '300': {
+              target: '#Tab list ui.List opened.Opened',
               actions: [],
               internal: false,
             },
           },
         },
-        opened: {
+        Opened: {
           on: {
             mouseenter: {
               target: 'Hover',
@@ -80,7 +84,7 @@ createMachine({
         Hover: {
           on: {
             mouseleave: {
-              target: 'opened',
+              target: 'Opened',
               actions: 'Hide dialog',
             },
             'Remove tab list': {

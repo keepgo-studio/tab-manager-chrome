@@ -8,5 +8,5 @@ export function connectToBack(name: string) {
  * @returns ChromeWindow[]
  */
 export async function getAllChromeWindow(): Promise<ChromeWindow[]> {
-  return await chrome.windows.getAll();
+  return await chrome.windows.getAll({populate: true});
 }

@@ -3,11 +3,11 @@
 export interface Typegen0 {
   '@@xstate/typegen': true;
   internalEvents: {
-    'xstate.after(500)#Tab list ui.List closed.opening': {
-      type: 'xstate.after(500)#Tab list ui.List closed.opening';
+    'xstate.after(300)#Tab list ui.List closed.Closing': {
+      type: 'xstate.after(300)#Tab list ui.List closed.Closing';
     };
-    'xstate.after(500)#Tab list ui.List opened.opening': {
-      type: 'xstate.after(500)#Tab list ui.List opened.opening';
+    'xstate.after(300)#Tab list ui.List opened.Opening': {
+      type: 'xstate.after(300)#Tab list ui.List opened.Opening';
     };
     'xstate.init': { type: 'xstate.init' };
   };
@@ -30,16 +30,16 @@ export interface Typegen0 {
   matchesStates:
     | 'Deleted'
     | 'List closed'
+    | 'List closed.Closed'
+    | 'List closed.Closing'
     | 'List closed.Hover'
-    | 'List closed.opened'
-    | 'List closed.opening'
     | 'List opened'
     | 'List opened.Hover'
-    | 'List opened.opened'
-    | 'List opened.opening'
+    | 'List opened.Opened'
+    | 'List opened.Opening'
     | {
-        'List closed'?: 'Hover' | 'opened' | 'opening';
-        'List opened'?: 'Hover' | 'opened' | 'opening';
+        'List closed'?: 'Closed' | 'Closing' | 'Hover';
+        'List opened'?: 'Hover' | 'Opened' | 'Opening';
       };
   tags: never;
 }

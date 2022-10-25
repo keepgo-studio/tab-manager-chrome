@@ -31,7 +31,7 @@ class Main extends EventComponent {
   receivedPortMessage?: IPortMessage | undefined;
   receivedFrontMessage?: IFrontMessage | undefined;
   
-  portMessageHandler({ detail }: CustomEvent<IPortMessage>): void {}
+  portMessageHandler(): void {}
   frontMessageHandler({ detail }: CustomEvent<IFrontMessage>): void {
     const { data } = detail;
 

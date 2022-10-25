@@ -8,6 +8,8 @@ import { savedTabListMachine } from '../../machine/saved-tab-list.machine';
 
 import styles from "./TabListContainer.scss";
 
+import './tab-list/TabList'
+
 const currentService = interpret(currentTabListMachine);
 const savedService = interpret(savedTabListMachine);
 
@@ -50,9 +52,10 @@ class TabListContainer extends EventComponent {
     if (this.mode === 'normal') {
       currentService
       .onTransition((s) => {
+        
         if (s.matches('Get all data.Failed')) {
           currentService.send('Retry');
-        } else {
+        } else if (s.matches('idle')) {
           this.windowMap = { ...s.context.data };
         }
       })
@@ -85,7 +88,7 @@ class TabListContainer extends EventComponent {
       Object.values(this.windowMap),
       (win) => win.id,
       (win) => html`
-        <app-tab .mode=${this.mode} .data=${win}> </app-tab>
+        <app-tab-list .mode=${this.mode} .data=${win}> </app-tab-list>
       `
     );
 

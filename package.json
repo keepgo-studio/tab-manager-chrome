@@ -4,9 +4,8 @@
   "description": "chrome extension, tab manager",
   "main": "main.js",
   "scripts": {
-    "build": "npm test && webpack --config webpack/webpack.config.js",
-    "build-watch": "set WATCH=true&&webpack --config webpack/webpack.config.js",
-    "test": "mocha -r ts-node/register 'src/**/*.test.ts'"
+    "build": "webpack --config webpack/webpack.config.js",
+    "build-watch": "set WATCH=true&&webpack --config webpack/webpack.config.js"
   },
   "repository": {
     "type": "git",
