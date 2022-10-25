@@ -31,9 +31,9 @@ export default class App {
     <app-navbar></app-navbar>
 
     <app-main>
-      <app-tab-list-container .mode="normal" slot="current-tab"></app-tab-list-container>
+      <app-tab-list-container mode=${AppMode.NORMAL} slot="current-tab"></app-tab-list-container>
 
-      <app-tab-list-container .mode="saved" slot="saved-tab"></app-tab-list-container>
+      <app-tab-list-container mode=${AppMode.SAVE} slot="saved-tab"></app-tab-list-container>
     </app-main>
     
     <app-search></app-search>
@@ -44,8 +44,8 @@ export default class App {
     this.elemMap = {
       navbar: this._main.querySelector('app-navbar')!,
       appMain: this._main.querySelector('app-main')!,
-      currentTabList: this._main.querySelector('app-tab-list-container')!,
-      savedTabList: this._main.querySelector('app-saved-tab-list')!,
+      currentTabList: this._main.querySelectorAll('app-tab-list-container')![0],
+      savedTabList: this._main.querySelectorAll('app-tab-list-container')![1],
       search: this._main.querySelector('app-search')!,
       message: this._main.querySelector('app-message')!,
     };
@@ -53,7 +53,7 @@ export default class App {
     document.body.appendChild(this._main);
   }
 
-  sendTo(elem: Element, msg: IPortMessage | IFrontMessage) {
+  sendTo(elem: Element, msg: IPortMessage<AppEventType> | IPortMessage<ChromeEventType> | IFrontMessage) {
     elem.dispatchEvent(
       new CustomEvent(FRONT_EVENT_NAME, {
         detail: msg,

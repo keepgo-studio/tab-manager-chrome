@@ -1,6 +1,7 @@
 import { html, css } from "lit";
 import { customElement } from "lit/decorators.js";
 import { Component, EventComponent } from "../../core/Component.core";
+import { consoleLitComponent } from "../../utils/utils";
 
 const styled = css`
   main {
@@ -21,20 +22,21 @@ const styled = css`
   ::slotted(current-tab-container) {
     width: 100%;
   }
-  .save-mode {
+  .saved-mode {
     transform: translateX(-50%);
   }
 `;
 
 @customElement('app-main')
 class Main extends EventComponent {
-  receivedPortMessage?: IPortMessage | undefined;
+  receivedPortMessage?: IPortMessage<ChromeEventType> | undefined;
   receivedFrontMessage?: IFrontMessage | undefined;
   
   portMessageHandler(): void {}
   frontMessageHandler({ detail }: CustomEvent<IFrontMessage>): void {
     const { data } = detail;
 
+    consoleLitComponent(this, detail);
     if (data.mode === AppMode.NORMAL) {
       this.renderRoot.querySelector('main')?.classList.remove('saved-mode');
     } else {
@@ -52,7 +54,7 @@ class Main extends EventComponent {
   constructor() {
     super();
 
-    this.attachFrontHandler();
+    this.attachFrontHandler(this);
   }
 
   render() {

@@ -69,7 +69,7 @@ class Navbar extends EventlessComponent {
         }
 
         this.sendToFront(IComponentEventType.USER_EVENT, {
-          sender: this.className,
+          sender: '[Navbar]',
           data: { mode: this._mode },
           type: UsersEventType.CHANGE_MODE,
         });

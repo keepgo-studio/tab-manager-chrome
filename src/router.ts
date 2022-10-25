@@ -10,8 +10,9 @@ export class PortRouter {
     this._port = port;
   }
 
-  activeAppEvent() {
-    this._port.onMessage.addListener(msg => {
+  active() {
+    this._port.onMessage.addListener((msg: IPortMessage<AppEventType> | IPortMessage<ChromeEventType>) => {
+      console.log('[main]:', msg.type, msg.data);
       switch(msg.type) {
         case AppEventType.INIT:
           const { extensionWidth, extensionHeight } = msg.data;
@@ -21,13 +22,7 @@ export class PortRouter {
         case AppEventType.TERMINATE:
           this._app.closeApp();
           break;
-      }
-    })
-  }
-  
-  activeChromeEvent() {
-    this._port.onMessage.addListener((msg: IPortMessage, _) => {
-      switch(msg.type) {
+
         case ChromeEventType.WINDOW_CREATED:
         case ChromeEventType.WINDOW_CLOSED:
         case ChromeEventType.TAB_CREATED:
@@ -39,6 +34,8 @@ export class PortRouter {
       }
     })
   }
+  
+  
 }
 
 export const enum IComponentEventType {
@@ -59,7 +56,7 @@ export class FrontRouter {
     window.addEventListener(IComponentEventType.USER_EVENT, function (e: CustomEvent) {
       const msg: IFrontMessage = e.detail;
 
-      console.log("[router]",msg.sender);
+      console.log("[router]", msg);
 
       switch(msg.type) {
         case UsersEventType.CHANGE_MODE:

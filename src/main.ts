@@ -14,8 +14,7 @@ window.onload = () => {
   const pr = new PortRouter(app, port);
   const fr = new FrontRouter(app);
 
-  pr.activeAppEvent();
-  pr.activeChromeEvent();
+  pr.active();
   
   fr.activeMessageEvent();
   fr.activeUserEvent();

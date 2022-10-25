@@ -22,8 +22,8 @@ declare global {
     mode: AppMode;
   }
 
-  interface IPortMessage {
-    readonly type: ChromeEventType;
+  interface IPortMessage<T> {
+    readonly type: T;
     readonly data: Partial<IBackData>;
   }
 

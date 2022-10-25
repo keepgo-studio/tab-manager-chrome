@@ -19,7 +19,7 @@ interface UserInfo {
 const { frontWidth, frontHeight } = getSize('mini');
 
 function sendMessage(type: ChromeEventType, data: Partial<IBackData>) {
-  const msg: IPortMessage = {
+  const msg: IPortMessage<ChromeEventType> = {
     type,
     data,
   };
@@ -27,8 +27,7 @@ function sendMessage(type: ChromeEventType, data: Partial<IBackData>) {
 }
 
 chrome.runtime.onConnect.addListener((port) => {
-  console.log(port.name);
-  if (port.name === 'tab-manager') {
+  if (port.name === 'front') {
     if (!frontPort) {
       frontPort = port;
     } else {

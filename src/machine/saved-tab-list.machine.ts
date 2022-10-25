@@ -1,98 +1,141 @@
-import { createMachine, spawn } from 'xstate';
-import { send } from 'xstate/lib/actions';
+import { ActorRef, createMachine, spawn } from 'xstate';
+import { done, send, sendParent } from 'xstate/lib/actions';
 import db from '../store/indexed-db';
 import { arrayToMap } from '../utils/utils';
+import { messageMachine } from './message.machine';
+
+export type DBGuards = UsersEventType | 'get all data';
 
 const dbMachine =
-  /** @xstate-layout N4IgpgJg5mDOIC5QQEYDoAyB7AhhAlgHZQDEEWhYaRAblgNZVERgAekAtKgNoAMAuolAAHLLHwAXfBSEhWiABwAmBWgCcvAGxKALAEYFAVl4KFOgOwAaEAE9ESzQGY0Cx45289vb0seGdAL4B1qiYuATEJGAATtFY0WjCADY4EgBm8QC21IQs7BBcKHyCSCCi4lIypfIIyqoa2vpGJmZWtvZeaMY+anpOeuamSkEh6ADKEjjREmQUTIR0jGihE1MSCLRYAMap0oTFxbLlknuyNe7maA6GmvpK5jqGSrxK1nYIen5o3t7mDwqeQxqBQjEArSbTKKxeKJFLpLLLcYQ9abHaVfYCQ6lY7os6IC5XTQ3O4PJ4vN6KZw-Xg6bQ02nmNRqUGoEgAJTAAEcAK5wCRYkRiE5VUA1HSvdoIBw6NCaOXmLS8RzAzwslAkADywjAGJKgoqp2qiHFFI+zzQfU05me5iBmgUtsCoMIWBY8FKoWweCIUCOQtxRoQTxlvh0fg8yo0ejUpqUSkMsvln0Mjj6NzVaDG3K2Wzg7v1wsIeI+Lxlty0DncNLUjNjThcbmVfj8rXcGYAYjh8ElIH6DSK5IgvLpZR5tE4PDoazHJc8lA23BY3J9GY5zBnVtM+4Xi31nM9U-GVHSiY5TWpNBb5YY9LeHtG1IY1duA6LEBxNKaOAmmb+-3+FE0IIgiAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QQEYDoDyA7ANgSyzDVgEMA3MAAgHcCIB7agYgcLQLPoGsjVNcCRUhRp1GCDvQDGJAC556WANoAGALqq1iUAAd6sPPMXaQAD0QBOAOwAWNAA4VAJgCML1wGYb9mx4sAaEABPRCcrDzQPKKcbGycAVicLeJd4gF80wL5sfDZhKlosBmYwACdS+lK0HRw5ADNKgFs0bIE88gKxagksThkjZXVNEz0DAZNzBAsLO0dXdxcvHz9AkIQ4i0jo+3ifRZ2EjKz0HMEWsBwwWSp8iFEixhZFIkkeFpO23gurm467wuKPT6cgUgw06hG+kMoImllsDmcbk83l8AWCiA8CS2mNsADYLG4bPFcUcQK1cl9LtdKLd7sUmGUKlUavUmu9+BTzlTfhR-l0gdIQYpNMMkCBRtDjGLJi4VCpZoiFktUatEN4XNinLjcfF4l4PCpcR5SeSzjBZJQSDgcDS-nTGLAnmxXrwPpzzZbrbbefbqLABf1QSKIWKJeNpZYfAj5sjlmi1h4rFZNbqbCoPC4CS4TW6zVdPTbaQCHQzypVqrVZA1Ss1TWwPVbC3bi36A0KwaLdFDw6AZXKFTHFiiVuiEHqIlFMRZ8QTcTESZkybnCEwAEoAUQAigBVdcAZQAKp3xd2YRGEBmNe4bBZ7NO4obYqqEEl7GhptMrDqVF+k+lF3WYBrluu6HkoLhaKGp5Sr2GJuGg163veTiPjYz4pHYH7JE4ri4i4uJJjmHKCMBO77keTiQV2YxnrBF7wYhd64g+zFoaOabJnKXEqIkRozDYRF7gArlIUhwI6x5hrRZihF+CExEhzEoaxz72BE3FyriOyJrs9hEeuZalEwknQVgsIvnJjHIahz5aW+WEuFY9h3lY04LscmB1HUFJMPQOhgGCkI0TBMkIC4sRoDxKH2FYCQLLsTjPjEb4qGpGaJkmjk2LYGSLlg9AQHAJiAcQHS+kFkpmeeWlOJEzFzq5+LZXESVWPEaDxNxXidR4nXhERpxsIV3LepA5VQcFVV0cxb56u4+JqThPj2M+HhqWgN7TI4coZreAkAcuRANl6RZdPAE2VeZzHJmmc5aZiKhuKkz43hqnVcY5eFGvEX4DZ8FU9qFWoRFZSk2aOLj2LiHXcWEzHWN4gkiWJsDndRl3nu4KSRE4BpOM5PgqLOrVvpOMQGrqPE6vphkA9JMphG+X7yp1P0WD+OwvfYGpk+zrhQ0TFgDV5FJ0yFkwtaOYS1RpixWD+KRCwdYtTaFAC0uLPhrkUabr8rGrlQA */
   createMachine(
     {
-  tsTypes: {} as import('./saved-tab-list.machine.typegen').Typegen0,
-  schema: {
-    services: {} as {
-      'transaction idb': { data: CurrentWindowMapping };
-      'open idb': { data: void };
-    },
-    events: {} as
-      | {
-          type: 'Request' | 'xstate.init';
-          command: UsersEventType | undefined;
-          data: Partial<IFrontData>;
-        }
-      | { type: 'Open' },
-  },
-  type: 'parallel',
-  on: {
-    Request: {
-      target: '.Loading',
-    },
-    Open: {
-      target: '.Start',
-    },
-  },
-  states: {
-    Loading: {
-      invoke: {
-        src: 'transaction idb',
-        id: 'indexed-db',
-        onDone: [
-          {
-            target: 'Success',
-          },
-        ],
-        onError: [
-          {
-            target: 'Failed',
-          },
-        ],
+      tsTypes: {} as import('./saved-tab-list.machine.typegen').Typegen0,
+      schema: {
+        services: {} as {
+          'open idb': { data: void };
+          'save window': { data: void };
+          'delete saved window': { data: void };
+          'get all saved windows': { data: CurrentWindowMapping };
+        },
+        events: {} as
+          | { type: 'open' }
+          | {
+              type: 'REQUEST';
+              command: DBGuards;
+              data: Partial<IFrontData>;
+            },
       },
-    },
-    Success: {
-      type: 'final',
-    },
-    Failed: {
-      type: 'final',
-    },
-    Start: {
-      invoke: {
-        src: 'open idb',
-        onDone: [
-          {
-            target: 'Loading',
+      initial: 'Offline',
+      states: {
+        Online: {
+          type: 'parallel',
+          states: {
+            'save window': {
+              invoke: {
+                src: 'save window',
+                onDone: [
+                  {
+                    target: '#db.Success',
+                  },
+                ],
+                onError: [
+                  {
+                    target: '#db.Error',
+                  },
+                ],
+              },
+            },
+            'delete saved window': {
+              invoke: {
+                src: 'delete saved window',
+                onDone: [
+                  {
+                    target: '#db.Success',
+                  },
+                ],
+                onError: [
+                  {
+                    target: '#db.Error',
+                  },
+                ],
+              },
+            },
+            'get all saved windows': {
+              invoke: {
+                src: 'get all saved windows',
+                onDone: [
+                  {
+                    target: '#db.Success',
+                  },
+                ],
+                onError: [
+                  {
+                    target: '#db.Error',
+                  },
+                ],
+              },
+            },
           },
-        ],
-        onError: [
-          {
-            target: 'Failed',
+          on: {
+            REQUEST: [
+              {
+                target: '.save window',
+                cond: 'save window',
+              },
+              {
+                target: '.get all saved windows',
+                cond: 'get all saved windows',
+              },
+              {
+                target: '.delete saved window',
+                cond: 'delete saved windows',
+              },
+            ],
           },
-        ],
+        },
+        Success: {
+          entry: ['send to parent', 'send status'],
+          always: {
+            target: 'Online',
+          },
+        },
+        Error: {
+          entry: ['send to parent', 'send status'],
+          always: {
+            target: 'Online',
+          },
+        },
+        Offline: {
+          on: {
+            open: {
+              target: 'Online',
+              actions: 'open idb',
+            },
+          },
+        },
       },
-      type: 'final',
+      id: 'db',
     },
-  },
-  id: 'db',
-},
     {
       services: {
-        'open idb': async () => {
-          await db.open();
+        'save window': async (_, event) => {
+          if (event.type === 'REQUEST') {
+            const win = event.data.win as CurrentWindow;
+
+            db.savingWindow(win);
+          }
         },
 
-        'transaction idb': async (_, event) => {
-          if (event.type === 'Request') {
-            if (event.command === UsersEventType.SAVE_WINDOW) {
-              const win = event.data.win as CurrentWindow;
-  
-              if (win === undefined || win.id === undefined) return {};
-  
-              await db.savingWindow(win);
-            } else if (event.command === UsersEventType.DELETE_SAVED_WINDOW) {
-              const { windowId } = event.data;
-  
-              await db.removingWindow(windowId!);
-            }
-          }
+        'delete saved window': async (_, event) => {
+          if (event.type === 'REQUEST') {
+            const { windowId } = event.data;
 
+            await db.removingWindow(windowId!);
+          }
+        },
+
+        'get all saved windows': async () => {
           const allTabList = await db.loadAllWindows();
 
           if (allTabList !== undefined) {
@@ -102,86 +145,166 @@ const dbMachine =
           return {};
         },
       },
+
+      guards: {
+        'delete saved windows': (_, event) =>
+          event.command === UsersEventType.DELETE_SAVED_WINDOW,
+        'get all saved windows': (_, event) => event.command === 'get all data',
+        'save window': (_, event) =>
+          event.command === UsersEventType.SAVE_WINDOW,
+      },
+
+      actions: {
+        'open idb': async () => {
+          await db.open();
+          console.log('idb server open');
+        },
+
+        'send to parent': (_, event) => {
+          let data = undefined;
+
+          const respond: {
+            type: string;
+            data?: CurrentWindowMapping;
+          } = {
+            type: 'REMOTE.RECEIVE',
+            data,
+          };
+
+          if (
+            event.type ===
+            'done.invoke.db.Online.get all saved windows:invocation[0]'
+          ) {
+            respond.data = event.data;
+          }
+
+          sendParent(respond);
+        },
+
+        'send status': (_, event) => {
+          if (/error/.test(event.type)) {
+            sendParent({ type: 'messaging', status: MessageEventType.FAILED });
+          } else {
+            sendParent({ type: 'messaging', status: MessageEventType.SUCCESS });
+          }
+        },
+      },
     }
   );
 
 export const savedTabListMachine =
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUCGA3SACALqgRlgDYCWsOAdCREWAMQBKYAjgK5w5YSp4DaADAF1EoAA4B7WCRwlxAOxEgAHogCMAZlUUAHADYA7Ku36ArABoQAT0QAmYxX7b1zl6-UBfdxbSYIuAsRklNS0dADCRJJgWKiiogLCSCASUjLyiioIqiYALBbWCDb8ORQmnt4Y2HiEpORUNPQA8qJgclyEsGAATphdCYop0rIKSZkAtOompbo25laI6to2OqblID5VAbWUACIAQnQQ8mBUcujiANYnEPhjALaoAMYAFiRyYP1Jg2kjoJkmNn0FAAnPwZtp+CZVKZ9NpVPkFpMKG4Uc41hs-NVAnV9nRul1xF0KKIiDwAGaEu4UG73J6vd6fMSSIbpUaIAFA0HgyHQkyw+HzQpOZGotzoyqYrZBCjIZ7iADuWDucFgqBgdEZyWZPwyiBmwIc-JMxt5-IRCCcni8IDk4ggcEUGP8NWlITAA21w11CByNnNwOWs3Fvmd2N2ew9qS9bIQ6n4BsmwJykKhMLh5psuimZWtTqx2xlcsVytgqpgkZZv2UiH0gJBumMENTfPTgrsuhFopcwc2LrqABVunc3jx3V9Pay-gt48iTEmU6bWwUiiUcxUQ-mghWdTGxsKTDM5gUxrore4gA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUCGA3SACALqgRlgDYCWsOAdCREWAMQAyA8gMICCDFTACgKIByAbQAMAXUSgADgHtYJHCWkA7CSAAeiAEyaALBQBsATgDshgMz6zAVh2XN+qwBoQAT0QBGQ3uE-ht-f46OgC+wc5omBC4BMRklCzKSmAAxjjYONJYEPh0AEq8ALJMACq8FPksvACSAGq8IuJIIDJyCsqqGghWxsIUVgAcZmY6XpbCmlbuzm4ImmaGFL4+7kHC7oNDoeEY6TGk5BQJSkmp6ZnZjKwc5bwAigCqvMjFDaot8ooqTZ2TmhT9On6hn6mncPQsE2mHn6xkWvnWk36-XcDi2IAiu0I+3iiRSaSiGSyOWY7E4+QeTxe7kaUlkH3a30QOmMehMhnWKP6VismkMTlcHmGFEMIuBA2M7l5IP0aIxBL2cUOuNOBPOxKuZLuj2egk0NOadLaX1AnWZVn+Zi5xn07m6XKMUIQgzhvl5I3MKxlYXRO3lWMVRxO+NwaroAFs4LBUFASEooK8mu8jR0tLoDGyLNZbGZ7PyZrp9C7xnz9P01sJ+rLfdF-QdkGAlKqsBHYFGYHQE7TWp8U7M00ZTJmbHYHI7hnoNvNxnYQVZQt6lNIIHBVHKa7EDtRaG9DT3GQhJX8LDorF4Vl4WaXHZ49FZfIF9AEQt613hazjjnizkSd92GSbEG6c0dFBdkb1zfQxxAi0hn0UEs25KtInXbEKHrRsQ2bSNozAX96WNdQmU0MczFhJZT2Ma1LTLYwkMxDccDw5N9wAWkggUEDYoslh44RaPnIA */
   createMachine(
     {
       context: {
         msgStatus: MessageEventType.FAILED,
         data: {},
+        dbRef: spawn(dbMachine, 'db-machine'),
+        msgRef: spawn(messageMachine, 'message-machine'),
       },
       tsTypes: {} as import('./saved-tab-list.machine.typegen').Typegen1,
       schema: {
         context: {} as {
           msgStatus: MessageEventType;
           data: CurrentWindowMapping;
+          dbRef: ActorRef<any>;
+          msgRef: ActorRef<any>;
         },
 
         events: {} as
-          | { type: 'Request data'; command: UsersEventType | undefined ; data: Partial<IFrontData>}
-          | { type: 'Close app' }
-          | { type: 'Open db server' },
+          | { type: 'LOCAL.OPEN' }
+          | {
+              type: 'REMOTE.RECEIVE';
+              data?: CurrentWindowMapping;
+            }
+          | {
+              type: 'LOCAL.REQUEST';
+              commnad: DBGuards;
+              data: Partial<IFrontData>;
+            }
+          | { type: 'messaging'; status: MessageEventType },
       },
       initial: 'idle',
       states: {
         idle: {
           on: {
-            'Request data': {
-              target: 'DB',
-              actions: 'send command',
-            },
-            'Close app': {
-              target: 'Terminate',
-            },
-            'Open db server': {
-              target: 'DB',
-              actions: 'send open command',
+            'LOCAL.OPEN': {
+              target: 'Connected to db',
+              actions: 'request open db',
             },
           },
         },
-        DB: {
-          invoke: {
-            src: dbMachine,
-            id: 'db-machine',
-            onDone: [
+        'Connected to db': {
+          on: {
+            'REMOTE.RECEIVE': {
+              actions: 'receive data',
+            },
+            'LOCAL.REQUEST': [
               {
-                target: 'Show message',
-                actions: 'Receive data',
+                cond: 'save window',
+                actions: 'request db with data',
+              },
+              {
+                cond: 'delete saved window',
+                actions: 'request db with data',
+              },
+              {
+                cond: 'get all saved window',
+                actions: 'request db with data',
               },
             ],
-            onError: [
-              {
-                target: 'Show message',
-              },
-            ],
+            messaging: {
+              target: 'Send to message',
+              actions: 'send to message machine',
+            },
           },
         },
-        'Show message': {
-          entry: 'send message status',
+        'Send to message': {
           always: {
-            target: 'idle',
+            target: 'Connected to db',
           },
-        },
-        Terminate: {
-          type: 'final',
         },
       },
       id: 'Saved tab list',
     },
     {
       actions: {
-        'send open command': send({ type: 'Open' }, { to: 'db-machine' }),
-        'send command': send(
-          (_, event) => ({ type: 'Request', command: event.command, data: event.data}),
-          { to: 'db-machine' }
-        ),
-        'Receive data': (context, event) =>  {
-          console.log(context, event);
+        'receive data': (context, event) => {
+          if (event.data !== undefined) {
+            context.data = event.data;
+          }
         },
-        'send message status': () => () => {}
+
+        'send to message machine': send(
+          (_, event) => ({
+            type: 'Showing message',
+            status: event.status,
+          }),
+          { to: (context, _) => context.msgRef }
+        ),
+
+        'request open db': send(
+          {
+            type: 'open',
+          },
+          { to: (context, _) => context.dbRef }
+        ),
+
+        'request db with data': send(
+          (_, event) => ({
+            type: 'REQUEST',
+            command: event.commnad,
+            data: event.data,
+          }),
+          { to: (context, _) => context.dbRef }
+        ),
+      },
+      guards: {
+        'delete saved window': (_, event) =>
+          event.commnad === UsersEventType.DELETE_SAVED_WINDOW,
+        'get all saved window': (_, event) => event.commnad === 'get all data',
+        'save window': (_, event) =>
+          event.commnad === UsersEventType.SAVE_WINDOW,
       },
     }
   );

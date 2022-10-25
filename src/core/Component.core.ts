@@ -18,20 +18,20 @@ export class Component extends LitElement {
 
 
 export abstract class EventComponent extends Component {
-  abstract receivedPortMessage?: IPortMessage;
+  abstract receivedPortMessage?: IPortMessage<ChromeEventType>;
 
   abstract receivedFrontMessage?: IFrontMessage;
 
   abstract frontMessageHandler({ detail }: CustomEvent<IFrontMessage>): void;
   
-  abstract portMessageHandler({ detail }: CustomEvent<IPortMessage>): void;
-
-  attachFrontHandler() {
-    window.addEventListener(FRONT_EVENT_NAME, this.frontMessageHandler as EventListener);
+  attachFrontHandler(self: Element) {
+    self.addEventListener(FRONT_EVENT_NAME, this.frontMessageHandler as EventListener);
   }
   
-  attachPortHandler() {
-    window.addEventListener(FRONT_EVENT_NAME, this.portMessageHandler as EventListener);
+  abstract portMessageHandler({ detail }: CustomEvent<IPortMessage<ChromeEventType>>): void;
+  
+  attachPortHandler(self: Element) {
+    self.addEventListener(FRONT_EVENT_NAME, this.portMessageHandler as EventListener);
   }
 }
 

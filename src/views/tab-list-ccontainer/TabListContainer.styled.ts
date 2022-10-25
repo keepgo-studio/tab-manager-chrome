@@ -9,6 +9,7 @@ import { savedTabListMachine } from '../../machine/saved-tab-list.machine';
 import styles from "./TabListContainer.scss";
 
 import './tab-list/TabList'
+import { consoleLitComponent } from '../../utils/utils';
 
 const currentService = interpret(currentTabListMachine);
 const savedService = interpret(savedTabListMachine);
@@ -16,7 +17,7 @@ const savedService = interpret(savedTabListMachine);
 
 @customElement('app-tab-list-container')
 class TabListContainer extends EventComponent {
-  receivedPortMessage?: IPortMessage | undefined;
+  receivedPortMessage?: IPortMessage<ChromeEventType> | undefined;
   receivedFrontMessage?: IFrontMessage | undefined;
 
   frontMessageHandler({ detail }: CustomEvent<IFrontMessage>): void {
@@ -29,9 +30,10 @@ class TabListContainer extends EventComponent {
     })
   }
 
-  portMessageHandler({ detail }: CustomEvent<IPortMessage>): void {
+  portMessageHandler({ detail }: CustomEvent<IPortMessage<ChromeEventType>>): void {
     const { type, data } = detail;
 
+    consoleLitComponent(this, detail);
     if (currentService.state.matches('idle'))
     currentService.send({
       backData: data,
@@ -40,16 +42,17 @@ class TabListContainer extends EventComponent {
     })
   }
 
-  @property()
-  mode: 'normal' | 'saved' = 'normal';
-
   @state()
   windowMap: CurrentWindowMapping = {};
+
+  private _mode;
 
   constructor() {
     super();
 
-    if (this.mode === 'normal') {
+    this._mode = this.getAttribute('mode')! as AppMode;
+
+    if (this._mode === AppMode.NORMAL) {
       currentService
       .onTransition((s) => {
         
@@ -61,16 +64,17 @@ class TabListContainer extends EventComponent {
       })
       .start();
 
-      this.attachPortHandler();
-    } else {
+      this.attachPortHandler(this);
+    } else if (this._mode === AppMode.SAVE){
       savedService
       .onTransition((s) => {
         this.windowMap = { ...s.context.data };
-      });
+      })
+      .start();
 
       savedService.send('Open db server');
 
-      this.attachFrontHandler();
+      this.attachFrontHandler(this);
     }
   }
 
@@ -88,7 +92,7 @@ class TabListContainer extends EventComponent {
       Object.values(this.windowMap),
       (win) => win.id,
       (win) => html`
-        <app-tab-list .mode=${this.mode} .data=${win}> </app-tab-list>
+        <app-tab-list .mode=${this._mode} .data=${win}> </app-tab-list>
       `
     );
 

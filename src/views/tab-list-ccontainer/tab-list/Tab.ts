@@ -93,7 +93,8 @@ class Tab extends EventlessComponent {
 
 
   miniTabRender() {
-    console.log(this.tabData);
+    if (this.tabData === undefined) return html``;
+    
     return html`
         <div
           class="rest-tab-container"

@@ -21,8 +21,8 @@ declare global {
   }
 
   const enum AppMode {
-    NORMAL,
-    SAVE
+    NORMAL='NORMAL',
+    SAVE='SAVE'
   }
 }
 
