@@ -1,7 +1,7 @@
-import { html, css } from "lit";
-import { customElement } from "lit/decorators.js";
-import { Component, EventComponent } from "../../core/Component.core";
-import { consoleLitComponent } from "../../utils/utils";
+import { html, css } from 'lit';
+import { customElement } from 'lit/decorators.js';
+import { Component, EventComponent } from '../../core/Component.core';
+import { consoleLitComponent } from '../../utils/utils';
 
 const styled = css`
   main {
@@ -29,11 +29,10 @@ const styled = css`
 
 @customElement('app-main')
 class Main extends EventComponent {
-  receivedPortMessage?: IPortMessage<ChromeEventType> | undefined;
-  receivedFrontMessage?: IFrontMessage | undefined;
-  
   portMessageHandler(): void {}
-  frontMessageHandler({ detail }: CustomEvent<IFrontMessage>): void {
+  frontMessageHandler({
+    detail,
+  }: CustomEvent<IFrontMessage<UsersEventType>>): void {
     const { data } = detail;
 
     consoleLitComponent(this, detail);
@@ -43,13 +42,13 @@ class Main extends EventComponent {
       this.renderRoot.querySelector('main')?.classList.add('saved-mode');
     }
   }
-  
+
   static get styles() {
     return css`
       ${super.styles}
       ${styled}
-    `
-  };
+    `;
+  }
 
   constructor() {
     super();
@@ -58,7 +57,6 @@ class Main extends EventComponent {
   }
 
   render() {
-    
     return html`
       <main>
         <div class="container">

@@ -11,27 +11,36 @@ export class Component extends LitElement {
    */
   static styles = globalStyles;
 
-  sendToFront(eventType: IComponentEventType, msg: IFrontMessage) {
+  sendToFront(
+    eventType: IComponentEventType,
+    msg: IFrontMessage<UsersEventType | MessageEventType>
+  ) {
     window.dispatchEvent(new CustomEvent(eventType, { detail: msg }));
   }
 }
 
-
 export abstract class EventComponent extends Component {
-  abstract receivedPortMessage?: IPortMessage<ChromeEventType>;
 
-  abstract receivedFrontMessage?: IFrontMessage;
+  abstract frontMessageHandler({
+    detail,
+  }: CustomEvent<IFrontMessage<UsersEventType | MessageEventType>>): void;
 
-  abstract frontMessageHandler({ detail }: CustomEvent<IFrontMessage>): void;
-  
   attachFrontHandler(self: Element) {
-    self.addEventListener(FRONT_EVENT_NAME, this.frontMessageHandler as EventListener);
+    self.addEventListener(
+      FRONT_EVENT_NAME,
+      this.frontMessageHandler as EventListener
+    );
   }
-  
-  abstract portMessageHandler({ detail }: CustomEvent<IPortMessage<ChromeEventType>>): void;
-  
+
+  abstract portMessageHandler({
+    detail,
+  }: CustomEvent<IPortMessage<ChromeEventType>>): void;
+
   attachPortHandler(self: Element) {
-    self.addEventListener(FRONT_EVENT_NAME, this.portMessageHandler as EventListener);
+    self.addEventListener(
+      FRONT_EVENT_NAME,
+      this.portMessageHandler as EventListener
+    );
   }
 }
 

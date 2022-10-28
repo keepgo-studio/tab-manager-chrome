@@ -14,7 +14,7 @@ export function setDocumentTitle(t: string) {
   window.document.title = t;
 }
 export function consoleLitComponent(component: LitElement, ...msg: any[]) {
-  console.log(`[${component.tagName}]:`, msg);
+  console.log(`[${component.tagName}]:`, ...msg);
 }
 
 export function moveHistory(path: string) {

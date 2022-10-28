@@ -11,7 +11,7 @@ export class PortRouter {
   }
 
   active() {
-    this._port.onMessage.addListener((msg: IPortMessage<AppEventType> | IPortMessage<ChromeEventType>) => {
+    this._port.onMessage.addListener((msg: IPortMessage<AppEventType | ChromeEventType>) => {
       console.log('[main]:', msg.type, msg.data);
       switch(msg.type) {
         case AppEventType.INIT:
@@ -30,7 +30,7 @@ export class PortRouter {
         case ChromeEventType.TAB_MOVED:
         case ChromeEventType.TAB_CLOSED:
         case ChromeEventType.ACTIVE_CHANGED:
-          this._app.sendTo(this._app.elemMap.currentTabList, msg);
+          this._app.sendTo(this._app.elemMap.currentTabListContainer, msg);
       }
     })
   }
@@ -54,7 +54,7 @@ export class FrontRouter {
     const a = this._app;
 
     window.addEventListener(IComponentEventType.USER_EVENT, function (e: CustomEvent) {
-      const msg: IFrontMessage = e.detail;
+      const msg: IFrontMessage<UsersEventType | MessageEventType> = e.detail;
 
       console.log("[router]", msg);
 
@@ -65,10 +65,12 @@ export class FrontRouter {
         case UsersEventType.OPEN_TAB:
         case UsersEventType.CLOSE_TAB:
         case UsersEventType.CLOSE_WINDOW:
+          a.sendTo(a.elemMap.currentTabListContainer, msg);
+          break;
         case UsersEventType.SAVE_WINDOW:
         case UsersEventType.OPEN_SAVED_WINDOW:
         case UsersEventType.DELETE_SAVED_WINDOW:
-          a.sendTo(a.elemMap.savedTabList, msg);
+          a.sendTo(a.elemMap.savedTabListContainer, msg);
       }
     } as EventListener)
   }
@@ -77,7 +79,7 @@ export class FrontRouter {
     const a = this._app;
 
     window.addEventListener(IComponentEventType.MESSAGE_STATUS, function (e: CustomEvent) {
-      const msg: IFrontMessage = e.detail;
+      const msg: IFrontMessage<UsersEventType | MessageEventType> = e.detail;
 
       console.log("[router]:",msg.sender);
       

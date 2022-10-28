@@ -13,8 +13,8 @@ export const FRONT_EVENT_NAME = 'from-main';
 interface IElemMap {
   navbar: Element;
   appMain: Element;
-  currentTabList: Element;
-  savedTabList: Element;
+  currentTabListContainer: Element;
+  savedTabListContainer: Element;
   search: Element;
   message: Element;
 }
@@ -44,8 +44,12 @@ export default class App {
     this.elemMap = {
       navbar: this._main.querySelector('app-navbar')!,
       appMain: this._main.querySelector('app-main')!,
-      currentTabList: this._main.querySelectorAll('app-tab-list-container')![0],
-      savedTabList: this._main.querySelectorAll('app-tab-list-container')![1],
+      currentTabListContainer: this._main.querySelectorAll(
+        'app-tab-list-container'
+      )![0],
+      savedTabListContainer: this._main.querySelectorAll(
+        'app-tab-list-container'
+      )![1],
       search: this._main.querySelector('app-search')!,
       message: this._main.querySelector('app-message')!,
     };
@@ -53,7 +57,12 @@ export default class App {
     document.body.appendChild(this._main);
   }
 
-  sendTo(elem: Element, msg: IPortMessage<AppEventType> | IPortMessage<ChromeEventType> | IFrontMessage) {
+  sendTo(
+    elem: Element,
+    msg:
+      | IPortMessage<AppEventType | ChromeEventType>
+      | IFrontMessage<UsersEventType | MessageEventType>
+  ) {
     elem.dispatchEvent(
       new CustomEvent(FRONT_EVENT_NAME, {
         detail: msg,

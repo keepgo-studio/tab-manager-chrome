@@ -14,6 +14,9 @@ section {
   position: relative;
 }
 
+.saved {
+  background-color: rgba(254, 204, 157, 0.15);
+}
 .gradient {
   background: linear-gradient(0deg, #f6faff 30%, rgba(246, 250, 255, 0) 100%);
   height: 1.5rem;

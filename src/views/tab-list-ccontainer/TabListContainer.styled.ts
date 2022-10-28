@@ -12,28 +12,29 @@ import './tab-list/TabList'
 import { consoleLitComponent } from '../../utils/utils';
 
 const currentService = interpret(currentTabListMachine);
+
 const savedService = interpret(savedTabListMachine);
+
 
 
 @customElement('app-tab-list-container')
 class TabListContainer extends EventComponent {
-  receivedPortMessage?: IPortMessage<ChromeEventType> | undefined;
-  receivedFrontMessage?: IFrontMessage | undefined;
 
-  frontMessageHandler({ detail }: CustomEvent<IFrontMessage>): void {
+  frontMessageHandler({ detail }: CustomEvent<IFrontMessage<UsersEventType>>): void {
     const { type, data } = detail;
 
-    savedService.send({
-      type: 'Request data',
-      command: type as UsersEventType,
-      data
-    })
+    if (savedService.state.matches('Connected to db')) {
+      savedService.send({
+        type: 'LOCAL.REQUEST',
+        command: type,
+        data
+      })
+    }
   }
 
   portMessageHandler({ detail }: CustomEvent<IPortMessage<ChromeEventType>>): void {
     const { type, data } = detail;
 
-    consoleLitComponent(this, detail);
     if (currentService.state.matches('idle'))
     currentService.send({
       backData: data,
@@ -55,6 +56,7 @@ class TabListContainer extends EventComponent {
     if (this._mode === AppMode.NORMAL) {
       currentService
       .onTransition((s) => {
+        consoleLitComponent(this, 'current-mode', s)
         
         if (s.matches('Get all data.Failed')) {
           currentService.send('Retry');
@@ -68,11 +70,12 @@ class TabListContainer extends EventComponent {
     } else if (this._mode === AppMode.SAVE){
       savedService
       .onTransition((s) => {
+        consoleLitComponent(this, 'save-mode', s);
         this.windowMap = { ...s.context.data };
       })
       .start();
 
-      savedService.send('Open db server');
+      savedService.send('LOCAL.OPEN');
 
       this.attachFrontHandler(this);
     }
@@ -97,7 +100,9 @@ class TabListContainer extends EventComponent {
     );
 
     return html`
-      <section>${nodeHtml}</section>
+      <section
+        class=${this._mode === AppMode.SAVE ? 'saved' : ''}
+      >${nodeHtml}</section>
       <div class="gradient"></div>
     `;
   }

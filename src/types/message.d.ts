@@ -27,9 +27,9 @@ declare global {
     readonly data: Partial<IBackData>;
   }
 
-  interface IFrontMessage {
+  interface IFrontMessage<T> {
     sender: string,
-    readonly type: UsersEventType | MessageEventType;
+    readonly type: T;
     readonly data: Partial<IFrontData>;
   }
 
