@@ -6,11 +6,11 @@ import { messageMachine } from './message.machine';
 
 export type DBGuards = UsersEventType | 'get all data';
 
-export const dbMachine =
-  /** @xstate-layout N4IgpgJg5mDOIC5QQEYDoDyA7ANgSyzDVgEMA3MAAgHcCIB7agYgcLQLPoGsjVNcCRUhRp1GCDvQDGJAC556WANoAGALqq1iUAAd6sPPMXaQAD0QBOAOwAWNAA4bAZnsqAjCos37ANhU+AGhAAT0QnACY3NCcYp1twpx8AVnCbNySAXwygvmx8NmEqWiwGZjAAJ3L6crQdHDkAM2qAWzRcgQLyIrFqCSxOGSNldU0TPQMhk3MECy8HZ1cPL19-INCEGysraJi0lySfJzT7TOyQdvzeMBwwWSpCiFESxhZFIkkeNvQ8wTbr2-uXUexVKfQGcgUww06jG+kMkKmlls8xc7k83j8gRCYSsTh2MXstmcbicKhUpxy3w6Vxud0oDyepSYFSqNTqjRaX34lz+tMBFGBPTB0ghik0oyQIHG8OMkumHhUdkcqKWGNW2IQKQs+Js4Ss-nCXi2WUp3N+MFklBIOBw9KBjMYsFebA+vCpPItVptdoFDuosGFg0h4phkulkzllkcKMW6JWWPWuqSOrJPhs1icSQsFPO7vNty9toZIMdzMq1Vq9VkTXKrQu+ct1qL9pL-sDoqhEt0cIjoHlZKVCzRy0xa0QSXsUViNhsKnCPmzSScFhNubNhCYACUAKIARQAqtuAMoAFS7Up7CMjCCcbiiblnfgs9kJ6QnSTHN5sPjQs1m9gsNxXAsCJwlXesNx3A9jzPNwtDDS9ZT7MI7zQB9-E8F8rDfE5PwOPEyVTQlfEiCJwLzSC90PU8lHCeDuwmK9kJvVD0KfLCcI-DUbCSZNCMVHwAP1E5yLQI8AFcpCkOAnXPcMmLMRA9R-NjMNfXjcI1ewCMItxsLcI1MysUTt3LcomDkxCsERBBlLQx81OwjSuPWXFtn4nwgL0+d01EjAGgaS4mHoHQwChWFGKQxSEAfOwDXTXwDk2HwEyUiwf3CJJCIOYijgSUTCGoelZDkKg3CYAAqSzIus68AFo73sT9CT47KF3wixDSyM4sHoCA4BMCChC6P0IplWrmME8JolcBIDO8vwXLCBI0HTWYUs6zyJ3sPzqV5AEfUgUaEJqmy03sNAkm-CxPCylKnM-YlLsI1I0zmtwfF2j0CybQ7BWef0xt7aK022XUgN8NNPBUKwmo1JdtSysl7ASCdvxnL7BCBhTpnnPFVOfdT30-ICfzW6wDMyrZGtEiSpJk7GovlTKpysLLeKc+dAM-CIf1iFxwncW8eMzEyzMZiborcPU4vSQTeasZJeLww18WXG7paujGzlyALLglmzdR5wW0H4zKySsbMFwKsAitgEq6TcA3ryNrTcVNwjsMOTMszAnWUGd5iGpSz86uTP9n2plRtMcTLuoyIA */
+const dbMachine =
+  /** @xstate-layout N4IgpgJg5mDOIC5QQEYDoDyA7ANgSyzDVgEMA3MAAgHcCIB7agYgcLQLPoGsjVNcCRUhRp1GCDvQDGJAC556WANoAGALqq1iUAAd6sPPMXaQAD0QBGFQA4LaawBYAzADZr1gJwuHjp9YA0IACeiABMAOyhaE4xsXGx4QC+iYF82PhswlS0WAzMYABOBfQFaDo4cgBmJQC2aGkCmeTZYtQSWJwyRsrqmiZ6Bt0m5ggWVna+bp7evgHBiA6h1tHxq05JKSANGbxgOGCyVFkQormMLIpEkjz16OmC9XsHR80nOXntnXIKPRrq-fpDD9hpYbBNnFMvD5nHMQggnKEHCs1nENqk7o1dvtDpRjqc8kxCsVSuUqrVbvwdo9sS8KG9Wp9pN9FJo+kgQAMgcZ2SMxmN7BD3FDZoE4T4VMiUTE0VsMVSYLJKCQcDhca98YxYBc2NdeHKHgqlSq1XSNdRYIyuj9Wf92ZyhjzQR5wa4hTMYaLEOsXJKpTLtgaDkbVXj3prCUUSmUKrJqgU6gG2IblSH1WHzZbmb82bpAQ7QLy+QLXdNoX5PQgAKwI31rBzJdGUh54CD7JgAJQAogBFACqnYAygAVHMcvPAx0IBwWZYWBwqFyhSsV0IeawN2VNnWtsAdnv94dKCxaO3j7kFhYztBzhdLiuVucbxNXHd7vuDkehE+5wYTi9Tq8b0XZd5inBcn3QAcAFcpCkOAtVHe0-zMMJwh9IC71A6wnAgtBO0jAomEQs8sBBBAInQ+dgIrKZcIwSpKh2JgMAABU7AA5Yjf3PFDRgcJFbxAuFEWWJdkk2LB6AgOATGfYhmjNAFuNIydwk8aJrBUUIbDWFdwiRSs6MxalnhNSBFNPZSyPCStKzQSsHDcGyKz8KJDM2OTk2NUNWngSyuRU-8bKRRYZ2c0CHA8CV3Mbe5t32JSArIpx+QwoSvRseyjJ2RL8140IXCca8qMwuEZzsmLN2g2D4Ny5DeScStlnWSK-GFD1QIicJazWf10Hw4k6p4hrbDQFQLFswr2vLCLNJ61Y+swBicv8vKRkWPTQggobAt4gBaFwKwO8TEiAA */
   createMachine(
     {
-  tsTypes: {} as import("./saved-tab-list.machine.typegen").Typegen0,
+  tsTypes: {} as import('./saved-tab-list.machine.typegen').Typegen0,
   schema: {
     services: {} as {
       'open idb': { data: void };
@@ -19,7 +19,7 @@ export const dbMachine =
       'get all saved windows': { data: CurrentWindowMapping };
     },
     events: {} as
-      | { type: 'open' }
+      | { type: 'OPEN' }
       | {
           type: 'REQUEST';
           command: DBGuards;
@@ -27,11 +27,9 @@ export const dbMachine =
         },
   },
   initial: 'Offline',
-  entry: () => console.log('entered in db'),
   states: {
     Online: {
-      entry: () => console.log('db is online'),
-      type: 'parallel',
+      initial: 'idle',
       states: {
         'save window': {
           invoke: {
@@ -78,22 +76,24 @@ export const dbMachine =
             ],
           },
         },
-      },
-      on: {
-        REQUEST: [
-          {
-            target: '.save window',
-            cond: 'save window',
+        idle: {
+          on: {
+            REQUEST: [
+              {
+                target: 'save window',
+                cond: 'save window',
+              },
+              {
+                target: 'get all saved windows',
+                cond: 'get all saved windows',
+              },
+              {
+                target: 'delete saved window',
+                cond: 'delete saved windows',
+              },
+            ],
           },
-          {
-            target: '.get all saved windows',
-            cond: 'get all saved windows',
-          },
-          {
-            target: '.delete saved window',
-            cond: 'delete saved windows',
-          },
-        ],
+        },
       },
     },
     Success: {
@@ -110,7 +110,7 @@ export const dbMachine =
     },
     Offline: {
       on: {
-        open: {
+        OPEN: {
           target: 'Online',
           actions: 'open idb',
         },
@@ -159,12 +159,12 @@ export const dbMachine =
       },
 
       actions: {
-        'open idb': () => {
+        'open idb': async () => {
           console.log('idb server open');
           
-          db.open();
+          await db.open();
 
-          sendParent('REMOTE.RECEIVE');
+          sendParent('REMOTE.OPEN');
         },
 
         'send to parent': (_, event) => {
@@ -200,16 +200,16 @@ export const dbMachine =
   );
 
 export const savedTabListMachine =
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUCGA3SACALqgRlgDYCWsOAdCREWAMQAyA8gMICCDFTACgKIByAbQAMAXUSgADgHtYJHCWkA7CSAAeiAKwAWAIwUA7MIDMugEyaANCACeiAGzCzFAJxuX9l9oAcZ7Wd0XAF8g6zRMCFwCYjJKFmUlMABjHGwcaSwIfDoAJV4AWSYAFV4KPJZeAEkANV4RcSQQGTkFZVUNBE0jCk1vTRdjAytbREHvCm13Tx8-AODQkHC06NJyCnilRJS0jKzGVg4y3gBFAFVeZCL61Wb5RRVGjs1zCj7dfuNhXSGDb11rOwIMwGFyuKZeXz+QIhMIYZaEVZxBLJVKRdKZbLMdicPJnC5XXQNKSyO5tR6IbQGbSubzaQbDQG6P49GGLOFolaxdbI7Zo3aYg44k7nS6CMxEpok1oPUAdSmaV50oYAxDeYyspYchFcjZbVG4fl0AC2cFgqCgJCUUGujVu0vaiDMfkMJnMDNGfQm4JmUO8GvZUW1a2QYCUfKwJtgZpgdBtxJa9wdQOdRlMFhVCB8xjBbmmkICftZSmkEDgqk1gZia2otBuUsT5IQxn8LrT7oQ9l0wkMkw8ENm0IWFbwQaRmxROwxdYTZNlWiGEzMHm8ypGmeZ7j7Prm-oilcRFBDYYNEdN5rA09JMvUFLMGcp9gounsL+Mncmwm8tM0u-hVZwl72o2AC09gZqBIQhEAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUCGA3SACALqgRlgDYCWsOAdCREWAMQAyA8gMICCDFTACgKIByAbQAMAXUSgADgHtYJHCWkA7CSAAeiAKwAWAIwUA7MIDMugEyaANCACeiAGzCzFAJxuX9l9oAcZ7Wd0XAF8g6zRMCFwCYjJKFmUlMABjHGwcaSwIfDoAJV4AWSYAFV4KPJZeAEkANV4RcSQQGTkFZVUNBE0jCk1vTRdjAytbREHvCm13Tx8-AODQkHC06NJyCnilRJS0jKzGVg4y3gBFAFVeZCL61Wb5RRVGjs1zCj7dfuNhXSGDb11rOwIMwGFyuKZeXz+QIhMIYZaEVZxBLJVKRdKZbLMdicPJnC5XXQNKSyO5tR6IbQGbSubzaQbDQG6P49GGLOFolaxdbI7Zo3aYg44k7nS6CMxEpok1oPUAdSmaV50oYAxDeYyspYchFcjZbVG4fl0AC2cFgqCgJCUUGujVu0vaiDMfkMJnMDNGfQm4JmUO8GvZUW1a2QYCUfKwJtgZpgdBtxJa9wdQOdRlMFhVCB8xjBbmmkICftZSmkEDgqk1gZia2otBuUsT5IQxn8LrT7oQ9l0wkMkw8ENm0IWFbwQaRmxROwxdYTZNlWiGEzMHm8ypGmeZ7j7Prm-oilcRFBDYYNEdN5rA09JMvUFLMGcp9gounsL+Mncmwm8tM0u-hVZwl72o2AC09gZsBCqbn8lIrs+xhOiEIRAA */
   createMachine(
     {
   context: {
     msgStatus: MessageEventType.FAILED,
     data: {},
     dbRef: null,
-    msgRef: spawn(messageMachine, 'message-machine'),
+    msgRef: null,
   },
-  tsTypes: {} as import("./saved-tab-list.machine.typegen").Typegen1,
+  tsTypes: {} as import('./saved-tab-list.machine.typegen').Typegen1,
   schema: {
     context: {} as {
       msgStatus: MessageEventType;
@@ -220,6 +220,7 @@ export const savedTabListMachine =
 
     events: {} as
       | { type: 'LOCAL.OPEN' }
+      | { type: 'REMOTE.OPEN' }
       | {
           type: 'REMOTE.RECEIVE';
           data?: CurrentWindowMapping;
@@ -230,25 +231,26 @@ export const savedTabListMachine =
           data: Partial<IFrontData>;
         }
       | { type: 'messaging'; status: MessageEventType },
+
+    actions: {} as 
+    | { type: 'set' }
+    | { type: 'request open db' }
+    | { type: 'receive data' }
+    | { type: 'request db with data' }
+    | { type: 'send to message machine' }
   },
   initial: 'idle',
   states: {
     idle: {
-      entry: [
-        assign({
-          dbRef: () => {
-            const s = spawn(dbMachine, 'db-machine')
-            console.log(s)
-
-            return s;
-          }
-        })
-      ],
+      entry: 'set',
       on: {
         'LOCAL.OPEN': {
-          target: 'Connected to db',
+          target: 'idle',
           actions: 'request open db',
         },
+        'REMOTE.OPEN': {
+          target: 'Connected to db'
+        }
       },
     },
     'Connected to db': {
@@ -256,20 +258,9 @@ export const savedTabListMachine =
         'REMOTE.RECEIVE': {
           actions: 'receive data',
         },
-        'LOCAL.REQUEST': [
-          {
-            cond: 'save window',
-            actions: 'request db with data',
-          },
-          {
-            cond: 'delete saved window',
-            actions: 'request db with data',
-          },
-          {
-            cond: 'get all saved window',
-            actions: 'request db with data',
-          },
-        ],
+        'LOCAL.REQUEST': {
+          actions: 'request db with data',
+        },
         messaging: {
           target: 'Send to message',
           actions: 'send to message machine',
@@ -287,9 +278,14 @@ export const savedTabListMachine =
     {
       actions: {
 
+        'set': assign({
+          dbRef: () => spawn(dbMachine, 'db-machine'),
+          msgRef: () => spawn(messageMachine, 'message-machine')
+        }),
+
         'request open db': send(
-          { type: 'open' },
-          { to: (context) => context.dbRef!}
+          { type: 'OPEN' },
+          { to: (context) => context.dbRef! }
         ),
 
         'receive data': (context, event) => {
@@ -314,13 +310,6 @@ export const savedTabListMachine =
           }),
           { to: (context) => context.msgRef }
         ),
-      },
-      guards: {
-        'delete saved window': (_, event) =>
-          event.command === UsersEventType.DELETE_SAVED_WINDOW,
-        'get all saved window': (_, event) => event.command === 'get all data',
-        'save window': (_, event) =>
-          event.command === UsersEventType.SAVE_WINDOW,
       },
     }
   );

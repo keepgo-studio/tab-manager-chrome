@@ -77,7 +77,7 @@ class TabListContainer extends EventComponent {
 
       savedService.send('LOCAL.OPEN');
 
-      this.attachFrontHandler(this);
+      // this.attachFrontHandler(this);
     }
   }
 

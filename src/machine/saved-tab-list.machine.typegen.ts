@@ -3,7 +3,6 @@
 export interface Typegen0 {
   '@@xstate/typegen': true;
   internalEvents: {
-    '': { type: '' };
     'done.invoke.db.Online.delete saved window:invocation[0]': {
       type: 'done.invoke.db.Online.delete saved window:invocation[0]';
       data: unknown;
@@ -45,7 +44,7 @@ export interface Typegen0 {
     delays: never;
   };
   eventsCausingActions: {
-    'open idb': 'open';
+    'open idb': 'OPEN';
     'send status':
       | 'done.invoke.db.Online.delete saved window:invocation[0]'
       | 'done.invoke.db.Online.get all saved windows:invocation[0]'
@@ -62,9 +61,9 @@ export interface Typegen0 {
       | 'error.platform.db.Online.save window:invocation[0]';
   };
   eventsCausingServices: {
-    'delete saved window': '' | 'REQUEST' | 'open';
-    'get all saved windows': '' | 'REQUEST' | 'open';
-    'save window': '' | 'REQUEST' | 'open';
+    'delete saved window': 'REQUEST';
+    'get all saved windows': 'REQUEST';
+    'save window': 'REQUEST';
   };
   eventsCausingGuards: {
     'delete saved windows': 'REQUEST';
@@ -78,12 +77,14 @@ export interface Typegen0 {
     | 'Online'
     | 'Online.delete saved window'
     | 'Online.get all saved windows'
+    | 'Online.idle'
     | 'Online.save window'
     | 'Success'
     | {
         Online?:
           | 'delete saved window'
           | 'get all saved windows'
+          | 'idle'
           | 'save window';
       };
   tags: never;
@@ -105,13 +106,10 @@ export interface Typegen1 {
     'request db with data': 'LOCAL.REQUEST';
     'request open db': 'LOCAL.OPEN';
     'send to message machine': 'messaging';
+    set: 'LOCAL.OPEN' | 'xstate.init';
   };
   eventsCausingServices: {};
-  eventsCausingGuards: {
-    'delete saved window': 'LOCAL.REQUEST';
-    'get all saved window': 'LOCAL.REQUEST';
-    'save window': 'LOCAL.REQUEST';
-  };
+  eventsCausingGuards: {};
   eventsCausingDelays: {};
   matchesStates: 'Connected to db' | 'Send to message' | 'idle';
   tags: never;
