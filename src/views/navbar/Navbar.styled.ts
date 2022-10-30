@@ -1,7 +1,7 @@
 import { css, html, TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { EventlessComponent } from '../../core/Component.core';
-import { IComponentEventType } from '../../router';
+import { UsersEventType } from '../../shared/events';
 
 const styled = css`
   nav {
@@ -53,8 +53,7 @@ const styled = css`
 
 @customElement('app-navbar')
 class Navbar extends EventlessComponent {
-
-  private _mode = AppMode.NORMAL;
+  private _mode: TAppMode = 'normal';
 
   @state()
   icons = [
@@ -62,16 +61,13 @@ class Navbar extends EventlessComponent {
       id: 'window',
       path: './img/window-light.png',
       clickHandler: () => {
-        if (this._mode === AppMode.NORMAL) {
-          this._mode = AppMode.SAVE;
-        } else {
-          this._mode = AppMode.NORMAL;
-        }
+        this._mode = this._mode === 'normal' ? 'save' : 'normal';
 
-        this.sendToFront(IComponentEventType.USER_EVENT, {
-          sender: '[Navbar]',
+        this.sendToFront({
+          discriminator: 'IFrontMessage',
+          sender: this.tagName,
+          command: UsersEventType.CHANGE_MODE,
           data: { mode: this._mode },
-          type: UsersEventType.CHANGE_MODE,
         });
       },
     },

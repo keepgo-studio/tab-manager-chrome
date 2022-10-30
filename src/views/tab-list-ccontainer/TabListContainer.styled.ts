@@ -6,79 +6,94 @@ import { interpret } from 'xstate';
 import { currentTabListMachine } from '../../machine/current-tab-list.machine';
 import { savedTabListMachine } from '../../machine/saved-tab-list.machine';
 
-import styles from "./TabListContainer.scss";
+import styles from './TabListContainer.scss';
 
-import './tab-list/TabList'
+import './tab-list/TabList';
 import { consoleLitComponent } from '../../utils/utils';
+import {
+  ChromeEventType,
+  MessageEventType,
+  UsersEventType,
+} from '../../shared/events';
 
 const currentService = interpret(currentTabListMachine);
 
 const savedService = interpret(savedTabListMachine);
 
-
-
 @customElement('app-tab-list-container')
 class TabListContainer extends EventComponent {
+  eventListener({
+    detail,
+  }: CustomEvent<
+    | IFrontMessage<UsersEventType | MessageEventType>
+    | IPortMessage<ChromeEventType>
+  >): void {
+    const { command, data } = detail;
 
-  frontMessageHandler({ detail }: CustomEvent<IFrontMessage<UsersEventType>>): void {
-    const { type, data } = detail;
+    switch (detail.discriminator) {
+      case 'IFrontMessage':
+        savedService.send('LOCAL.REQUEST', {
+          command,
+          data,
+        });
 
-    if (savedService.state.matches('Connected to db')) {
-      savedService.send({
-        type: 'LOCAL.REQUEST',
-        command: type,
-        data
-      })
+        break;
+      case 'IPortMessage':
+        currentService.send('Update list', {
+          command,
+          data,
+        });
+        break;
     }
   }
 
-  portMessageHandler({ detail }: CustomEvent<IPortMessage<ChromeEventType>>): void {
-    const { type, data } = detail;
-
-    if (currentService.state.matches('idle'))
-    currentService.send({
-      backData: data,
-      command: type,
-      type: 'Update list'
-    })
-  }
+  private _mode;
 
   @state()
   windowMap: CurrentWindowMapping = {};
 
-  private _mode;
+  private startMachine(mode: TAppMode) {
+    switch (mode) {
+      case 'normal':
+        currentService
+          .onTransition((s) => {
+            consoleLitComponent(this, 'current-mode', s);
+
+            if (s.matches('Get all data.Failed')) {
+              currentService.send('Retry');
+            } else if (s.matches('idle')) {
+              this.windowMap = { ...s.context.data };
+            }
+          })
+          .start();
+        break;
+
+      case 'save':
+        savedService
+          .onTransition((s) => {
+            consoleLitComponent(this, 'save-mode', s);
+
+            // if (s.matches('xstate.init')) {
+            //   savedService.send('LOCAL.OPEN');
+            // }
+
+            if (s.changed) {
+              this.windowMap = { ...s.context.data };
+            }
+          })
+          .start();
+
+        savedService.send('LOCAL.OPEN');
+        break;
+    }
+  }
 
   constructor() {
     super();
 
-    this._mode = this.getAttribute('mode')! as AppMode;
+    this._mode = this.getAttribute('mode')! as TAppMode;
 
-    if (this._mode === AppMode.NORMAL) {
-      currentService
-      .onTransition((s) => {
-        consoleLitComponent(this, 'current-mode', s)
-        
-        if (s.matches('Get all data.Failed')) {
-          currentService.send('Retry');
-        } else if (s.matches('idle')) {
-          this.windowMap = { ...s.context.data };
-        }
-      })
-      .start();
-
-      this.attachPortHandler(this);
-    } else if (this._mode === AppMode.SAVE){
-      savedService
-      .onTransition((s) => {
-        consoleLitComponent(this, 'save-mode', s);
-        this.windowMap = { ...s.context.data };
-      })
-      .start();
-
-      savedService.send('LOCAL.OPEN');
-
-      // this.attachFrontHandler(this);
-    }
+    this.startMachine(this._mode);
   }
 
   static get styles() {
@@ -91,18 +106,16 @@ class TabListContainer extends EventComponent {
   render() {
     if (this.windowMap === undefined) return html`<section></section>`;
 
-    const nodeHtml = repeat(
-      Object.values(this.windowMap),
-      (win) => win.id,
-      (win) => html`
-        <app-tab-list .mode=${this._mode} .data=${win}> </app-tab-list>
-      `
-    );
-
     return html`
-      <section
-        class=${this._mode === AppMode.SAVE ? 'saved' : ''}
-      >${nodeHtml}</section>
+      <section class=${this._mode}>
+        ${repeat(
+          Object.values(this.windowMap),
+          (win) => win.id,
+          (win) => html`
+            <app-tab-list .appMode=${this._mode} .winData=${win}> </app-tab-list>
+          `
+        )}
+      </section>
       <div class="gradient"></div>
     `;
   }

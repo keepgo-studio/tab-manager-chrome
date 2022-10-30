@@ -20,10 +20,9 @@ declare global {
     [windowId: number]: CurrentWindow
   }
 
-  const enum AppMode {
-    NORMAL='NORMAL',
-    SAVE='SAVE'
-  }
+  type TThemeMode = "dark" | "light" | "system";
+
+  type TSizeMode = "mini" | "tablet" | "side";
 }
 
 export {};

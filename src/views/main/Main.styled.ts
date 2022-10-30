@@ -1,7 +1,8 @@
 import { html, css } from 'lit';
-import { customElement } from 'lit/decorators.js';
-import { Component, EventComponent } from '../../core/Component.core';
-import { consoleLitComponent } from '../../utils/utils';
+import { customElement, state } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js'
+import { EventComponent } from '../../core/Component.core';
+import { UsersEventType } from '../../shared/events';
 
 const styled = css`
   main {
@@ -29,18 +30,15 @@ const styled = css`
 
 @customElement('app-main')
 class Main extends EventComponent {
-  portMessageHandler(): void {}
-  frontMessageHandler({
-    detail,
-  }: CustomEvent<IFrontMessage<UsersEventType>>): void {
+  private mode: TAppMode = 'normal';
+
+  @state()
+  classes = { 'saved-mode': this.mode === 'save' || false };
+
+  eventListener({ detail }: CustomEvent<IFrontMessage<UsersEventType>>): void {
     const { data } = detail;
 
-    consoleLitComponent(this, detail);
-    if (data.mode === AppMode.NORMAL) {
-      this.renderRoot.querySelector('main')?.classList.remove('saved-mode');
-    } else {
-      this.renderRoot.querySelector('main')?.classList.add('saved-mode');
-    }
+    this.mode = data.mode === 'normal' ? 'save' : 'normal';
   }
 
   static get styles() {
@@ -50,15 +48,9 @@ class Main extends EventComponent {
     `;
   }
 
-  constructor() {
-    super();
-
-    this.attachFrontHandler(this);
-  }
-
   render() {
     return html`
-      <main>
+      <main class=${classMap(this.classes)}>
         <div class="container">
           <slot name="current-tab"></slot>
         </div>

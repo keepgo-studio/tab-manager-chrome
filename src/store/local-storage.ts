@@ -1,38 +1,29 @@
+/**
+ *   "dark-mode": TThemeMode;
+ *   "outer-height": number;
+ *   "size-mode": TSizeMode;
+ */
 class UserSettings {
-  init() {
-    chrome.storage.local.get(['dark-mode', 'outer-height'], (items) => {
-      if (!items['dark-mode']) this.setDarkMode();
-      if (!items['outer-height']) this.setOuterHeight();
-    });
+  static async geThemeMode() {
+    return (await chrome.storage.local.get('dark-mode'))['dark-mode'];
   }
-
-  async getDarkMode() {
-    return await chrome.storage.local.get('dark-mode');
-  }
-
-  async getOuterHeight() {
-    return await chrome.storage.local.get('outer-height');
-  }
-
-  async setDarkMode(mode = 'dark') {
+  static async seThemeMode(mode: TThemeMode = 'system') {
     return await chrome.storage.local.set({ 'dark-mode': mode });
   }
 
-  async setOuterHeight(h = 120) {
+  static async getOuterHeight() {
+    return (await chrome.storage.local.get('outer-height'))['outer-height'];
+  }
+  static async setOuterHeight(h = 120) {
     return await chrome.storage.local.set({ 'outer-height': h });
   }
 
-  addChangeHandler(handler: {
-    (changes: { [x: string]: any }): void;
-    (
-      changes: { [key: string]: chrome.storage.StorageChange },
-      areaName: 'sync' | 'local' | 'managed' | 'session'
-    ): void;
-  }) {
-    chrome.storage.onChanged.addListener(handler);
+  static async getSizeMode() {
+    return (await chrome.storage.local.get('size-mode'))['size-mode'];
+  }
+  static async setSizeMode(sizeMode: TSizeMode = 'mini') {
+    return await chrome.storage.local.set({ 'size-mode': sizeMode });
   }
 }
 
-const userSettings = new UserSettings();
-
-export { userSettings };
+export default UserSettings;

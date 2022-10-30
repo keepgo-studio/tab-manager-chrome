@@ -12,6 +12,7 @@
       "node_modules/@types",
       "./src/types"
     ],
+    "removeComments": true,
     "alwaysStrict": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",

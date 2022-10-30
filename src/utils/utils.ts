@@ -25,7 +25,7 @@ export function getPathName() {
   return window.location.pathname.split(/\//)[1];
 }
 
-export function getSize(mode: 'mini' | 'tablet' | 'side') {
+export function getSize(mode: TSizeMode) {
   let diagnol = 0;
   let frontWidth = 0;
   let frontHeight = 0;

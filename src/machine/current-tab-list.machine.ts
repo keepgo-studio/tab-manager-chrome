@@ -1,5 +1,6 @@
 import { ActorRef, ActorRefFrom, createMachine, spawn } from 'xstate';
 import { send } from 'xstate/lib/actions';
+import { ChromeEventType } from '../shared/events';
 import { getAllChromeWindow } from '../utils/browser-api';
 import { arrayToMap } from '../utils/utils';
 import { messageMachine } from './message.machine';
@@ -9,7 +10,7 @@ export const currentTabListMachine =
   createMachine(
     {
       context: {
-        msgStatus: MessageEventType.FAILED,
+        // msgStatus: MessageEventType.FAILED,
         msgRef: spawn(messageMachine, 'message-machine'),
         data: {},
       },
@@ -23,13 +24,13 @@ export const currentTabListMachine =
           | {
               type: 'Update list';
               command: ChromeEventType;
-              backData: Partial<IBackData>;
+              data: Partial<IBackData>;
             }
           | { type: 'Close app' }
           | { type: 'Send status' },
 
         context: {} as {
-          msgStatus: MessageEventType;
+          // msgStatus: MessageEventType;
           msgRef: ActorRef<any>;
           data: CurrentWindowMapping;
         },
@@ -116,7 +117,7 @@ export const currentTabListMachine =
               },
               {
                 target: 'Updated',
-                cond: 'ACTIVE_CHANGED',
+                cond: 'FOCUS_CHANGED',
               },
             ],
           },
@@ -150,36 +151,36 @@ export const currentTabListMachine =
           event.command === ChromeEventType.TAB_UPDATED,
         TAB_MOVED: (_, event) => event.command === ChromeEventType.TAB_MOVED,
         TAB_CLOSED: (_, event) => event.command === ChromeEventType.TAB_CLOSED,
-        ACTIVE_CHANGED: (_, event) =>
-          event.command === ChromeEventType.ACTIVE_CHANGED,
+        FOCUS_CHANGED: (_, event) =>
+          event.command === ChromeEventType.FOCUS_CHANGED,
       },
       actions: {
         WINDOW_CREATED(context, event) {
-          const { win } = event.backData;
+          const { win } = event.data;
 
           if (win === undefined || win.id === undefined) {
-            context.msgStatus = MessageEventType.FAILED;
+            // context.msgStatus = MessageEventType.FAILED;
             return;
           }
 
           context.data[win.id] = win as CurrentWindow;
-          context.msgStatus = MessageEventType.SUCCESS;
+          // context.msgStatus = MessageEventType.SUCCESS;
         },
 
         WINDOW_CLOSED(context, event) {
-          const { windowId } = event.backData;
+          const { windowId } = event.data;
 
           if (windowId === undefined) {
-            context.msgStatus = MessageEventType.FAILED;
+            // context.msgStatus = MessageEventType.FAILED;
             return;
           }
 
           delete context.data[windowId];
-          context.msgStatus = MessageEventType.SUCCESS;
+          // context.msgStatus = MessageEventType.SUCCESS;
         },
 
         TAB_CRAETED(context, event) {
-          const { tab, windowId } = event.backData;
+          const { tab, windowId } = event.data;
 
           /**
            * since CREATE_TAB can fired before the CREATE_WINDOW even though the window not
@@ -191,19 +192,19 @@ export const currentTabListMachine =
             windowId === undefined ||
             !(windowId in context.data)
           ) {
-            context.msgStatus = MessageEventType.FAILED;
+            // context.msgStatus = MessageEventType.FAILED;
             return;
           }
 
           context.data[windowId!].tabs.splice(tab!.index, 0, tab!);
-          context.msgStatus = MessageEventType.SUCCESS;
+          // context.msgStatus = MessageEventType.SUCCESS;
         },
 
         TAB_UPDATED(context, event) {
-          const { tab } = event.backData;
+          const { tab } = event.data;
 
           if (tab === undefined) {
-            context.msgStatus = MessageEventType.FAILED;
+            // context.msgStatus = MessageEventType.FAILED;
             return;
           }
 
@@ -214,19 +215,19 @@ export const currentTabListMachine =
           );
 
           if (tabIdx === -1) {
-            context.msgStatus = MessageEventType.FAILED;
+            // context.msgStatus = MessageEventType.FAILED;
             return;
           }
 
           context.data[windowId].tabs[tabIdx] = tab;
-          context.msgStatus = MessageEventType.SUCCESS;
+          // context.msgStatus = MessageEventType.SUCCESS;
         },
 
         TAB_MOVED(context, event) {
-          const { windowId, moveInfo } = event.backData;
+          const { windowId, moveInfo } = event.data;
 
           if (windowId === undefined || moveInfo === undefined) {
-            context.msgStatus = MessageEventType.FAILED;
+            // context.msgStatus = MessageEventType.FAILED;
             return;
           }
 
@@ -235,14 +236,14 @@ export const currentTabListMachine =
             1
           )[0];
           context.data[windowId].tabs.splice(moveInfo.toIndex, 0, moveTab);
-          context.msgStatus = MessageEventType.SUCCESS;
+          // context.msgStatus = MessageEventType.SUCCESS;
         },
 
         TAB_CLOSED(context, event) {
-          const { tabId, windowId } = event.backData;
+          const { tabId, windowId } = event.data;
 
           if (tabId === undefined || windowId === undefined) {
-            context.msgStatus = MessageEventType.FAILED;
+            // context.msgStatus = MessageEventType.FAILED;
             return;
           }
 
@@ -251,7 +252,7 @@ export const currentTabListMachine =
           );
 
           context.data[windowId].tabs.splice(tabIdx, 1);
-          context.msgStatus = MessageEventType.SUCCESS;
+          // context.msgStatus = MessageEventType.SUCCESS;
         },
 
         'send status to message machine': send(

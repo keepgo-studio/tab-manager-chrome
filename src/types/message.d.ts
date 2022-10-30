@@ -10,6 +10,10 @@ declare global {
       fromIndex: number;
       toIndex: number;
     };
+    userSettings: {
+      "theme-mode"?: TThemeMode;
+      "size-mode"?: TSizeMode;
+    }
   }
 
   interface IFrontData {
@@ -19,45 +23,22 @@ declare global {
     tabsLength: number;
     firstTabId: number;
     message: string;
-    mode: AppMode;
+    mode: TAppMode;
   }
 
+  type TAppMode  = "normal" | "save";
+
   interface IPortMessage<T> {
-    readonly type: T;
+    discriminator: 'IPortMessage',
     readonly data: Partial<IBackData>;
+    readonly command: T;
   }
 
   interface IFrontMessage<T> {
+    discriminator: 'IFrontMessage'
     sender: string,
-    readonly type: T;
     readonly data: Partial<IFrontData>;
-  }
-
-  const enum AppEventType {
-    INIT="INIT",
-    TERMINATE="TERMINATE"
-  }
-  const enum ChromeEventType {
-    WINDOW_CREATED="WINDOW_CREATED",
-    WINDOW_CLOSED="WINDOW_CLOSED",
-    TAB_CREATED="TAB_CREATED",
-    TAB_UPDATED="TAB_UPDATED",
-    TAB_MOVED="TAB_MOVED",
-    TAB_CLOSED="TAB_CLOSED",
-    ACTIVE_CHANGED="ACTIVE_CHANGED",
-  }
-  const enum UsersEventType {
-    CHANGE_MODE="CHANGE_MODE",
-    OPEN_TAB="OPEN_TAB",
-    CLOSE_TAB="CLOSE_TAB",
-    CLOSE_WINDOW="CLOSE_WINDOW",
-    SAVE_WINDOW="SAVE_WINDOW",
-    OPEN_SAVED_WINDOW="OPEN_SAVED_WINDOW",
-    DELETE_SAVED_WINDOW="DELETE_SAVED_WINDOW",
-  }
-  const enum MessageEventType {
-    SUCCESS,
-    FAILED
+    readonly command: T;
   }
 }
 

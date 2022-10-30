@@ -24,7 +24,7 @@ export interface Typegen0 {
   };
   eventsCausingServices: {};
   eventsCausingGuards: {
-    ACTIVE_CHANGED: 'Update list';
+    FOCUS_CHANGED: 'Update list';
     TAB_CLOSED: 'Update list';
     TAB_CRAETED: 'Update list';
     TAB_MOVED: 'Update list';

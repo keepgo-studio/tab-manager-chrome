@@ -1,14 +1,21 @@
 import './views/navbar/Navbar.styled';
 import './views/main/Main.styled';
 import './views/tab-list-ccontainer/TabListContainer.styled';
-
-import { userSettings } from './store/local-storage';
+import {
+  AppEventType,
+  ChromeEventType,
+  MessageEventType,
+  UserSettingsEventType,
+  UsersEventType,
+} from './shared/events';
 
 /**
  * app class is managing routes endpoints and attach components to index.html
  */
 
 export const FRONT_EVENT_NAME = 'from-main';
+
+export const USER_SETTINGS_CHNAGED = 'user-settings-changed';
 
 interface IElemMap {
   navbar: Element;
@@ -31,9 +38,9 @@ export default class App {
     <app-navbar></app-navbar>
 
     <app-main>
-      <app-tab-list-container mode=${AppMode.NORMAL} slot="current-tab"></app-tab-list-container>
+      <app-tab-list-container mode=${'normal'} slot="current-tab"></app-tab-list-container>
 
-      <app-tab-list-container mode=${AppMode.SAVE} slot="saved-tab"></app-tab-list-container>
+      <app-tab-list-container mode=${'save'} slot="saved-tab"></app-tab-list-container>
     </app-main>
     
     <app-search></app-search>
@@ -68,6 +75,16 @@ export default class App {
         detail: msg,
       })
     );
+  }
+
+  sendUserSetting(msg: IPortMessage<UserSettingsEventType>) {
+    Object.values(this.elemMap).forEach((elem) => {
+      elem.dispatchEvent(
+        new CustomEvent(USER_SETTINGS_CHNAGED, {
+          detail: msg,
+        })
+      );
+    });
   }
 
   closeApp() {

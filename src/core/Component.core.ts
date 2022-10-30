@@ -1,9 +1,14 @@
 import { LitElement } from 'lit';
-import { state } from 'lit/decorators';
-import { FRONT_EVENT_NAME } from '../app';
-import { globalStyles } from '../views/shared/styles';
-import { IComponentEventType } from '../router';
-import styles from './shared.scss';
+import { state } from 'lit/decorators.js';
+import { FRONT_EVENT_NAME, USER_SETTINGS_CHNAGED } from '../app';
+import UserSettings from '../store/local-storage';
+import { globalStyles } from '../shared/styles';
+import {
+  ChromeEventType,
+  MessageEventType,
+  UserSettingsEventType,
+  UsersEventType,
+} from '../shared/events';
 
 export class Component extends LitElement {
   /**
@@ -11,35 +16,52 @@ export class Component extends LitElement {
    */
   static styles = globalStyles;
 
-  sendToFront(
-    eventType: IComponentEventType,
-    msg: IFrontMessage<UsersEventType | MessageEventType>
-  ) {
-    window.dispatchEvent(new CustomEvent(eventType, { detail: msg }));
+  sendToFront(msg: IFrontMessage<UsersEventType | MessageEventType>) {
+    window.dispatchEvent(new CustomEvent(msg.command, { detail: msg }));
+  }
+
+  @state()
+  themeMode: TThemeMode = 'system';
+
+  @state()
+  sizeMode: TSizeMode = 'mini';
+
+  async userEventsListener({
+    detail,
+  }: CustomEvent<IPortMessage<UserSettingsEventType>>) {
+    if (detail.command === UserSettingsEventType.SIZE_MODE) {
+      this.sizeMode = await UserSettings.getSizeMode();
+    }
+
+    if (detail.command === UserSettingsEventType.THEME_MODE) {
+      this.themeMode = await UserSettings.geThemeMode();
+    }
+  }
+
+  constructor() {
+    super();
+
+    this.addEventListener(
+      USER_SETTINGS_CHNAGED,
+      this.userEventsListener as unknown as EventListener
+    );
   }
 }
 
 export abstract class EventComponent extends Component {
-
-  abstract frontMessageHandler({
+  abstract eventListener({
     detail,
-  }: CustomEvent<IFrontMessage<UsersEventType | MessageEventType>>): void;
+  }: CustomEvent<
+    | IPortMessage<ChromeEventType>
+    | IFrontMessage<UsersEventType | MessageEventType>
+  >): void;
 
-  attachFrontHandler(self: Element) {
-    self.addEventListener(
+  constructor() {
+    super();
+
+    this.addEventListener(
       FRONT_EVENT_NAME,
-      this.frontMessageHandler as EventListener
-    );
-  }
-
-  abstract portMessageHandler({
-    detail,
-  }: CustomEvent<IPortMessage<ChromeEventType>>): void;
-
-  attachPortHandler(self: Element) {
-    self.addEventListener(
-      FRONT_EVENT_NAME,
-      this.portMessageHandler as EventListener
+      this.eventListener as EventListener
     );
   }
 }

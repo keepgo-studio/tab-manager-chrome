@@ -1,55 +1,70 @@
-import { getSize } from "./utils/utils";
+import { AppEventType, ChromeEventType, UserSettingsEventType } from './shared/events';
+import { getSize } from './utils/utils';
 
-console.log("background is running");
+console.log('background is running');
 
-/**
- * the background worker will send a events only the extension's window is created
- * the window's script will request connection to background
- */
-var frontPort: RuntimePort | undefined;
-var frontWinId: number | undefined;
-const EXTENSION_ID = chrome.runtime.id;
+const size = getSize('mini');
 
-interface UserInfo {
-  "dark-mode": boolean;
-  "outer-height": number;
-  "size-mode": "mini" | "tablet" | "side";
-}
+const extensionInfo: {
+  id: string;
+  frontPort: RuntimePort | undefined;
+  /**
+   * frontWinId : the background worker will send a events only the extension's window is created.
+   * the window's script will request connection to background
+   */
+  frontWinId: number | undefined;
+  frontWidth: number;
+  frontHeight: number;
+} = {
+  id: chrome.runtime.id,
+  frontPort: undefined,
+  frontWinId: undefined,
+  frontWidth: size.frontWidth,
+  frontHeight: size.frontHeight,
+};
 
-const { frontWidth, frontHeight } = getSize('mini');
+function sendMessage(
+  port: RuntimePort | undefined,
+  command: ChromeEventType | AppEventType | UserSettingsEventType,
+  data?: Partial<IBackData>
+) {
+  if (!port) return;
 
-function sendMessage(type: ChromeEventType, data: Partial<IBackData>) {
-  const msg: IPortMessage<ChromeEventType> = {
-    type,
-    data,
+  const msg: IPortMessage<
+    ChromeEventType | AppEventType | UserSettingsEventType
+  > = {
+    discriminator: 'IPortMessage',
+    command,
+    data: data ?? {},
   };
-  frontPort!.postMessage(msg)
+
+  port.postMessage(msg);
 }
 
 chrome.runtime.onConnect.addListener((port) => {
-  if (port.name === 'front') {
-    if (!frontPort) {
-      frontPort = port;
-    } else {
-      /**
-       * extension window can open more than one since user can execute Ctrl + t (reopen recent closed tab)
-       */
-      port.postMessage({type: AppEventType.TERMINATE});
-      port.disconnect();
-    }
-    frontPort.onDisconnect.addListener(() => (frontPort = undefined));
-  } else if (port.name === 'content-script') {
-    port.onMessage.addListener((msg, _) => {
-      const { message, data } = msg;
-      if (message === 'get address bar') {
-        console.log('content-script', msg, frontPort);
-        if (frontPort) {
-          frontPort.postMessage({ message: 'get outer height' , outerHeight: data })
-        }
+  switch (port.name) {
+    case 'front':
+      if (!extensionInfo.frontPort) {
+        extensionInfo.frontPort = port;
+
+        extensionInfo.frontPort.onDisconnect.addListener(
+          () => {
+            extensionInfo.frontPort = undefined
+            extensionInfo.frontWinId = undefined
+          }
+        );
+      } else {
+        /**
+         * extension window can open more than one since user can execute Ctrl + t (reopen recent closed tab)
+         */
+        sendMessage(port, AppEventType.TERMINATE);
+        port.disconnect();
       }
-    })
+      break;
+    case 'content-script':
+      break;
+    case 'homepage':
   }
-  
 });
 
 // when extension installed, only once
@@ -65,90 +80,125 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 chrome.windows.onCreated.addListener((win: ChromeWindow) => {
-  if (win.id && frontPort) {
-    chrome.windows.get(win.id, { populate: true }, (justCreatedWindow) => {
-      sendMessage(ChromeEventType.WINDOW_CREATED, { win: justCreatedWindow });
+  if (!extensionInfo.frontPort) return;
+
+  if (!win.id) return;
+
+  chrome.windows.get(win.id, { populate: true }, (justCreatedWindow) => {
+    sendMessage(extensionInfo.frontPort, ChromeEventType.WINDOW_CREATED, {
+      win: justCreatedWindow,
     });
-  }
+  });
 });
 
 chrome.windows.onRemoved.addListener((windowId) => {
-  if (frontPort) {
-    sendMessage(ChromeEventType.WINDOW_CLOSED, { windowId });
-  }
+  if (!extensionInfo.frontPort) return;
+
+  sendMessage(extensionInfo.frontPort, ChromeEventType.WINDOW_CLOSED, {
+    windowId,
+  });
 });
 
 chrome.tabs.onCreated.addListener((tab) => {
   // Notice, that the onCreate does not guarantee that the tab has fully loaded.
-  if (frontPort) {
-    sendMessage(ChromeEventType.TAB_CREATED, { tab });
-  }
+  if (!extensionInfo.frontPort) return;
+
+  sendMessage(extensionInfo.frontPort, ChromeEventType.TAB_CREATED, { tab });
 });
 
 chrome.tabs.onMoved.addListener((_, moveInfo) => {
-  if (frontPort) {
-    const { windowId } = moveInfo;
+  if (!extensionInfo.frontPort) return;
 
-    sendMessage(ChromeEventType.TAB_MOVED, { moveInfo, windowId });
-  }
+  const { windowId } = moveInfo;
+
+  sendMessage(extensionInfo.frontPort, ChromeEventType.TAB_MOVED, {
+    moveInfo,
+    windowId,
+  });
 });
 
 chrome.tabs.onRemoved.addListener((tabId, { isWindowClosing, windowId }) => {
-  if (!frontPort) return;
+  if (!extensionInfo.frontPort) return;
 
   if (isWindowClosing) {
-    sendMessage(ChromeEventType.WINDOW_CLOSED, { windowId, tabId });
-  }
-  else {
-    sendMessage(ChromeEventType.TAB_CLOSED, { windowId, tabId });
+    sendMessage(extensionInfo.frontPort, ChromeEventType.WINDOW_CLOSED, {
+      windowId,
+      tabId,
+    });
+  } else {
+    sendMessage(extensionInfo.frontPort, ChromeEventType.TAB_CLOSED, {
+      windowId,
+      tabId,
+    });
   }
 });
 
 chrome.tabs.onUpdated.addListener((_, changeInfo, tab) => {
-  if (frontPort && !tab.url?.match(EXTENSION_ID)) {
-    if (changeInfo.status !== "complete") return;
+  if (!extensionInfo.frontPort) return;
 
-    sendMessage(ChromeEventType.TAB_UPDATED, { tab });
-  }
+  if (tab.url?.match(extensionInfo.id)) return;
+
+  if (changeInfo.status !== 'complete') return;
+
+  sendMessage(extensionInfo.frontPort, ChromeEventType.TAB_UPDATED, { tab });
 });
 
-chrome.tabs.onActivated.addListener(activeInfo => {
+chrome.tabs.onActivated.addListener((activeInfo) => {
+  if (!extensionInfo.frontPort) return;
+
   const { tabId, windowId } = activeInfo;
 
-  if (frontPort && windowId !== frontWinId) {
-    sendMessage(ChromeEventType.ACTIVE_CHANGED, { tabId, windowId });
-  }
-})
+  if (windowId === extensionInfo.frontWinId) return;
+
+  sendMessage(extensionInfo.frontPort, ChromeEventType.FOCUS_CHANGED, {
+    tabId,
+    windowId,
+  });
+});
 
 // invoke app init(=constructor)
 chrome.action.onClicked.addListener(() => {
   // open web
-  if (!frontPort) {
+  if (extensionInfo.frontWinId) {
+    /**
+     * if front window is alive and not focused
+     */
+    chrome.windows.update(extensionInfo.frontWinId, { focused: true });
+  } else {
     chrome.windows.create(
       {
         focused: true,
-        type: "panel",
-        url: "index.html",
-        width: frontWidth,
-        height: frontHeight,
+        type: 'panel',
+        url: 'index.html',
+        width: extensionInfo.frontWidth,
+        height: extensionInfo.frontHeight,
         left: 20,
         top: 20,
       },
-      (win) => (frontWinId = win?.id)
+      (win) => (extensionInfo.frontWinId = win?.id)
     );
-  } else if (frontPort && frontWinId) {
-    chrome.windows.update(frontWinId, { focused: true });
   }
 });
 
 chrome.windows.onBoundsChanged.addListener((win) => {
-  if (frontPort && win.id === frontWinId) {
-    frontPort.postMessage({
-      type: AppEventType.INIT,
-      data: {
-        extensionWidth: frontWidth,
-        extensionHeight: frontHeight,
-      }
-    });
+  if (!extensionInfo.frontPort) return;
+
+  if (win.id !== extensionInfo.frontWinId) return;
+
+  sendMessage(extensionInfo.frontPort, AppEventType.SET_SIZE, {
+    extensionWidth: extensionInfo.frontWidth,
+    extensionHeight: extensionInfo.frontHeight,
+  });
+});
+
+chrome.storage.onChanged.addListener((changes) => {
+  if (!extensionInfo.frontPort) return;
+
+  if ('theme-mode' in changes) {
+    sendMessage(extensionInfo.frontPort, UserSettingsEventType.THEME_MODE);
+  }
+
+  if ('size-mode' in changes) {
+    sendMessage(extensionInfo.frontPort, UserSettingsEventType.SIZE_MODE);
   }
 });
