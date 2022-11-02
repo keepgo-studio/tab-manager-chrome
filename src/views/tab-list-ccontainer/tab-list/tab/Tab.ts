@@ -1,13 +1,13 @@
 import { interpret } from 'xstate';
-import { EventlessComponent } from '../../../core/Component.core';
+import { EventlessComponent } from '../../../../core/Component.core';
 import { customElement, property } from 'lit/decorators.js';
-import { tabUiMachine } from '../../../machine/tab-ui.machine';
+import { tabUiMachine } from '../../../../machine/tab-ui.machine';
 import { css, html, unsafeCSS } from 'lit';
-import { ThreeDotModes } from '../../components/ThreeDot';
+import { ThreeDotModes } from '../../../components/ThreeDot';
 import { styleMap } from 'lit/directives/style-map.js';
 
 import styles from "./Tab.scss";
-import { UsersEventType } from '../../../shared/events';
+import { UsersEventType } from '../../../../shared/events';
 
 const uiService = interpret(tabUiMachine);
 
@@ -96,11 +96,8 @@ class Tab extends EventlessComponent {
 
     switch (this.sizeMode) {
       case 'mini':
-        console.log(this.idx)
-        if (this.idx) {
-          const s= miniFirstTabRender(this)
-          console.log(s);
-          return s;
+        if (this.idx === 0) {
+          return miniFirstTabRender(this);
         } else {
           return miniTabRender(this);
         }
@@ -114,8 +111,9 @@ class Tab extends EventlessComponent {
 
 
 function miniFirstTabRender(self: Tab) {
-
+  console.log('titel')
   return html`
+  <div class="first-tab-container">
     <div class="first-fav-icon-container">
       ${self.tabData.favIconUrl
         ? html`<img src="${self.tabData.favIconUrl}" />`
@@ -137,6 +135,7 @@ function miniFirstTabRender(self: Tab) {
 
       <a>${self.tabData.url}</a>
     </div>
+  </div>
   `;
 }
 

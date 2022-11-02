@@ -6,15 +6,16 @@ import { styleMap } from 'lit/directives/style-map.js';
 import { interpret } from 'xstate';
 import { tabListUiMachine } from '../../../machine/tab-list-ui.machine';
 
-import styles from './TabList.scss';
+import stylesMini from  "./TabList-mini.scss"
 
 import "./Menu.styled"
-import './Tab';
+import './tab/Tab';
 
 const uiService = interpret(tabListUiMachine);
 
 const TAB_HEIGHT = 72;
 const MAX_REST_CNT = 4;
+
 
 @customElement('app-tab-list')
 class TabList extends EventlessComponent {
@@ -43,7 +44,7 @@ class TabList extends EventlessComponent {
   static get styles() {
     return css`
       ${super.styles}
-      ${unsafeCSS(styles)}
+      ${unsafeCSS(stylesMini)}
     `;
   }
 
@@ -82,40 +83,40 @@ class TabList extends EventlessComponent {
     if (typeof this.winData === 'undefined' || this.winData.tabs.length === 0)
       return html``;
 
-    const restNodesMaxHeight =
-      (this.winData.tabs.length > MAX_REST_CNT
-        ? MAX_REST_CNT
-        : this.winData.tabs.length) * 32;
+    // const restNodesMaxHeight =
+    //   (this.winData.tabs.length > MAX_REST_CNT
+    //     ? MAX_REST_CNT
+    //     : this.winData.tabs.length) * 32;
 
-    this.jsStyleMap = {
-      restStyle: {
-        opacity: this.state.context.isOpened ? '1' : '0',
-        display: this.state.matches('List opened.Opening') ? 'block' : 'none',
-        height: this.state.matches('List opened.Opening')
-          ? `${restNodesMaxHeight}px`
-          : `${TAB_HEIGHT}px`,
-      },
-      shouldShowRestNodes: {
-        height: this.state.matches('List opened.Opening')
-          ? `${restNodesMaxHeight + TAB_HEIGHT}px`
-          : `${TAB_HEIGHT}px`,
-      },
-      shouldStretchDecorator: {
-        display: this.appMode === 'save' ? 'block' : 'none',
-        height: `${
-          TAB_HEIGHT +
-          (this.state.matches('List opened.Opening') ? restNodesMaxHeight : 0)
-        }px`,
-      },
-      shouldRotateButton: {
-        transform: this.state.matches('List opened.Opening')
-          ? 'rotate(45deg)'
-          : '',
-      },
-      active: {
-        color: '#3D73FF !important',
-      },
-    };
+    // this.jsStyleMap = {
+    //   restStyle: {
+    //     opacity: this.state.context.isOpened ? '1' : '0',
+    //     display: this.state.matches('List opened.Opening') ? 'block' : 'none',
+    //     height: this.state.matches('List opened.Opening')
+    //       ? `${restNodesMaxHeight}px`
+    //       : `${TAB_HEIGHT}px`,
+    //   },
+    //   shouldShowRestNodes: {
+    //     height: this.state.matches('List opened.Opening')
+    //       ? `${restNodesMaxHeight + TAB_HEIGHT}px`
+    //       : `${TAB_HEIGHT}px`,
+    //   },
+    //   shouldStretchDecorator: {
+    //     display: this.appMode === 'save' ? 'block' : 'none',
+    //     height: `${
+    //       TAB_HEIGHT +
+    //       (this.state.matches('List opened.Opening') ? restNodesMaxHeight : 0)
+    //     }px`,
+    //   },
+    //   shouldRotateButton: {
+    //     transform: this.state.matches('List opened.Opening')
+    //       ? 'rotate(45deg)'
+    //       : '',
+    //   },
+    //   active: {
+    //     color: '#3D73FF !important',
+    //   },
+    // };
 
     switch (this.sizeMode) {
       case 'mini':
