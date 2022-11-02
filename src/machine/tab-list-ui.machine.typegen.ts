@@ -3,12 +3,6 @@
 export interface Typegen0 {
   '@@xstate/typegen': true;
   internalEvents: {
-    'xstate.after(300)#Tab list ui.List closed.Closing': {
-      type: 'xstate.after(300)#Tab list ui.List closed.Closing';
-    };
-    'xstate.after(300)#Tab list ui.List opened.Opening': {
-      type: 'xstate.after(300)#Tab list ui.List opened.Opening';
-    };
     'xstate.init': { type: 'xstate.init' };
   };
   invokeSrcNameMap: {};
@@ -20,26 +14,21 @@ export interface Typegen0 {
   };
   eventsCausingActions: {
     'Hide dialog': 'mouseleave';
-    'Set tab list close': 'close';
-    'Set tab list open': 'open';
     'Show dialog': 'mouseenter';
+    toggle: 'Toggle';
   };
   eventsCausingServices: {};
-  eventsCausingGuards: {};
+  eventsCausingGuards: {
+    'list is not opened': 'Toggle';
+    'list is opened': 'Toggle';
+  };
   eventsCausingDelays: {};
   matchesStates:
     | 'Deleted'
-    | 'List closed'
-    | 'List closed.Closed'
-    | 'List closed.Closing'
-    | 'List closed.Hover'
-    | 'List opened'
-    | 'List opened.Hover'
-    | 'List opened.Opened'
-    | 'List opened.Opening'
-    | {
-        'List closed'?: 'Closed' | 'Closing' | 'Hover';
-        'List opened'?: 'Hover' | 'Opened' | 'Opening';
-      };
+    | 'idle'
+    | 'idle.Closed'
+    | 'idle.Hover'
+    | 'idle.Opened'
+    | { idle?: 'Closed' | 'Hover' | 'Opened' };
   tags: never;
 }

@@ -133,7 +133,7 @@ const dbMachine =
           if (event.type === 'REQUEST') {
             const win = event.data.win as CurrentWindow;
 
-            db.savingWindow(win);
+            await db.savingWindow(win);
           }
         },
 

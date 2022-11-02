@@ -1,109 +1,72 @@
-import { ActorRef, createMachine, spawn } from "xstate";
+import { createMachine } from "xstate";
 
 
 export const tabListUiMachine = 
-/** @xstate-layout N4IgpgJg5mDOIC5QBUCGAjABAGwJawBdMBXXAOgBl8iBjbAe1kjIGEHZcA7KAYgA9CqAmDKoAZsIBOACgDMABnkBKHmix5CJclU11GzNoy5QA2vIC6iUAAcjBXPU5WQfRLIDsADjIAmAJwAjABsfkGyfp5+Pj4ArO4ANCAAnohBATFkQVlBMUEALPKynjGFAL6liWo41FqUNXpMEKzskDwAtvTETGCcUmaWSCC2HPaOzq4IHt7+waHhkdFxiSkIWe6Z2TGBAbEBe+WVGNWapHW6LU0AEvQAbmCS7Z1M2GCod-3Ow7ijToMTU75AiEwhEorEEslEO4smQSopFJ4QvIfO48gcQFUNERTjpaBcyNc7g8AEpgDp3TAEI5Yj6DL4-capTzyWF5ALuHxBdzydzcvwxZaIPyyPJkTyyCVslE7AKyHzozE1HE1ejWHrMADyas4xn4gmEogk9zkihUipO2hV2s12uMtJsdgcv1A-3cfkyuRReXcRXCqMFCHSovhihiYZRMW9aIqGOpSstmlV6qaWuTjy6YB6fQsn0dYz+bjdHqCXp94r8-shCB88gyfnrFfkezyLcK0cO6njZyISc4zEJ93Tz1e7xzdLzzpchfdORLqLLfryAYUovFEr2nj5uSCCrjFu7mF7-dug9J5LAlL3BHtQwnjNWngCZD88jCtfk3oCnjyQQD3tkZDBFkMTRD6AR5LEu6dhaPC9je9JOveEEBnEoo+Hk9bFCBYZRAEUHHNiuA8A0YDwXeBYIMhVZ7D4sJrjEHjehEEGyOUMacPQEBwM45qEQeJFNIYHDcLmIyIRRsSij6oQfl+qKyFssgBmkQSAZs+SFMUZQxrxtS4pgAnNPoECid84kuogDEZJuJR5J49k+Ii3rKYEdESo5YT5EUfj4Vien1PiA6SKZDISTkz4xOK4bFO4sqxAG3IshK7nCrKQQfr5Xb6QJIXmVO1avmQ0npWym55ApwooZyGzARpRQlKxOlXv5ibWimtoieOYn5hZ1a5IBsmeLEnKBDySnUZGsIhmGIHuJGsWZfu+lHu1ya5T1+UMesPjhHO0Q7eEApVtE7pAiCYTikEzIxItfHLW1BInsFXVmRtEycuscr+BKJYxF+j4Bjt3jZHV6QMXK7axtBd1WmtL2hb1NbeAEg3DSEKM+spGQhrW4ZzVGt21AAImALzCCZ8N5RMxS0eysWReEyKeH+zJislATCldV0fjuTXQ1o62ThMAC0v5VsLO3Pg2fgtt66HYe4bGlEAA */
+/** @xstate-layout N4IgpgJg5mDOIC5QBUCGAjABAGwJawBdMBXXAOlwmzDIHkAHMAO0gGIBtABgF1FR6A9rFwFcApnxAAPRAFZOANjIAOWQE4AzBoDsugEwBGACycNAGhABPRHoVqyBhU4UHlRjWtl6NAXx8W0LDxCEnJKajIAYWwhNi5eJBBBYVFxSRkEL04yUwMDNTVVBW09QotrBEcDB2d1TnqCowVlPwCMHHwiUgoqGgAJAQA3MAAnVmQBKChqeMlkkTEJRIyNWWqFTk1ZZU5ZDSNteXMrGwMNGqdtA8M9Tm0z1pBAjpDu8P6h0fHJ6bB2AwS-CECzSy0Qq3Wm1WOz2ByO5XBhguClk2g0pgUtgUj2ewS6YV6rBGYAAtp9MAR2njZol5qklqAMsoDHoctodmp6oZOPlZAjKiiVMphZpDE0tIUcVTOqEetRWGTiLAwNRUMMaUCUot0ohmay7hyuQYeZ5+Xomjk9LplPsrkZHEY9FKgjLSAqBEqwMwCKMNUlgfSdQhHfz8kYyFpI9pPEZUUYmn5-CAmAIIHBJLjXeQACIqsA+iBzAPasEIYr8zGyZFozjeG3KNTOl74uU0BjMSBFrWgxmIFzKMhqQzKPTMvLuNFmlyDgoFTg2jTCowtJOZ14EiLRWKF2nFnvSPuuQfD0d5Yw6Y4VAyycP1O-Lq7aedqbGr6Xr1tkAbDEZdkEMg8ED0UoyHUHR4w8NQDHuS9EGg85HGcXQ7EQ3YmzxWV3j-QNS1caowLtSDoLOCsqzveoXCHNFbF8N8XXXbCS17BAAFoFH5FjvBnWdDhvHRlBKWi-CAA */
 createMachine({
-  tsTypes: {} as import("./tab-list-ui.machine.typegen").Typegen0,
-  schema: {
-    context: {} as {
-      shouldShowDialog: boolean;
-      isOpened: boolean;
-    },
-  },
-  context: {
-    shouldShowDialog: false,
-    isOpened: false
-  },
+  tsTypes: {} as import('./tab-list-ui.machine.typegen').Typegen0,
   predictableActionArguments: true,
+  initial: 'idle',
   on: {
-    open: {
-      target: '.List closed',
-      actions: 'Set tab list open',
-    },
-    close: {
-      target: '.List opened',
-      actions: 'Set tab list close',
+    mouseenter: {
+      target: '.idle',
+      actions: 'Show dialog',
     },
   },
-  initial: 'List closed',
   states: {
-    'List closed': {
-      initial: 'Closing',
+    Deleted: {
+      type: 'final',
+    },
+    idle: {
+      initial: 'Hover',
       states: {
-        Closing: {
-          after: {
-            '300': {
-              target: '#Tab list ui.List closed.Closed',
-              actions: [],
-              internal: false,
-            },
+        Opened: {
+          entry: 'toggle',
+          always: {
+            target: 'Hover',
           },
         },
         Closed: {
-          on: {
-            mouseenter: {
-              target: 'Hover',
-              actions: 'Show dialog',
-            },
+          entry: 'toggle',
+          always: {
+            target: 'Hover',
           },
         },
         Hover: {
           on: {
-            mouseleave: {
-              target: 'Closed',
-              actions: 'Hide dialog',
-            },
-            'Remove tab list': {
-              target: '#Tab list ui.Deleted',
-            },
+            Toggle: [
+              {
+                target: 'Closed',
+                cond: 'list is not opened',
+              },
+              {
+                target: 'Opened',
+                cond: 'list is opened',
+              },
+            ],
           },
         },
       },
-    },
-    'List opened': {
-      initial: 'Opening',
-      states: {
-        Opening: {
-          after: {
-            '300': {
-              target: '#Tab list ui.List opened.Opened',
-              actions: [],
-              internal: false,
-            },
-          },
+      on: {
+        'remove tab list': {
+          target: 'Deleted',
         },
-        Opened: {
-          on: {
-            mouseenter: {
-              target: 'Hover',
-              actions: 'Show dialog',
-            },
-          },
-        },
-        Hover: {
-          on: {
-            mouseleave: {
-              target: 'Opened',
-              actions: 'Hide dialog',
-            },
-            'Remove tab list': {
-              target: '#Tab list ui.Deleted',
-            },
-          },
+        mouseleave: {
+          target: '#Tab list ui',
+          actions: 'Hide dialog',
         },
       },
-    },
-    Deleted: {
-      type: 'final',
     },
   },
   id: 'Tab list ui',
 }, {
+  guards: {
+    'list is opened': () => false,
+    'list is not opened': () => false,
+  },
   actions: {
-    'Hide dialog': (context, _) => context.shouldShowDialog = false,
-    'Show dialog': (context, _) => context.shouldShowDialog = true,
-    'Set tab list close': (context, _) => context.isOpened = false,
-    'Set tab list open': (context, _) => context.isOpened = true
+    'Hide dialog': () => {},
+    'Show dialog': () => {},
+    'toggle': () => {},
   }
 })

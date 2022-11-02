@@ -23,22 +23,21 @@ const styled = css`
   ::slotted(current-tab-container) {
     width: 100%;
   }
-  .saved-mode {
+  .save {
     transform: translateX(-50%);
   }
 `;
 
 @customElement('app-main')
 class Main extends EventComponent {
-  private mode: TAppMode = 'normal';
-
   @state()
-  classes = { 'saved-mode': this.mode === 'save' || false };
+  mode!: TAppMode;
 
   eventListener({ detail }: CustomEvent<IFrontMessage<UsersEventType>>): void {
     const { data } = detail;
 
-    this.mode = data.mode === 'normal' ? 'save' : 'normal';
+    this.mode = data.mode!;
+    console.log(this.mode)
   }
 
   static get styles() {
@@ -50,7 +49,7 @@ class Main extends EventComponent {
 
   render() {
     return html`
-      <main class=${classMap(this.classes)}>
+      <main class=${this.mode}>
         <div class="container">
           <slot name="current-tab"></slot>
         </div>

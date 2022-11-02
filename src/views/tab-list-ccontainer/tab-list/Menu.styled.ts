@@ -3,6 +3,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { EventlessComponent } from '../../../core/Component.core';
 import { UsersEventType } from '../../../shared/events';
+import { closeWindow } from '../../../utils/browser-api';
 
 const styled = css`
   .dialog-container {
@@ -72,7 +73,7 @@ const styled = css`
 `;
 
 function normalRender(self: TabListMenu) {
-  return html` <div class="dialog-container" style=${styleMap(self.show)}>
+  return html` <div class="dialog-container">
     <svg
       @click=${self.closeHandler}
       class="close"
@@ -108,7 +109,6 @@ function normalRender(self: TabListMenu) {
 function saveRender(self: TabListMenu) {
   return html` <div
     class="dialog-container-save-mode"
-    style=${styleMap(self.show)}
   >
     <svg
       @click=${self.closeHandler}
@@ -129,13 +129,8 @@ function saveRender(self: TabListMenu) {
 
 @customElement('app-tab-list-menu')
 export class TabListMenu extends EventlessComponent {
-  show = {};
-
   @property()
   mode!: TAppMode;
-
-  @property()
-  shouldShow = false;
 
   @property()
   win?: CurrentWindow;
@@ -148,16 +143,7 @@ export class TabListMenu extends EventlessComponent {
       return;
     }
 
-    this.sendToFront({
-      discriminator: 'IFrontMessage',
-      sender: this.tagName,
-      command: UsersEventType.CLOSE_WINDOW,
-      data: {
-        windowId: this.win.id,
-        tabsLength: this.win.tabs.length,
-        firstTabId: this.win.tabs[0].id,
-      },
-    });
+    closeWindow(this.win.id!);
   }
 
   savedHandler() {
@@ -172,11 +158,6 @@ export class TabListMenu extends EventlessComponent {
   }
 
   render() {
-    this.show = {
-      opacity: this.shouldShow ? '1' : '0',
-      zIndex: this.shouldShow ? '999' : '0',
-    };
-
     switch (this.mode) {
       case 'normal':
         return normalRender(this);

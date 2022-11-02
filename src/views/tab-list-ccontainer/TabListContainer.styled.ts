@@ -25,7 +25,7 @@ class TabListContainer extends EventComponent {
   eventListener({
     detail,
   }: CustomEvent<
-    | IFrontMessage<UsersEventType | MessageEventType>
+    | IFrontMessage<UsersEventType>
     | IPortMessage<ChromeEventType>
   >): void {
     const { command, data } = detail;
@@ -36,8 +36,8 @@ class TabListContainer extends EventComponent {
           command,
           data,
         });
-
         break;
+        
       case 'IPortMessage':
         currentService.send('Update list', {
           command,
@@ -71,7 +71,6 @@ class TabListContainer extends EventComponent {
       case 'save':
         savedService
           .onTransition((s) => {
-            consoleLitComponent(this, 'save-mode', s);
 
             // if (s.matches('xstate.init')) {
             //   savedService.send('LOCAL.OPEN');

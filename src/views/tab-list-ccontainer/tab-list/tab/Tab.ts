@@ -1,23 +1,25 @@
 import { interpret } from 'xstate';
 import { EventlessComponent } from '../../../../core/Component.core';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import { tabUiMachine } from '../../../../machine/tab-ui.machine';
 import { css, html, unsafeCSS } from 'lit';
 import { ThreeDotModes } from '../../../components/ThreeDot';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import styles from "./Tab.scss";
-import { UsersEventType } from '../../../../shared/events';
-
-const uiService = interpret(tabUiMachine);
+import styles from './Tab.scss';
+import { focusTab, removeTab } from '../../../../utils/browser-api';
 
 @customElement('app-tab')
 class Tab extends EventlessComponent {
-  state = uiService.initialState;
-
   active;
 
-  showCloseBtn;
+  uiService;
+
+  @state()
+  state = tabUiMachine.initialState;
+
+  @state()
+  showCloseBtn = {};
 
   @property()
   idx?: number;
@@ -42,35 +44,32 @@ class Tab extends EventlessComponent {
       color: '#3D73FF !important',
     };
 
-    uiService.onTransition((s) => (this.state = s)).start();
+    this.uiService = interpret(
+      tabUiMachine.withConfig({
+        actions: {
+          'open tab': () =>
+            focusTab(this.tabData.windowId, this.tabData.id!, {
+              top: 0,
+              left: window.screen.width / 2,
+              width: window.screen.width / 2,
+              height: window.screen.height - 24,
+              state: 'normal',
+            }),
 
-    this.showCloseBtn = {
-      opacity: this.state.matches('Hover') ? '1' : '0',
-    };
+          'remove the tab': () => removeTab(this.tabData.id!),
+        },
+      })
+    )
+      .onTransition((s) => this.state = s)
+      .start();
   }
 
   handleTabClick() {
-    this.sendToFront({
-      discriminator: 'IFrontMessage',
-      sender: this.tagName,
-      command: UsersEventType.OPEN_TAB,
-      data: {
-        windowId: this.tabData.windowId,
-        tabId: this.tabData.id
-      }
-    })
+    this.uiService.send('mousedown');
   }
 
   handleTabDelete() {
-    this.sendToFront({
-      discriminator: 'IFrontMessage',
-      sender: this.tagName,
-      command: UsersEventType.CLOSE_TAB,
-      data: {
-        windowId: this.tabData.windowId,
-        tabId: this.tabData.id
-      }
-    })
+    this.uiService.send('remove');
   }
 
   handleFaviconError(e: Event) {
@@ -82,13 +81,13 @@ class Tab extends EventlessComponent {
 
     elem.parentNode!.replaceChild(newElem, elem);
   }
-  
+
   handleTabMouseEnter() {
-    uiService.send('mouseenter');
+    this.uiService.send('mouseenter');
   }
 
   handleTabMouseLeave() {
-    uiService.send('mouseleave');
+    this.uiService.send('mouseleave');
   }
 
   render() {
@@ -109,37 +108,41 @@ class Tab extends EventlessComponent {
   }
 }
 
-
 function miniFirstTabRender(self: Tab) {
-  console.log('titel')
   return html`
-  <div class="first-tab-container">
-    <div class="first-fav-icon-container">
-      ${self.tabData.favIconUrl
-        ? html`<img src="${self.tabData.favIconUrl}" />`
-        : html`<three-dot
-            width=${5}
-            height=${5}
-            mode=${ThreeDotModes['dot-flashing']}
-          ></three-dot>`}
-    </div>
+    <div
+      class="first-tab-container"
+      @click=${self.handleTabClick}
+      @mouseenter=${self.handleTabMouseEnter}
+      @mouseleave=${self.handleTabMouseLeave}
+    >
+      <div class="first-fav-icon-container">
+        ${self.tabData.favIconUrl
+          ? html`<img src="${self.tabData.favIconUrl}" />`
+          : html`<three-dot
+              width=${5}
+              height=${5}
+              mode=${ThreeDotModes['dot-flashing']}
+            ></three-dot>`}
+      </div>
 
-    <div class="first-text-container">
-      <h1
-        style=${self.isWindowFocused && self.tabData.active
-          ? styleMap(self.active)
-          : ''}
-      >
-        ${self.tabData.title}
-      </h1>
+      <div class="first-text-container">
+        <h1
+          style=${self.isWindowFocused && self.tabData.active
+            ? styleMap(self.active)
+            : ''}
+        >
+          ${self.tabData.title}
+        </h1>
 
-      <a>${self.tabData.url}</a>
+        <a>${self.tabData.url}</a>
+      </div>
     </div>
-  </div>
   `;
 }
 
 function miniTabRender(self: Tab) {
+  
   return html`
     <div
       class="rest-tab-container"
@@ -168,7 +171,10 @@ function miniTabRender(self: Tab) {
 
       <button
         @click=${self.handleTabDelete}
-        style=${styleMap(self.showCloseBtn)}
+        style=${styleMap({
+          display: self.state.matches('Hover') ? 'flex' : 'none',
+          opacity: self.state.matches('Hover.Opened') ? '1' : '0',
+        })}
       >
         <p>X</p>
       </button>

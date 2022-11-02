@@ -22,10 +22,16 @@
 }
 
 .first {
+  position: relative;
   display: grid;
-  grid-template-columns: auto 30px;
+  grid-template-columns: 90% 10%;
 }
 
+.mode-decorator {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 
 .button-container {
   background-color: rgba(205, 205, 205, 0.3);
@@ -39,10 +45,6 @@
 }
 
 .rest {
-  position: absolute;
-  top: 72px;
-  left: 0;
-  padding: 1rem;
   z-index: 1;
   background-color: #fff;
   overflow-y: scroll;
@@ -51,12 +53,22 @@
     since showing rest tab list shouldn't faster than node's growing height,
     so I set short trasnition duration. 
   */
+  transition-property: max-height, opacity;
   transition: ease 250ms;
 
   width: 100%;
   /*
     you can find dynamic height in the function render()
   */
+
+  ul {
+    padding: 1rem;
+
+    /* set margin bottom for tabs except for last child */
+    li:not(:last-child) {
+      margin-bottom: 6px;
+    }
+  }
 }
 
 .rest::-webkit-scrollbar {
@@ -68,9 +80,3 @@
   background-color: #d9d9d9;
   border-radius: 999px;
 }
-
-/* set margin bottom for tabs except for last child */
-.rest-tab-container:not(:last-child) {
-  margin-bottom: 6px;
-}
-
