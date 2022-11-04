@@ -6,20 +6,22 @@ export const enum MessageStyle {
 }
 
 export const messageMachine = 
-/** @xstate-layout N4IgpgJg5mDOIC5QFk6wIYwHQCUwGMwBLANzAAJYAXdKgV1gGIBlACwHsB3IgOynIC2aTGADaABgC6iUAAd2sIlSLseMkAA9EAZgAcANiwB2XQEYArLr0BOfeIAsAJgA0IAJ47H140e3aj+ham2o7a1gC+ka487BBw6qiwGNh4hKQU1LQM6vKKyqrqWggWRlj2RraOjuLWjnbi+q4eCH7iWI6+2vrVFQG6EeGuiclgWGxcgsIwOQpKKmpImoj6XVjmVSHa5uZGpvbmje6e3kad5vbW4o772hZRIMMiM3nzhYimNWUV3dW19YFNRDXUw+PxGA66bZGezaeyRSJAA */
+/** @xstate-layout N4IgpgJg5mDOIC5QFk6wIYwHQCUwGMwBLANzAAJYAXdKgV1gGIBlACwHsB3IgOynIC2aTGADaABgC6iUAAd2sIlSLseMkAA9EAJnEBWLAE4AzAHYALAA5zFgIzbb4w+YA0IAJ6JbxvQF9fbqiwGNgAIqpgjBLSSCDyisqq6loI2oYAbFh6bp4Ilsb+ASA87BBw6kEhYLgExGSUNPTwsfFKKmqxKebaOYiWhljGQ8MjI-6BwmER6q2JHaApxoYGS+LpTnYOTq4eiIa2WPmjxwVFlSIzCm1JnYgAtOm9CA+FvkA */
 createMachine({
   tsTypes: {} as import("./message.machine.typegen").Typegen0,
   initial: 'Receive status',
   states: {
     'Receive status': {
       on: {
-        'Showing message': {
+        'Showing message': { 
           target: 'Done',
         },
       },
     },
-    'Done': {
-      type: 'final',
+    Done: {
+      always: {
+        target: 'Receive status',
+      },
     },
   },
   id: 'Message',

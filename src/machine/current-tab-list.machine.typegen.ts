@@ -4,9 +4,20 @@ export interface Typegen0 {
   '@@xstate/typegen': true;
   internalEvents: {
     '': { type: '' };
+    'done.invoke.get-all-windows': {
+      type: 'done.invoke.get-all-windows';
+      data: unknown;
+      __tip: 'See the XState TS docs to learn how to strongly type this.';
+    };
+    'error.platform.get-all-windows': {
+      type: 'error.platform.get-all-windows';
+      data: unknown;
+    };
     'xstate.init': { type: 'xstate.init' };
   };
-  invokeSrcNameMap: {};
+  invokeSrcNameMap: {
+    'chrome api: get all windows': 'done.invoke.get-all-windows';
+  };
   missingImplementations: {
     actions: never;
     services: never;
@@ -14,6 +25,8 @@ export interface Typegen0 {
     delays: never;
   };
   eventsCausingActions: {
+    ACTIVE_CHANGED: 'Update list';
+    FOCUS_CHANGED: 'Update list';
     TAB_CLOSED: 'Update list';
     TAB_CRAETED: 'Update list';
     TAB_MOVED: 'Update list';
@@ -22,8 +35,11 @@ export interface Typegen0 {
     WINDOW_CREATED: 'Update list';
     'send status to message machine': '';
   };
-  eventsCausingServices: {};
+  eventsCausingServices: {
+    'chrome api: get all windows': 'Retry' | 'xstate.init';
+  };
   eventsCausingGuards: {
+    ACTIVE_CHANGED: 'Update list';
     FOCUS_CHANGED: 'Update list';
     TAB_CLOSED: 'Update list';
     TAB_CRAETED: 'Update list';

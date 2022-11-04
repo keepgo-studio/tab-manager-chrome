@@ -2,11 +2,9 @@ import {
   ActorRef,
   assign,
   createMachine,
-  interpret,
-  SendAction,
   spawn,
 } from 'xstate';
-import { error, send, sendParent } from 'xstate/lib/actions';
+import { send, sendParent } from 'xstate/lib/actions';
 import { MessageEventType, UsersEventType } from '../shared/events';
 import db from '../store/indexed-db';
 import { arrayToMap } from '../utils/utils';
@@ -18,7 +16,7 @@ const dbMachine =
   /** @xstate-layout N4IgpgJg5mDOIC5QQEYDoDyA7ANgSyzDVgEMA3MAAgHcCIB7agYgcLQLPoGsjVNcCRUhRp1GCDvQDGJAC556WANoAGALqq1iUAAd6sPPMXaQAD0QBGFQA4LaawBYAzADZr1gJwuHjp9YA0IACeiABMAOyhaE4xsXGx4QC+iYF82PhswlS0WAzMYABOBfQFaDo4cgBmJQC2aGkCmeTZYtQSWJwyRsrqmiZ6Bt0m5ggWVna+bp7evgHBiA6h1tHxq05JKSANGbxgOGCyVFkQormMLIpEkjz16OmC9XsHR80nOXntnXIKPRrq-fpDD9hpYbBNnFMvD5nHMQggnKEHCs1nENqk7o1dvtDpRjqc8kxCsVSuUqrVbvwdo9sS8KG9Wp9pN9FJo+kgQAMgcZ2SMxmN7BD3FDZoE4T4VMiUTE0VsMVSYLJKCQcDhca98YxYBc2NdeHKHgqlSq1XSNdRYIyuj9Wf92ZyhjzQR5wa4hTMYaLEOsXJKpTLtgaDkbVXj3prCUUSmUKrJqgU6gG2IblSH1WHzZbmb82bpAQ7QLy+QLXdNoX5PQgAKwI31rBzJdGUh54CD7JgAJQAogBFACqnYAygAVHMcvPAx0IBwWZYWBwqFyhSsV0IeawN2VNnWtsAdnv94dKCxaO3j7kFhYztBzhdLiuVucbxNXHd7vuDkehE+5wYTi9Tq8b0XZd5inBcn3QAcAFcpCkOAtVHe0-zMMJwh9IC71A6wnAgtBO0jAomEQs8sBBBAInQ+dgIrKZcIwSpKh2JgMAABU7AA5Yjf3PFDRgcJFbxAuFEWWJdkk2LB6AgOATGfYhmjNAFuNIydwk8aJrBUUIbDWFdwiRSs6MxalnhNSBFNPZSyPCStKzQSsHDcGyKz8KJDM2OTk2NUNWngSyuRU-8bKRRYZ2c0CHA8CV3Mbe5t32JSArIpx+QwoSvRseyjJ2RL8140IXCca8qMwuEZzsmLN2g2D4Ny5DeScStlnWSK-GFD1QIicJazWf10Hw4k6p4hrbDQFQLFswr2vLCLNJ61Y+swBicv8vKRkWPTQggobAt4gBaFwKwO8TEiAA */
   createMachine(
     {
-      tsTypes: {} as import('./saved-tab-list.machine.typegen').Typegen0,
+      tsTypes: {} as import("./saved-tab-list.machine.typegen").Typegen0,
       schema: {
         services: {} as {
           'open idb': { data: void };
@@ -241,7 +239,6 @@ export const savedTabListMachine =
           | { type: 'messaging'; status: MessageEventType },
 
         actions: {} as
-          | { type: 'set' }
           | { type: 'request open db' }
           | { type: 'receive data' }
           | { type: 'request db with data' }
@@ -250,7 +247,10 @@ export const savedTabListMachine =
       initial: 'idle',
       states: {
         idle: {
-          entry: 'set',
+          entry: assign({
+            dbRef: () => spawn(dbMachine, 'db-machine'),
+            msgRef: () => spawn(messageMachine, 'message-machine'),
+          }),
           on: {
             'LOCAL.OPEN': {
               target: 'idle',
@@ -285,14 +285,9 @@ export const savedTabListMachine =
     },
     {
       actions: {
-        'set': assign({
-          dbRef: () => spawn(dbMachine, 'db-machine'),
-          msgRef: () => spawn(messageMachine, 'message-machine'),
-        }),
-
         'request open db': send(
           { type: 'OPEN' },
-          { to: (context) => context.dbRef! }
+          { to: (context) => context.dbRef }
         ),
 
         'receive data': (context, event) => {
@@ -307,7 +302,7 @@ export const savedTabListMachine =
             command: event.command,
             data: event.data,
           }),
-          { to: (context) => context.dbRef! }
+          { to: (context) => context.dbRef }
         ),
 
         'send to message machine': send(

@@ -12,7 +12,6 @@ import './tab-list/TabList';
 import { consoleLitComponent } from '../../utils/utils';
 import {
   ChromeEventType,
-  MessageEventType,
   UsersEventType,
 } from '../../shared/events';
 
@@ -57,7 +56,6 @@ class TabListContainer extends EventComponent {
       case 'normal':
         currentService
           .onTransition((s) => {
-            consoleLitComponent(this, 'current-mode', s);
 
             if (s.matches('Get all data.Failed')) {
               currentService.send('Retry');

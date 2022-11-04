@@ -8,6 +8,8 @@ setDocumentTitle(chrome.runtime.getManifest().description ?? 'tab-manager');
 window.onload = () => {
   // connect to worker
   let port = connectToBack('front');
+  
+  chrome.runtime.sendMessage('sending windowId to background script')
 
   const app = new App();
 

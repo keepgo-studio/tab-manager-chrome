@@ -1,7 +1,7 @@
 import { createMachine } from "xstate";
 
 export const tabUiMachine = 
-/** @xstate-layout N4IgpgJg5mDOIC5QBUCGAjAdACQPYDcwAnTAeQAcwA7ASyqgGIAPWAF1VbE1QDNOiAFAEYAlAzRY8hEhWp0oAbQAMAXUShyuWDVY1cVdSCaIArAA4AzJiEAWJQDYTAJic2LToQE57AGhABPUwsbTE8wzxMIjwsAdmCAX3i-CRwCYgYiMABbNOU1JBBNbV19Q2MEISUlGNDYkwtqmJihewszP0CEG08lTG6wkxjHE3snJU9E5IxU6QYcgFdYMAAbMFRCPMMinT0DAvKhSMwqqsqzM09KzzaOxBtu63sni0Gle-szJ8mQFJoIVbmuEWYGo-E2BW2JT2oAORxOSjOFyuNwCpgRjyeQiEZhsg0+n2+KQAwssaABjADWkAY4I0Wh2pX2iAs9k8fQ8ZhiOJiJhsZhMJluFQcfXCNhcPXs2KETkJGEBwIguAA7lRaYV6VCyncnELKvZRWFxU5JdLZd8qLgIHBDCkpMQyJQqJAtprdtqEDEnGZMPZmtcLJ4nA1zhYhSZKqFwpZ7G93DEInLJGkZE75K7iu6mQgLCzMMH7kp3CypRdw1jDZ44jHzK4kzNiBmGdCjIhvT6C3Zi5iy6ic3Eo2EE5zvcGhBZ6wAlbJpCBNrXZrHB6z+uO516eIU2J6VpSRMyuYf1v6redZmGmGJbgWVwNmcbFvf1knkqlziFuxkXio9TBDEYeD0uZVJ4NhCgeg4RE8e4Hl6QhJmeX6tggAC0vh9mhxwnDyPKxhECaOIkiRAA */
+/** @xstate-layout N4IgpgJg5mDOIC5QBUCGAjAdACQPYDcwAnTAeQAcwA7ASyqgGIAPWAF1VbE1QDNOiAFAEYAlAzRY8hEhWp0oAbQAMAXUShyuWDVY1cVdSCaIArADYAHJiEAWJWYBM9pQE4zAZhsuANCACeiA4OJpguYS5C5gDsNg5mShYWAL5JvhI4BMQMALa4AK6wkLgA7lTKakggmtq6+obGCC5RITYWNp4udi4mSkK+AQhxNqFCZuYOLg42JpMmKWkYGdIMRGC5hOWG1Tp6BpUNTS1tHV09ff6IQk6YMWET7Wcm7fMg6VJZuQVgADZgqBuqLZaHZ1faXGzDJRQqFmKIWMxmNw2KL9cFKawIxwOCwmExCJTuZKpV6LGgQX45fKFaj8TaVba1PagBq2SHQ+xwhFIlEXBBCSYYsbwpR4-GWdwvdIAYW+NAAxgBrSAMOkaYGM+qIQ6YVrtLynXqowZXEZjMJRbEmCzdFLEqi4CBwQxvTIyShUSBAmq7TUIRFCTAOIQWKJCdxKKbuWE2I1OAPhbpuEVRZpRFySxbvN1yehekFMoyIdxBwOedwWkzNaImWMRnXhYIJUbmObEl3SPMasGDKLuUvtCtV2E13lmYYJysmIIp0MODNYABKa0yEE7Pu7+Jc6NDiXce4RVpiRrcNy8TX3Y3D5fnmDJvzXoOZiFiRtsZnrYR6Ioh5bGN5l8pKqu9LquuT58lcwxTGECI2GGMwirWIS3BETgxHiZiRPOD4Fg0AC0ZhGnhDh9gmZFkRKtpAA */
 createMachine({
   tsTypes: {} as import('./tab-ui.machine.typegen').Typegen0,
   schema: {
@@ -12,11 +12,6 @@ createMachine({
       | { type: 'remove' },
   },
   predictableActionArguments: true,
-  on: {
-    mousedown: {
-      target: '.Clicked',
-    },
-  },
   initial: 'idle',
   states: {
     Hover: {
@@ -39,6 +34,9 @@ createMachine({
         },
       },
       on: {
+        mousedown: {
+          target: 'Clicked',
+        },
         remove: {
           target: 'Removed',
         },
@@ -61,7 +59,7 @@ createMachine({
     Clicked: {
       entry: 'open tab',
       always: {
-        target: 'idle',
+        target: 'Hover',
       },
     },
   },

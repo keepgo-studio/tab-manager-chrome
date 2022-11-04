@@ -37,7 +37,6 @@ class Main extends EventComponent {
     const { data } = detail;
 
     this.mode = data.mode!;
-    console.log(this.mode)
   }
 
   static get styles() {

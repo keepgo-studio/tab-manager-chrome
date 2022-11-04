@@ -37,7 +37,7 @@ class TabList extends EventlessComponent {
   @property()
   appMode!: TAppMode;
 
-  @property({ type: Object })
+  @property({ type: Object, hasChanged: () => true })
   winData!: CurrentWindow;
 
   constructor() {
@@ -56,10 +56,7 @@ class TabList extends EventlessComponent {
         },
       })
     )
-      .onTransition((s) => {
-        this.state = s;
-        console.log(s.value);
-      })
+      .onTransition((s) => this.state = s)
       .start();
   }
 
@@ -148,6 +145,7 @@ class TabList extends EventlessComponent {
 }
 
 function miniRender(self: TabList) {
+
   const dialogHtml = html`
     <app-tab-list-menu
       .mode=${self.appMode}
@@ -203,7 +201,7 @@ function miniRender(self: TabList) {
     <div
       class="rest"
       style=${styleMap({
-        maxHeight: self.isOpened ? `150px` : `0px`,
+        maxHeight: self.isOpened ? `132px` : `0px`,
         opacity: self.isOpened ? '1' : '0',
       })}
     >

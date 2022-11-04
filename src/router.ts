@@ -17,7 +17,7 @@ export class PortRouter {
           | IPortMessage<ChromeEventType | AppEventType>
           | IPortMessage<UserSettingsEventType>
       ) => {
-        // console.log('[main]:', msg.command, msg.data);
+        console.log('[main]:', msg.command, msg.data);
         switch (msg.command) {
           case AppEventType.SET_SIZE:
             const { extensionWidth, extensionHeight } = msg.data;
@@ -35,6 +35,7 @@ export class PortRouter {
           case ChromeEventType.TAB_MOVED:
           case ChromeEventType.TAB_CLOSED:
           case ChromeEventType.FOCUS_CHANGED:
+          case ChromeEventType.ACTIVE_CHANGED:
             this._app.sendTo(this._app.elemMap.currentTabListContainer, msg);
             break;
 

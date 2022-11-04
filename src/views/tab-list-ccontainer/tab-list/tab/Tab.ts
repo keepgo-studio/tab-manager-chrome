@@ -24,7 +24,7 @@ class Tab extends EventlessComponent {
   @property()
   idx?: number;
 
-  @property()
+  @property({ hasChanged: () => true})
   tabData!: CurrentTab;
 
   @property()

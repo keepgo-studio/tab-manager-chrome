@@ -3,6 +3,7 @@
 export interface Typegen0 {
   '@@xstate/typegen': true;
   internalEvents: {
+    '': { type: '' };
     'xstate.after(1)#Tab.Hover.Opening': {
       type: 'xstate.after(1)#Tab.Hover.Opening';
     };
@@ -17,7 +18,7 @@ export interface Typegen0 {
     delays: never;
   };
   eventsCausingActions: {
-    'display close button': 'mouseenter';
+    'display close button': '' | 'mouseenter';
     'opacity close button': 'xstate.after(1)#Tab.Hover.Opening';
     'open tab': 'mousedown';
     'remove & hide close button':

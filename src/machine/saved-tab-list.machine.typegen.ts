@@ -106,7 +106,6 @@ export interface Typegen1 {
     'request db with data': 'LOCAL.REQUEST';
     'request open db': 'LOCAL.OPEN';
     'send to message machine': 'messaging';
-    set: 'LOCAL.OPEN' | 'xstate.init';
   };
   eventsCausingServices: {};
   eventsCausingGuards: {};

@@ -14,6 +14,7 @@ export const enum ChromeEventType {
   TAB_MOVED="TAB_MOVED",
   TAB_CLOSED="TAB_CLOSED",
   FOCUS_CHANGED="FOCUS_CHANGED",
+  ACTIVE_CHANGED="ACTIVE_CHANGED",
 }
 export const enum UserSettingsEventType {
   THEME_MODE="theme-mode",
