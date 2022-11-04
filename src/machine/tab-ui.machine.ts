@@ -15,15 +15,12 @@ createMachine({
   initial: 'idle',
   states: {
     Hover: {
-      exit: 'remove & hide close button',
       initial: 'Opening',
       states: {
         Opened: {
-          entry: 'opacity close button',
           type: 'final',
         },
         Opening: {
-          entry: 'display close button',
           after: {
             '1': {
               target: '#Tab.Hover.Opened',
@@ -46,7 +43,7 @@ createMachine({
       },
     },
     Removed: {
-      entry: 'remove the tab',
+      entry: 'remove the tab or remove the tab from idb',
       type: 'final',
     },
     idle: {
@@ -57,7 +54,7 @@ createMachine({
       },
     },
     Clicked: {
-      entry: 'open tab',
+      entry: 'open tab or open saved window with new window',
       always: {
         target: 'Hover',
       },
@@ -66,10 +63,7 @@ createMachine({
   id: 'Tab',
 }, {
   actions: {
-    "open tab": () => {},
-    'remove the tab': () => {},
-    'remove & hide close button': () => {},
-    'display close button': () => {},
-    'opacity close button': () => {},
+    "open tab or open saved window with new window": () => {},
+    'remove the tab or remove the tab from idb': () => {},
   }
 })

@@ -1,5 +1,6 @@
 import { css, html, LitElement } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
+import { DialogComponent } from '../../core/Dialog.core';
 
 const styled = css`
 * {
@@ -49,129 +50,44 @@ button {
   background-color: rgba(205, 205, 205, 0.5);
 }
 
-#message {
-  position: fixed;
-  z-index: 1000;
-  bottom:0;
-  left:24px;
-  font-weight: ;
-  font-size: 1.5rem
-  padding: 5px 16px;
-  transform: translateY(100%);
-  transition: ease 300ms;
-  color: #fff;
-  padding: 12px 24px;
-}
-#message[isConfirmed='true'] {
-  background-color: #4F6EFC;
-}
-#message[isConfirmed='false'] {
-  background-color: #F83F4B;
-}
-.appear-msg {
-  bottom:24px !important;
-  transform: none !important;
-}
 `;
 
 @customElement('app-confirm')
-export class Confirm extends LitElement {
-  @state()
-  isConfirmed?: boolean;
+export class Confirm extends DialogComponent {
 
   @state()
-  dialogStr = '';
-
-  @state()
-  msgStr = '';
+  confirmMsg = '';
 
   @query('#dialog')
   dialog: Element | undefined;
 
-  @query('#message')
-  message: Element | undefined;
-
   static styles = styled;
-
-  wait() {
-    return new Promise((res, _) => {
-      const loop = () => {
-        setTimeout(() => {
-          if (this.isConfirmed !== undefined) {
-            return res(this.isConfirmed);
-          }
-          loop();
-        }, 100);
-      };
-      loop();
-    });
-  }
-
-  appaer() {
-    const prev = document.body.querySelector(this.tagName);
-    if (prev) {
-      prev.remove();
-    }
-    document.body.appendChild(this);
-  }
-
-  disappear() {
-    this.dialog!.remove();
-    this.message!.classList.add('appear-msg');
-
-    setTimeout(() => {
-      this.message!.classList.remove('appear-msg');
-
-      setTimeout(() => {
-        this.remove();
-      }, 500);
-    }, 3000);
-  }
-
-  async show() {
-    this.appaer();
-
-    await this.wait();
-
-    this.disappear();
-
-    return this.isConfirmed;
-  }
 
   private handleSubmit(e: Event) {
     const target = e.currentTarget as Element;
 
     if (target.className === 'confirm') {
       this.isConfirmed = true;
-      this.msgStr = `${this.msgStr} has success! 😊`;
     } else {
       this.isConfirmed = false;
-      this.msgStr = `${this.msgStr} has failed... 😒`;
     }
-
-    this.message?.setAttribute('isConfirmed', this.isConfirmed.toString());
   }
 
-  constructor(dialogStr: string = 'alert', msgStr: string = 'alert') {
+  constructor(confirmMsg: string = 'alert') {
     super();
 
-    this.dialogStr = dialogStr;
-    this.msgStr = msgStr;
+    this.confirmMsg = confirmMsg;
   }
 
   render() {
     return html`
       <div id="dialog">
         <div class="container">
-          <h1>${this.dialogStr}</h1>
+          <h1>${this.confirmMsg}</h1>
 
           <button @click=${this.handleSubmit} class="confirm">confirm</button>
           <button @click=${this.handleSubmit} class="cancel">cancel</button>
         </div>
-      </div>
-
-      <div id="message">
-        <h1>${this.msgStr}</h1>
       </div>
     `;
   }

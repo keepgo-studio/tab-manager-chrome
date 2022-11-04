@@ -10,14 +10,16 @@ interface ITabManagerDB extends DBSchema {
 class DBHandler {
   private _db!: IDBPDatabase<ITabManagerDB>;
 
-  constructor() {}
+  constructor() { }
 
   async open() {
-    return (this._db = await openDB<ITabManagerDB>('tab-manager-db', 1, {
+    this._db = await openDB<ITabManagerDB>('tab-manager-db', 1, {
       upgrade(db) {
         db.createObjectStore('saved-window', { autoIncrement: true });
       },
-    }));
+    })
+
+    console.log('[idb]: db server is open!');
   }
 
   async loadAllWindows() {
@@ -50,6 +52,25 @@ class DBHandler {
       })
       .catch(err => {
         console.error('[idb]: saving had failed');
+        throw err;
+      });
+  }
+
+  async removingTab(windowId: number, tabId: number) {
+    const transaction = this._db.transaction('saved-window', 'readwrite');
+
+    const targetWindow = await transaction.store.get(windowId) as CurrentWindow;
+
+    targetWindow.tabs = targetWindow.tabs.filter(tab => tab.id !== tabId);
+
+    transaction.store.put(targetWindow, windowId);
+
+    return transaction.done
+      .then(() => {
+        console.log('[idb]: complete removing the specific tab!');
+      })
+      .catch(err => {
+        console.error('[idb]: error while removing the tab');
         throw err;
       });
   }

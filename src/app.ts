@@ -1,6 +1,9 @@
 import './views/navbar/Navbar.styled';
 import './views/main/Main.styled';
 import './views/tab-list-ccontainer/TabListContainer.styled';
+import './views/search/Search';
+import './views/message/Message.styled';
+
 import {
   AppEventType,
   ChromeEventType,

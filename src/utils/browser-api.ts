@@ -59,3 +59,22 @@ export function removeTab(tabId: number) {
 export function closeWindow(windowId: number) {
   chrome.windows.remove(windowId);
 }
+
+export function createNewWindow(
+  tabs: CurrentTab[],
+  config: Partial<{
+    type: chrome.windows.createTypeEnum;
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+    focused: boolean;
+  }>
+) {
+
+  const { type, top, left, width, height, focused } = config;
+
+  const url = tabs.map(tab => tab.url) as string[];
+
+  chrome.windows.create({ url, focused, type, top, left, width, height })
+}

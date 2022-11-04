@@ -8,7 +8,6 @@ export interface Typegen0 {
       type: 'xstate.after(1)#Tab.Hover.Opening';
     };
     'xstate.init': { type: 'xstate.init' };
-    'xstate.stop': { type: 'xstate.stop' };
   };
   invokeSrcNameMap: {};
   missingImplementations: {
@@ -18,16 +17,8 @@ export interface Typegen0 {
     delays: never;
   };
   eventsCausingActions: {
-    'display close button': '' | 'mouseenter';
-    'opacity close button': 'xstate.after(1)#Tab.Hover.Opening';
-    'open tab': 'mousedown';
-    'remove & hide close button':
-      | 'mousedown'
-      | 'mouseleave'
-      | 'remove'
-      | 'xstate.after(1)#Tab.Hover.Opening'
-      | 'xstate.stop';
-    'remove the tab': 'remove';
+    'open tab or open saved window with new window': 'mousedown';
+    'remove the tab or remove the tab from idb': 'remove';
   };
   eventsCausingServices: {};
   eventsCausingGuards: {};

@@ -1,4 +1,5 @@
 import { LitElement } from 'lit';
+import { MessageEventType, UsersEventType } from '../shared/events';
 
 export function isUserDarkMode() {
   if (
@@ -48,4 +49,8 @@ export function getSize(mode: TSizeMode) {
 
 export function arrayToMap(list: Array<any>): Object {
   return list.reduce((acc:CurrentWindowMapping,curr)=> (acc[curr.id!]=curr,acc), {});
+}
+
+export function sendToFront(msg: IFrontMessage<UsersEventType | MessageEventType>) {
+  window.dispatchEvent(new CustomEvent(msg.command, { detail: msg }));
 }

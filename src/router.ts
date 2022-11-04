@@ -65,14 +65,10 @@ export class FrontRouter {
         case UsersEventType.CHANGE_MODE:
           target = _app.elemMap.appMain;
           break;
-        // case UsersEventType.OPEN_TAB:
-        // case UsersEventType.CLOSE_TAB:
-        // case UsersEventType.CLOSE_WINDOW:
-        //   target = _app.elemMap.currentTabListContainer;
-        //   break;
         case UsersEventType.SAVE_WINDOW:
         case UsersEventType.OPEN_SAVED_WINDOW:
         case UsersEventType.DELETE_SAVED_WINDOW:
+        case UsersEventType.DELETE_SAVED_TAB:
           target = _app.elemMap.savedTabListContainer;
       }
 

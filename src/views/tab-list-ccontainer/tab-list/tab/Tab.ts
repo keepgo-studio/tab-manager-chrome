@@ -8,6 +8,8 @@ import { styleMap } from 'lit/directives/style-map.js';
 
 import styles from './Tab.scss';
 import { focusTab, removeTab } from '../../../../utils/browser-api';
+import { UsersEventType } from '../../../../shared/events';
+import { Confirm } from '../../../dialog/Confirm.styled';
 
 @customElement('app-tab')
 class Tab extends EventlessComponent {
@@ -23,6 +25,9 @@ class Tab extends EventlessComponent {
 
   @property()
   idx?: number;
+
+  @property()
+  appMode!: TAppMode;
 
   @property({ hasChanged: () => true})
   tabData!: CurrentTab;
@@ -47,16 +52,43 @@ class Tab extends EventlessComponent {
     this.uiService = interpret(
       tabUiMachine.withConfig({
         actions: {
-          'open tab': () =>
-            focusTab(this.tabData.windowId, this.tabData.id!, {
-              top: 0,
-              left: window.screen.width / 2,
-              width: window.screen.width / 2,
-              height: window.screen.height - 24,
-              state: 'normal',
-            }),
+          'open tab or open saved window with new window':async () => {
+            if (this.appMode === 'normal') {
+              focusTab(this.tabData.windowId, this.tabData.id!, {
+                top: 0,
+                left: window.screen.width / 2,
+                width: window.screen.width / 2,
+                height: window.screen.height - 24,
+                state: 'normal',
+              })
+            } else if (this.appMode === 'save'){
 
-          'remove the tab': () => removeTab(this.tabData.id!),
+              if (!(await new Confirm('저장된 창을 여시겠습니까?').show())) return;
+
+              this.sendToFront({
+                discriminator: 'IFrontMessage',
+                sender: this.tagName,
+                command: UsersEventType.OPEN_SAVED_WINDOW,
+                data: { windowId: this.tabData.windowId },
+              })
+            }
+          },
+
+          'remove the tab or remove the tab from idb':async () => {
+            if (this.appMode === 'normal') {
+              removeTab(this.tabData.id!)
+            } else if (this.appMode === 'save') {
+
+              if (!(await new Confirm('해당 탭을 삭제하시겠습니까?').show())) return;
+
+              this.sendToFront({
+                discriminator: 'IFrontMessage',
+                sender: this.tagName,
+                command: UsersEventType.DELETE_SAVED_TAB,
+                data: { tabId: this.tabData.id, windowId: this.tabData.windowId },
+              })
+            }
+          },
         },
       })
     )
@@ -64,15 +96,15 @@ class Tab extends EventlessComponent {
       .start();
   }
 
-  handleTabClick() {
+  tabClickHandler() {
     this.uiService.send('mousedown');
   }
 
-  handleTabDelete() {
+  tabDeleteHandler() {
     this.uiService.send('remove');
   }
 
-  handleFaviconError(e: Event) {
+  faviconErrorHandler(e: Event) {
     const elem = e.currentTarget as Element;
     const newElem = document.createElement('three-dot');
     newElem.setAttribute('width', '5');
@@ -82,11 +114,11 @@ class Tab extends EventlessComponent {
     elem.parentNode!.replaceChild(newElem, elem);
   }
 
-  handleTabMouseEnter() {
+  tabMouseEnterHandler() {
     this.uiService.send('mouseenter');
   }
 
-  handleTabMouseLeave() {
+  tabMouseLeaveHandler() {
     this.uiService.send('mouseleave');
   }
 
@@ -112,9 +144,9 @@ function miniFirstTabRender(self: Tab) {
   return html`
     <div
       class="first-tab-container"
-      @click=${self.handleTabClick}
-      @mouseenter=${self.handleTabMouseEnter}
-      @mouseleave=${self.handleTabMouseLeave}
+      @click=${self.tabClickHandler}
+      @mouseenter=${self.tabMouseEnterHandler}
+      @mouseleave=${self.tabMouseLeaveHandler}
     >
       <div class="first-fav-icon-container">
         ${self.tabData.favIconUrl
@@ -128,7 +160,9 @@ function miniFirstTabRender(self: Tab) {
 
       <div class="first-text-container">
         <h1
-          style=${self.isWindowFocused && self.tabData.active
+          style=${self.appMode === 'normal' 
+            && self.isWindowFocused 
+            && self.tabData.active
             ? styleMap(self.active)
             : ''}
         >
@@ -146,9 +180,9 @@ function miniTabRender(self: Tab) {
   return html`
     <div
       class="rest-tab-container"
-      @click=${self.handleTabClick}
-      @mouseenter=${self.handleTabMouseEnter}
-      @mouseleave=${self.handleTabMouseLeave}
+      @click=${self.tabClickHandler}
+      @mouseenter=${self.tabMouseEnterHandler}
+      @mouseleave=${self.tabMouseLeaveHandler}
     >
       <div class="rest-fav-icon-container">
         ${self.tabData.favIconUrl !== undefined
@@ -162,7 +196,7 @@ function miniTabRender(self: Tab) {
 
       <div class="rest-text-container">
         <a
-          style=${self.isWindowFocused && self.tabData.active
+          style=${self.appMode === 'normal' && self.isWindowFocused && self.tabData.active
             ? styleMap(self.active)
             : ''}
           >${self.tabData.title}</a
@@ -170,7 +204,7 @@ function miniTabRender(self: Tab) {
       </div>
 
       <button
-        @click=${self.handleTabDelete}
+        @click=${self.tabDeleteHandler}
         style=${styleMap({
           display: self.state.matches('Hover') ? 'flex' : 'none',
           opacity: self.state.matches('Hover.Opened') ? '1' : '0',

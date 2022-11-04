@@ -12,7 +12,9 @@ export interface Typegen0 {
     guards: never;
     delays: never;
   };
-  eventsCausingActions: {};
+  eventsCausingActions: {
+    'send to front message data': 'Showing message';
+  };
   eventsCausingServices: {};
   eventsCausingGuards: {};
   eventsCausingDelays: {};

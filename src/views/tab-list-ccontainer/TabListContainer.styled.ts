@@ -1,23 +1,19 @@
 import { css, html, unsafeCSS } from 'lit';
-import { customElement, property, query, state } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { EventComponent } from '../../core/Component.core';
 import { repeat } from 'lit/directives/repeat.js';
 import { interpret } from 'xstate';
 import { currentTabListMachine } from '../../machine/current-tab-list.machine';
 import { savedTabListMachine } from '../../machine/saved-tab-list.machine';
-
-import styles from './TabListContainer.scss';
-
-import './tab-list/TabList';
-import { consoleLitComponent } from '../../utils/utils';
 import {
   ChromeEventType,
   UsersEventType,
 } from '../../shared/events';
 
-const currentService = interpret(currentTabListMachine);
+import styles from './TabListContainer.scss';
 
-const savedService = interpret(savedTabListMachine);
+import './tab-list/TabList';
+import { createNewWindow } from '../../utils/browser-api';
 
 @customElement('app-tab-list-container')
 class TabListContainer extends EventComponent {
@@ -31,14 +27,16 @@ class TabListContainer extends EventComponent {
 
     switch (detail.discriminator) {
       case 'IFrontMessage':
-        savedService.send('LOCAL.REQUEST', {
+        this._savedService!.send('LOCAL.REQUEST', {
           command,
           data,
         });
+
+        
         break;
         
       case 'IPortMessage':
-        currentService.send('Update list', {
+        this._currentService!.send('Update list', {
           command,
           data,
         });
@@ -46,33 +44,56 @@ class TabListContainer extends EventComponent {
     }
   }
 
+  private _savedService;
+  private _currentService;
   private _mode;
 
   @state()
   windowMap: CurrentWindowMapping = {};
 
-  private startMachine(mode: TAppMode) {
-    switch (mode) {
-      case 'normal':
-        currentService
+  constructor() {
+    super();
+
+    this._mode = this.getAttribute('mode')! as TAppMode;
+
+    if (this._mode === 'normal') {
+      this._currentService = interpret(currentTabListMachine);
+
+      this._currentService
           .onTransition((s) => {
 
             if (s.matches('Get all data.Failed')) {
-              currentService.send('Retry');
+              this._currentService!.send('Retry');
             } else if (s.matches('idle')) {
               this.windowMap = { ...s.context.data };
             }
           })
           .start();
-        break;
+    } else {
+      this._savedService = interpret(savedTabListMachine.withConfig({
+        actions: {
+          "open new window": (_, event) => {
+            const { windowId } = event.data;
+            
+            if (windowId === undefined) {
+              console.error('no window Id');
+              return;
+            }
 
-      case 'save':
-        savedService
+            createNewWindow(this.windowMap[windowId].tabs as CurrentTab[], {
+              focused: true,
+              top: 0,
+              left: window.screen.width / 2,
+              width: window.screen.width / 2,
+              height: window.screen.height - 24,
+              type: 'normal'
+            });
+          }
+        }
+      }));
+
+      this._savedService
           .onTransition((s) => {
-
-            // if (s.matches('xstate.init')) {
-            //   savedService.send('LOCAL.OPEN');
-            // }
 
             if (s.changed) {
               this.windowMap = { ...s.context.data };
@@ -80,17 +101,8 @@ class TabListContainer extends EventComponent {
           })
           .start();
 
-        savedService.send('LOCAL.OPEN');
-        break;
+        this._savedService.send('LOCAL.OPEN');
     }
-  }
-
-  constructor() {
-    super();
-
-    this._mode = this.getAttribute('mode')! as TAppMode;
-
-    this.startMachine(this._mode);
   }
 
   static get styles() {

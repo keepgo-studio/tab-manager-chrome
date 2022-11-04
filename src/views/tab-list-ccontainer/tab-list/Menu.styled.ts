@@ -1,9 +1,9 @@
 import { css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { styleMap } from 'lit/directives/style-map.js';
 import { EventlessComponent } from '../../../core/Component.core';
 import { UsersEventType } from '../../../shared/events';
 import { closeWindow } from '../../../utils/browser-api';
+import { Confirm } from '../../dialog/Confirm.styled';
 
 const styled = css`
   .dialog-container {
@@ -111,7 +111,7 @@ function saveRender(self: TabListMenu) {
     class="dialog-container-save-mode"
   >
     <svg
-      @click=${self.closeHandler}
+      @click=${self.removeSavedHandler}
       class="close-save-mode"
       width="24"
       height="24"
@@ -137,7 +137,10 @@ export class TabListMenu extends EventlessComponent {
 
   static styles = styled;
 
-  closeHandler() {
+  async closeHandler() {
+
+    if (!(await new Confirm('해당 창을 삭제하시겠습니까?').show())) return;
+
     if (this.win === undefined) {
       console.error('Window data should passed to menu component')
       return;
@@ -146,7 +149,9 @@ export class TabListMenu extends EventlessComponent {
     closeWindow(this.win.id!);
   }
 
-  savedHandler() {
+  async savedHandler() {
+    if (!(await new Confirm('해당 창을 저장하시겠습니까?').show())) return;
+    
     this.sendToFront({
       discriminator: 'IFrontMessage',
       sender: this.tagName,
@@ -155,6 +160,22 @@ export class TabListMenu extends EventlessComponent {
         win: this.win,
       },
     });
+  }
+
+  async removeSavedHandler() {
+    if (this.win === undefined) {
+      console.error('you should get win data to menu component');
+      return;
+    }
+
+    if (!(await new Confirm('저장된 해당 창을 삭제하시겠습니까?').show())) return;
+
+    this.sendToFront({
+      sender: this.tagName,
+      discriminator: 'IFrontMessage',
+      command: UsersEventType.DELETE_SAVED_WINDOW,
+      data: { windowId: this.win.id }
+    })
   }
 
   render() {

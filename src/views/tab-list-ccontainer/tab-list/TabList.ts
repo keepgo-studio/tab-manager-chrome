@@ -11,17 +11,8 @@ import stylesMini from './TabList-mini.scss';
 import './Menu.styled';
 import './tab/Tab';
 
-const MAX_REST_CNT = 4;
-
 @customElement('app-tab-list')
 class TabList extends EventlessComponent {
-  jsStyleMap = {
-    restStyle: {},
-    shouldShowRestNodes: {},
-    shouldStretchDecorator: {},
-    shouldRotateButton: {},
-    active: {},
-  };
 
   uiService;
 
@@ -98,41 +89,6 @@ class TabList extends EventlessComponent {
     if (typeof this.winData === 'undefined' || this.winData.tabs.length === 0)
       return html``;
 
-    // const restNodesMaxHeight =
-    //   (this.winData.tabs.length > MAX_REST_CNT
-    //     ? MAX_REST_CNT
-    //     : this.winData.tabs.length) * 32;
-
-    // this.jsStyleMap = {
-    //   restStyle: {
-    //     opacity: this.state.context.isOpened ? '1' : '0',
-    //     display: this.state.matches('List opened.Opening') ? 'block' : 'none',
-    //     height: this.state.matches('List opened.Opening')
-    //       ? `${restNodesMaxHeight}px`
-    //       : `${TAB_HEIGHT}px`,
-    //   },
-    //   shouldShowRestNodes: {
-    //     height: this.state.matches('List opened.Opening')
-    //       ? `${restNodesMaxHeight + TAB_HEIGHT}px`
-    //       : `${TAB_HEIGHT}px`,
-    //   },
-    //   shouldStretchDecorator: {
-    //     display: this.appMode === 'save' ? 'block' : 'none',
-    //     height: `${
-    //       TAB_HEIGHT +
-    //       (this.state.matches('List opened.Opening') ? restNodesMaxHeight : 0)
-    //     }px`,
-    //   },
-    //   shouldRotateButton: {
-    //     transform: this.state.matches('List opened.Opening')
-    //       ? 'rotate(45deg)'
-    //       : '',
-    //   },
-    //   active: {
-    //     color: '#3D73FF !important',
-    //   },
-    // };
-
     switch (this.sizeMode) {
       case 'mini':
         return miniRender(this);
@@ -149,7 +105,7 @@ function miniRender(self: TabList) {
   const dialogHtml = html`
     <app-tab-list-menu
       .mode=${self.appMode}
-      .win=${self.appMode === 'normal' ? self.winData : undefined}
+      .win=${self.winData}
       style=${styleMap({
         transition: 'ease 300ms',
         opacity: self.shouldShowMenu ? '1' : '0',
@@ -159,18 +115,9 @@ function miniRender(self: TabList) {
 
   const firstTabHtml = html`
     <div class="first">
-      <div
-        class="mode-decorator"
-        style=${styleMap({
-          display: self.appMode === 'save' ? 'initial' : 'none',
-          // height: `${
-          //   TAB_HEIGHT +
-          //   (this.state.matches('List opened.Opening') ? restNodesMaxHeight : 0)
-          // }px`,
-        })}
-      ></div>
 
       <app-tab
+        .appMode=${self.appMode}
         .idx=${0}
         .tabData=${self.winData.tabs[0]}
         .isWindowFocused=${self.winData.focused}
@@ -212,6 +159,7 @@ function miniRender(self: TabList) {
           (tab) => html`
             <li>
               <app-tab
+                .appMode=${self.appMode}
                 .tabData=${tab}
                 .isWindowFocused=${self.winData.focused}
               ></app-tab>
@@ -227,9 +175,18 @@ function miniRender(self: TabList) {
       class="node-container"
       @mouseenter=${self.handleMouseEnter}
       @mouseleave=${self.handleMouseLeave}
-      style=${styleMap(self.jsStyleMap.shouldShowRestNodes)}
     >
-      ${firstTabHtml} ${restTabsHtml} ${dialogHtml}
+
+    <div
+      class="mode-decorator"
+      style=${styleMap({ display: self.appMode === 'save' ? 'initial' : 'none' })}
+    ></div>
+
+    ${firstTabHtml} 
+    
+    ${restTabsHtml} 
+    
+    ${dialogHtml}
     </div>
   `;
 }

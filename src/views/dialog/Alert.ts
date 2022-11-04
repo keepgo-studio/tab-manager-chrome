@@ -1,8 +1,9 @@
 import { css, html, LitElement } from "lit";
 import { customElement, query, state } from "lit/decorators.js";
+import { DialogComponent } from "../../core/Dialog.core";
 
 @customElement("app-alert")
-export class AppAlert extends LitElement {
+export class AppAlert extends DialogComponent {
   @state()
   isConfirmed?: boolean;
 
@@ -57,43 +58,7 @@ export class AppAlert extends LitElement {
     }
   `;
 
-  wait() {
-    return new Promise((res, _) => {
-      const loop = () => {
-        setTimeout(() => {
-          if (this.isConfirmed !== undefined) {
-            return res(this.isConfirmed);
-          }
-          loop();
-        }, 100);
-      };
-      loop();
-    });
-  }
-
-  appaer() {
-    const prev = document.body.querySelector(this.tagName);
-    if (prev) { prev.remove(); }
-    document.body.appendChild(this);
-  }
-
-  disappear() {
-    this.remove();
-  }
-
-  async show() {
-    this.appaer();
-
-    await this.wait();
-
-    this.disappear();
-
-    return this.isConfirmed;
-  }
-
-  private handleSubmit(e: Event) {
-    const target = e.currentTarget as Element;
-
+  private handleSubmit() {
     this.isConfirmed = true;
   }
 

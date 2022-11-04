@@ -1,4 +1,6 @@
 import { createMachine } from "xstate";
+import { ChromeEventType, MessageEventType, UsersEventType } from "../shared/events";
+import { sendToFront } from "../utils/utils";
 
 export const enum MessageStyle {
   'top',
@@ -10,6 +12,9 @@ export const messageMachine =
 createMachine({
   tsTypes: {} as import("./message.machine.typegen").Typegen0,
   initial: 'Receive status',
+  schema: {
+    events: {} as { type: 'Showing message'; status: MessageEventType ; command: UsersEventType | ChromeEventType | undefined } // check current-tab-list.machine and saved-tab-list.machine
+  },
   states: {
     'Receive status': {
       on: {
@@ -19,10 +24,27 @@ createMachine({
       },
     },
     Done: {
+      entry: 'send to front message data',
       always: {
         target: 'Receive status',
       },
     },
   },
   id: 'Message',
+}, {
+  actions: {
+    'send to front message data': (_, event) => {
+      if (event.command === undefined) return;
+
+      if (!(event.command in UsersEventType)) return;
+      
+      sendToFront({
+        discriminator: 'IFrontMessage',
+        sender: '[xstate-message-machine]',
+        /** @type {MessageEventType} */
+        command: event.status,
+        data: { message: event.command },
+      })
+    }
+  }
 });

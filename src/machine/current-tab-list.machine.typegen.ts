@@ -33,6 +33,7 @@ export interface Typegen0 {
     TAB_UPDATED: 'Update list';
     WINDOW_CLOSED: 'Update list';
     WINDOW_CREATED: 'Update list';
+    'command update': 'Update list';
     'send status to message machine': '';
   };
   eventsCausingServices: {
