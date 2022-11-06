@@ -1,5 +1,12 @@
 import App from './app';
-import { AppEventType, ChromeEventType, MessageEventType, UserSettingsEventType, UsersEventType } from './shared/events';
+import {
+  AppLifeCycleEventType,
+  ChromeEventType,
+  FrontInitEventType,
+  MessageEventType,
+  UserSettingsEventType,
+  UsersEventType,
+} from './shared/events';
 
 export class PortRouter {
   private _app: App;
@@ -14,17 +21,18 @@ export class PortRouter {
     this._port.onMessage.addListener(
       (
         msg:
-          | IPortMessage<ChromeEventType | AppEventType>
+          | IPortMessage<ChromeEventType>
+          | IPortMessage<AppLifeCycleEventType>
           | IPortMessage<UserSettingsEventType>
       ) => {
         console.log('[main]:', msg.command, msg.data);
         switch (msg.command) {
-          case AppEventType.SET_SIZE:
+          case AppLifeCycleEventType.SET_SIZE:
             const { extensionWidth, extensionHeight } = msg.data;
             this._app.resizeApp(extensionWidth!, extensionHeight!);
             break;
 
-          case AppEventType.TERMINATE:
+          case AppLifeCycleEventType.TERMINATE:
             this._app.closeApp();
             break;
 
@@ -55,28 +63,57 @@ export class FrontRouter {
     this._app = app;
   }
 
-  activeUserEvent() {
+  attachEvent(
+    command: UsersEventType | FrontInitEventType | MessageEventType,
+    target: Element
+  ) {
     const _app = this._app;
 
+    window.addEventListener(command, function (e: CustomEvent) {
+      const msg: IFrontMessage<
+        UsersEventType | FrontInitEventType | MessageEventType
+      > = e.detail;
+
+      _app.sendTo(target, msg);
+    } as EventListener);
+  }
+
+  activeUserEvent() {
     for (const command in UsersEventType) {
       let target: Element;
 
       switch (command) {
         case UsersEventType.CHANGE_MODE:
-          target = _app.elemMap.appMain;
+          target = this._app.elemMap.appMain;
           break;
         case UsersEventType.SAVE_WINDOW:
         case UsersEventType.OPEN_SAVED_WINDOW:
         case UsersEventType.DELETE_SAVED_WINDOW:
         case UsersEventType.DELETE_SAVED_TAB:
-          target = _app.elemMap.savedTabListContainer;
+          target = this._app.elemMap.savedTabListContainer;
+          break;
       }
 
-      window.addEventListener(command, function (e: CustomEvent) {
-        const msg: IFrontMessage<UsersEventType> = e.detail;
+      this.attachEvent(command as UsersEventType, target!);
+    }
+  }
 
-        _app.sendTo(target, msg);
-      } as EventListener);
+  activeInitEvent() {
+    const _app = this._app;
+
+    for (const command in FrontInitEventType) {
+      let target: Element;
+
+      switch (command) {
+        case FrontInitEventType.SET_WINDOWS_CONTENT:
+          target = _app.elemMap.search;
+
+          this.attachEvent(command as FrontInitEventType, target!);
+          break;
+        case FrontInitEventType.RESET_WINDOW_ID:
+          _app.initWindowId();
+          break;
+      }
     }
   }
 
@@ -92,11 +129,7 @@ export class FrontRouter {
           target = _app.elemMap.message;
       }
 
-      window.addEventListener(command, function (e: CustomEvent) {
-        const msg: IFrontMessage<MessageEventType> = e.detail;
-
-        _app.sendTo(target, msg);
-      } as EventListener);
+      this.attachEvent(command as MessageEventType, target!);
     }
   }
 }

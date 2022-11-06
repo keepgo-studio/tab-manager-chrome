@@ -133,7 +133,7 @@ export class TabListMenu extends EventlessComponent {
   mode!: TAppMode;
 
   @property()
-  win?: CurrentWindow;
+  win?: ChromeWindow;
 
   static styles = styled;
 

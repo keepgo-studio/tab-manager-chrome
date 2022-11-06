@@ -7,6 +7,7 @@ import { currentTabListMachine } from '../../machine/current-tab-list.machine';
 import { savedTabListMachine } from '../../machine/saved-tab-list.machine';
 import {
   ChromeEventType,
+  FrontInitEventType,
   UsersEventType,
 } from '../../shared/events';
 
@@ -49,7 +50,7 @@ class TabListContainer extends EventComponent {
   private _mode;
 
   @state()
-  windowMap: CurrentWindowMapping = {};
+  windowMap: IChromeWindowMapping = {};
 
   constructor() {
     super();
@@ -64,7 +65,15 @@ class TabListContainer extends EventComponent {
 
             if (s.matches('Get all data.Failed')) {
               this._currentService!.send('Retry');
-            } else if (s.matches('idle')) {
+            }
+            else if (s.matches('idle')) {
+              this.sendToFront({
+                discriminator: 'IFrontMessage',
+                sender: this.tagName,
+                command: FrontInitEventType.SET_WINDOWS_CONTENT,
+                data: { allWindows: s.context.data }
+              })
+              
               this.windowMap = { ...s.context.data };
             }
           })
@@ -80,7 +89,7 @@ class TabListContainer extends EventComponent {
               return;
             }
 
-            createNewWindow(this.windowMap[windowId].tabs as CurrentTab[], {
+            createNewWindow(this.windowMap[windowId].tabs as ChromeTab[], {
               focused: true,
               top: 0,
               left: window.screen.width / 2,

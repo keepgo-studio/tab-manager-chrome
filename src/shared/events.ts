@@ -2,7 +2,9 @@
  * Enums that doesn't need to iterate in router.ts are defined as 'const enum'
  *  since these are not needed at runtime.
  */
-export const enum AppEventType {
+
+// only back can fire this event
+export const enum AppLifeCycleEventType {
   SET_SIZE="SET_SIZE",
   TERMINATE="TERMINATE",
 }
@@ -20,6 +22,10 @@ export const enum UserSettingsEventType {
   THEME_MODE="theme-mode",
   SIZE_MODE="size-mode"
 }
+
+// --------------------------------------------------
+
+// only front and front's child can fire this event
 export enum UsersEventType {
   CHANGE_MODE="CHANGE_MODE",
   // CLOSE_WINDOW="CLOSE_WINDOW",
@@ -33,4 +39,8 @@ export enum UsersEventType {
 export enum MessageEventType {
   SUCCESS="SUCCESS",
   FAILED="FAILED"
+}
+export enum FrontInitEventType {
+  RESET_WINDOW_ID="RESET_WINDOW_ID",
+  SET_WINDOWS_CONTENT="SET_WINDOWS_CONTENT"
 }

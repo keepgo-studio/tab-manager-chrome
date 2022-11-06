@@ -10,10 +10,6 @@ declare global {
       fromIndex: number;
       toIndex: number;
     };
-    userSettings: {
-      "theme-mode"?: TThemeMode;
-      "size-mode"?: TSizeMode;
-    }
   }
 
   interface IFrontData {
@@ -24,21 +20,28 @@ declare global {
     firstTabId: number;
     message: string;
     mode: TAppMode;
+    allWindows: IChromeWindowMapping;
   }
 
-  type TAppMode  = "normal" | "save";
+  type TAppMode = 'normal' | 'save';
 
   interface IPortMessage<T> {
-    discriminator: 'IPortMessage',
+    readonly discriminator: 'IPortMessage';
     readonly data: Partial<IBackData>;
     readonly command: T;
   }
 
   interface IFrontMessage<T> {
-    discriminator: 'IFrontMessage'
-    sender: string,
+    readonly discriminator: 'IFrontMessage';
+    readonly sender: string;
     readonly data: Partial<IFrontData>;
     readonly command: T;
+  }
+
+  interface IRuntimeMessage<T> {
+    sender: 'front' | 'back' | 'content';
+    readonly command: T;
+    readonly data: Partial<{ textContent: string }>;
   }
 }
 

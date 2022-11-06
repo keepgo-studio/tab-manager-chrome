@@ -3,8 +3,13 @@ import { openDB, DBSchema, IDBPDatabase } from 'idb';
 interface ITabManagerDB extends DBSchema {
   'saved-window': {
     key: number;
-    value: CurrentWindow;
+    value: ChromeWindow;
   };
+
+  'content-map': {
+    key: number;
+    value: IContent
+  }
 }
 
 class DBHandler {
@@ -26,7 +31,7 @@ class DBHandler {
     return await this._db.getAll('saved-window');
   }
 
-  async savingWindow(win: CurrentWindow) {
+  async savingWindow(win: ChromeWindow) {
     const transaction = this._db.transaction('saved-window', 'readwrite');
 
     transaction.store.put(win, win.id);
@@ -36,7 +41,7 @@ class DBHandler {
         console.log('[idb]: saving window complete');
       })
       .catch(err => {
-        console.error('[idb]: saving had failed');
+        console.error('[idb]: saving window had failed');
         throw err;
       });
   }
@@ -48,10 +53,10 @@ class DBHandler {
 
     return transaction.done
       .then(() => {
-        console.log('[idb]: saving window complete');
+        console.log('[idb]: removing window complete');
       })
       .catch(err => {
-        console.error('[idb]: saving had failed');
+        console.error('[idb]: removing window had failed');
         throw err;
       });
   }
@@ -59,9 +64,13 @@ class DBHandler {
   async removingTab(windowId: number, tabId: number) {
     const transaction = this._db.transaction('saved-window', 'readwrite');
 
-    const targetWindow = await transaction.store.get(windowId) as CurrentWindow;
+    const targetWindow = await transaction.store.get(windowId);
 
-    targetWindow.tabs = targetWindow.tabs.filter(tab => tab.id !== tabId);
+    if (targetWindow === undefined) {
+      console.error('there no such window is in idb')
+      return;
+    }
+    targetWindow.tabs = targetWindow.tabs!.filter(tab => tab.id !== tabId);
 
     transaction.store.put(targetWindow, windowId);
 
@@ -70,10 +79,44 @@ class DBHandler {
         console.log('[idb]: complete removing the specific tab!');
       })
       .catch(err => {
-        console.error('[idb]: error while removing the tab');
+        console.error('[idb]: error while removing the tab', err);
+      });
+  }
+  
+  async loadAllContents() {
+    return await this._db.getAll('content-map');
+  }
+
+  async savingContent(windowId: number, content: IContent) {
+    const transaction = this._db.transaction('content-map', 'readwrite');
+
+    transaction.store.put(content, windowId);
+
+    return await transaction.done
+      .then(() => {
+        console.log('[idb]: saving content complete');
+      })
+      .catch(err => {
+        console.error('[idb]: saving content had failed');
         throw err;
       });
   }
+
+  async removingContent(windowId: number) {
+    const transaction = this._db.transaction('content-map', 'readwrite');
+
+    transaction.store.delete(windowId);
+
+    return transaction.done
+      .then(() => {
+        console.log('[idb]: saving content complete');
+      })
+      .catch(err => {
+        console.error('[idb]: removing content had failed');
+        throw err;
+      });
+  }
+
   close() {
     this._db.close();
   }

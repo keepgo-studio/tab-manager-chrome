@@ -5,20 +5,21 @@ export interface Typegen0 {
   internalEvents: {
     'xstate.init': { type: 'xstate.init' };
   };
-  invokeSrcNameMap: {};
+  invokeSrcNameMap: {
+    'updating contents': 'done.invoke.Search.Update map:invocation[0]';
+  };
   missingImplementations: {
     actions: never;
     services: never;
     guards: never;
     delays: never;
   };
-  eventsCausingActions: {
-    'open tab': 'mousedown';
-    'show close button': 'mouseenter';
+  eventsCausingActions: {};
+  eventsCausingServices: {
+    'updating contents': 'update';
   };
-  eventsCausingServices: {};
   eventsCausingGuards: {};
   eventsCausingDelays: {};
-  matchesStates: 'Clicked' | 'Delete' | 'Hover' | 'idle';
+  matchesStates: 'Search mode' | 'Update map' | 'idle';
   tags: never;
 }

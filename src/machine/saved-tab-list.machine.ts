@@ -21,7 +21,7 @@ const dbMachine =
       'open server': { data: void };
       'save window': { data: void };
       'delete saved window': { data: void };
-      'get all saved windows': { data: CurrentWindowMapping };
+      'get all saved windows': { data: IChromeWindowMapping };
     },
     events: {} as
       | { type: 'OPEN' }
@@ -163,9 +163,13 @@ const dbMachine =
         'open server': async () => await db.open(),
 
         'save window': async (_, event) => {
-          const win = event.data.win as CurrentWindow;
+          const win = event.data.win;
 
           // console.log('[xstate-saved-tab-list-machine]', win);
+          if (win === undefined) {
+            console.error('[xstate-save-machine]: window data not seneded to machine');
+            return;
+          }
           await db.savingWindow(win);
         },
 
@@ -179,7 +183,7 @@ const dbMachine =
           const allTabList = await db.loadAllWindows();
 
           if (allTabList !== undefined) {
-            return arrayToMap(allTabList) as CurrentWindowMapping;
+            return arrayToMap(allTabList) as IChromeWindowMapping;
           }
 
           return {};
@@ -210,7 +214,7 @@ const dbMachine =
 
           const respond: {
             type: string;
-            data?: CurrentWindowMapping;
+            data?: IChromeWindowMapping;
             status: MessageEventType;
           } = {
             type: 'REMOTE.RECEIVE',
@@ -250,7 +254,7 @@ export const savedTabListMachine =
   tsTypes: {} as import('./saved-tab-list.machine.typegen').Typegen1,
   schema: {
     context: {} as {
-      data: CurrentWindowMapping;
+      data: IChromeWindowMapping;
       dbRef: any;
       msgRef: any;
       command: UsersEventType | undefined
@@ -261,7 +265,7 @@ export const savedTabListMachine =
       | { type: 'REMOTE.OPEN' }
       | {
           type: 'REMOTE.RECEIVE';
-          data?: CurrentWindowMapping;
+          data?: IChromeWindowMapping;
           status: MessageEventType;
         }
       | {
@@ -365,7 +369,7 @@ export const savedTabListMachine =
         ),
 
         'receive data': (context, event) => {
-          console.log('[xstate-saved-tab-list-machine]: received data from idb', event)
+          // console.log('[xstate-saved-tab-list-machine]: received data from idb', event)
           if (event.data !== undefined) {
             context.data = event.data;
           }

@@ -1,7 +1,8 @@
 import {
-  AppEventType,
+  AppLifeCycleEventType,
   ChromeEventType,
   UserSettingsEventType,
+  FrontInitEventType,
 } from './shared/events';
 import { getSize } from './utils/utils';
 
@@ -29,14 +30,15 @@ const extensionInfo: {
 
 function sendMessage(
   port: RuntimePort | undefined,
-  command: ChromeEventType | AppEventType | UserSettingsEventType,
+  command: ChromeEventType | AppLifeCycleEventType | UserSettingsEventType,
   data?: Partial<IBackData>
 ) {
   if (!port) return;
 
-  const msg: IPortMessage<
-    ChromeEventType | AppEventType | UserSettingsEventType
-  > = {
+  const msg:
+    | IPortMessage<ChromeEventType>
+    | IPortMessage<AppLifeCycleEventType>
+    | IPortMessage<UserSettingsEventType> = {
     discriminator: 'IPortMessage',
     command,
     data: data ?? {},
@@ -45,182 +47,223 @@ function sendMessage(
   port.postMessage(msg);
 }
 
-chrome.runtime.onConnect.addListener((port) => {
-  switch (port.name) {
-    case 'front':
-      if (!extensionInfo.frontPort) {
-        extensionInfo.frontPort = port;
+function init() {
+  chrome.runtime.onInstalled.addListener(() => {
+    // chrome.windows.create(
+    //   {
+    //     focused: true,
+    //     type: "normal",
+    //     url: "https://keepgo-studio.github.io/tab-manager-homepage/",
+    //     state: "maximized",
+    //   },
+    // );
+    // chrome.windows.getAll({ populate: true, windowTypes: ['normal']}, allWindows => {
+    //   allWindows.forEach(win => {
+    //     win.tabs?.forEach(tab => {
+    //       if (tab.id === undefined) return;
+    //       chrome.tabs.reload(tab.id);
+    //     })
+    //   })
+    // })
+  });
+}
 
-        extensionInfo.frontPort.onDisconnect.addListener(() => {
-          extensionInfo.frontPort = undefined;
-          extensionInfo.frontWinId = undefined;
-        });
-      } else {
-        /**
-         * extension window can open more than one since user can execute Ctrl + t (reopen recent closed tab)
-         */
-        sendMessage(port, AppEventType.TERMINATE);
-        port.disconnect();
+/**
+ * craete connection between content-script, and front
+ */
+function createConnection() {
+  chrome.runtime.onConnect.addListener((port) => {
+    switch (port.name) {
+      case 'front':
+        if (!extensionInfo.frontPort) {
+          extensionInfo.frontPort = port;
+
+          extensionInfo.frontPort.onDisconnect.addListener(() => {
+            extensionInfo.frontPort = undefined;
+            extensionInfo.frontWinId = undefined;
+          });
+        } else {
+          /**
+           * extension window can open more than one since user can execute Ctrl + t (reopen recent closed tab)
+           */
+          sendMessage(port, AppLifeCycleEventType.TERMINATE);
+          port.disconnect();
+        }
+        break;
+      case 'content-script':
+        break;
+    }
+  });
+
+  chrome.runtime.onMessage.addListener(
+    (
+      msg: IRuntimeMessage<FrontInitEventType | ChromeEventType>,
+      senderInfo
+    ) => {
+      const { command, sender } = msg;
+
+      switch (sender) {
+        case 'front':
+          if (command === FrontInitEventType.RESET_WINDOW_ID) {
+            extensionInfo.frontWinId = senderInfo.tab!.windowId;
+          }
+          break;
       }
-      break;
-    case 'content-script':
-      break;
-    case 'homepage':
-  }
-});
+    }
+  );
+}
 
-chrome.runtime.onMessage.addListener((msg, sender) => {
-  if (msg === 'sending windowId to background script') {
-    extensionInfo.frontWinId = sender.tab!.windowId;
-  }
-});
+function startFront() {
+  chrome.action.onClicked.addListener(() => {
+    // open web
+    if (extensionInfo.frontWinId) {
+      /**
+       * if front window is alive and not focused
+       */
+      chrome.windows.update(extensionInfo.frontWinId, { focused: true });
+    } else {
+      chrome.windows.create({
+        focused: true,
+        type: 'panel',
+        url: 'index.html',
+        width: extensionInfo.frontWidth,
+        height: extensionInfo.frontHeight,
+        left: 20,
+        top: 20,
+      });
+    }
+  });
+}
 
-// when extension installed, only once
-chrome.runtime.onInstalled.addListener(() => {
-  // chrome.windows.create(
-  //   {
-  //     focused: true,
-  //     type: "normal",
-  //     url: "https://keepgo-studio.github.io/tab-manager-homepage/",
-  //     state: "maximized",
-  //   },
-  // );
-});
+function windowEventsHandler() {
+  chrome.windows.onCreated.addListener((win: ChromeWindow) => {
+    if (!extensionInfo.frontPort) return;
 
-chrome.windows.onCreated.addListener((win: ChromeWindow) => {
-  if (!extensionInfo.frontPort) return;
+    if (!win.id) return;
 
-  if (!win.id) return;
-
-  chrome.windows.get(win.id, { populate: true }, (justCreatedWindow) => {
-    sendMessage(extensionInfo.frontPort, ChromeEventType.WINDOW_CREATED, {
-      win: justCreatedWindow,
+    chrome.windows.get(win.id, { populate: true }, (justCreatedWindow) => {
+      sendMessage(extensionInfo.frontPort, ChromeEventType.WINDOW_CREATED, {
+        win: justCreatedWindow,
+      });
     });
   });
-});
 
-chrome.windows.onRemoved.addListener((windowId) => {
-  if (!extensionInfo.frontPort) return;
+  chrome.windows.onRemoved.addListener((windowId) => {
+    if (!extensionInfo.frontPort) return;
 
-  sendMessage(extensionInfo.frontPort, ChromeEventType.WINDOW_CLOSED, {
-    windowId,
-  });
-});
-
-chrome.windows.onBoundsChanged.addListener((win) => {
-  if (!extensionInfo.frontPort) return;
-
-  if (win.id !== extensionInfo.frontWinId) return;
-
-  sendMessage(extensionInfo.frontPort, AppEventType.SET_SIZE, {
-    extensionWidth: extensionInfo.frontWidth,
-    extensionHeight: extensionInfo.frontHeight,
-  });
-});
-
-chrome.windows.onFocusChanged.addListener((windowId) => {
-  if (!extensionInfo.frontPort) return;
-
-  if (
-    windowId === chrome.windows.WINDOW_ID_NONE ||
-    windowId === extensionInfo.frontWinId
-  )
-    return;
-
-  sendMessage(extensionInfo.frontPort, ChromeEventType.FOCUS_CHANGED, {
-    windowId,
-  });
-});
-
-chrome.tabs.onCreated.addListener((tab) => {
-  // Notice, that the onCreate does not guarantee that the tab has fully loaded.
-  if (!extensionInfo.frontPort) return;
-
-  sendMessage(extensionInfo.frontPort, ChromeEventType.TAB_CREATED, {
-    tab,
-    windowId: tab.windowId,
-  });
-});
-
-chrome.tabs.onMoved.addListener((_, moveInfo) => {
-  if (!extensionInfo.frontPort) return;
-
-  const { windowId } = moveInfo;
-
-  sendMessage(extensionInfo.frontPort, ChromeEventType.TAB_MOVED, {
-    windowId,
-    moveInfo,
-  });
-});
-
-chrome.tabs.onRemoved.addListener((tabId, { isWindowClosing, windowId }) => {
-  if (!extensionInfo.frontPort) return;
-
-  if (isWindowClosing) {
     sendMessage(extensionInfo.frontPort, ChromeEventType.WINDOW_CLOSED, {
       windowId,
-      tabId,
     });
-  } else {
-    sendMessage(extensionInfo.frontPort, ChromeEventType.TAB_CLOSED, {
-      windowId,
-      tabId,
-    });
-  }
-});
-
-chrome.tabs.onUpdated.addListener((_, changeInfo, tab) => {
-  if (!extensionInfo.frontPort) return;
-
-  if (tab.url?.match(extensionInfo.id)) return;
-
-  if (changeInfo.status !== 'complete') return;
-
-  sendMessage(extensionInfo.frontPort, ChromeEventType.TAB_UPDATED, { tab });
-});
-
-chrome.tabs.onActivated.addListener((activeInfo) => {
-  if (!extensionInfo.frontPort) return;
-
-  const { tabId, windowId } = activeInfo;
-
-  if (windowId === extensionInfo.frontWinId) return;
-
-  sendMessage(extensionInfo.frontPort, ChromeEventType.ACTIVE_CHANGED, {
-    tabId,
-    windowId,
   });
-});
 
-// invoke app init(=constructor)
-chrome.action.onClicked.addListener(() => {
-  // open web
-  if (extensionInfo.frontWinId) {
-    /**
-     * if front window is alive and not focused
-     */
-    chrome.windows.update(extensionInfo.frontWinId, { focused: true });
-  } else {
-    chrome.windows.create({
-      focused: true,
-      type: 'panel',
-      url: 'index.html',
-      width: extensionInfo.frontWidth,
-      height: extensionInfo.frontHeight,
-      left: 20,
-      top: 20,
+  chrome.windows.onBoundsChanged.addListener((win) => {
+    if (!extensionInfo.frontPort) return;
+
+    if (win.id !== extensionInfo.frontWinId) return;
+
+    sendMessage(extensionInfo.frontPort, AppLifeCycleEventType.SET_SIZE, {
+      extensionWidth: extensionInfo.frontWidth,
+      extensionHeight: extensionInfo.frontHeight,
     });
-  }
-});
+  });
 
-chrome.storage.onChanged.addListener((changes) => {
-  if (!extensionInfo.frontPort) return;
+  chrome.windows.onFocusChanged.addListener((windowId) => {
+    if (!extensionInfo.frontPort) return;
 
-  if ('theme-mode' in changes) {
-    sendMessage(extensionInfo.frontPort, UserSettingsEventType.THEME_MODE);
-  }
+    if (
+      windowId === chrome.windows.WINDOW_ID_NONE ||
+      windowId === extensionInfo.frontWinId
+    )
+      return;
 
-  if ('size-mode' in changes) {
-    sendMessage(extensionInfo.frontPort, UserSettingsEventType.SIZE_MODE);
-  }
-});
+    sendMessage(extensionInfo.frontPort, ChromeEventType.FOCUS_CHANGED, {
+      windowId,
+    });
+  });
+}
+
+function tabEventsHandler() {
+  chrome.tabs.onCreated.addListener((tab) => {
+    // Notice, that the onCreate does not guarantee that the tab has fully loaded.
+    if (!extensionInfo.frontPort) return;
+
+    sendMessage(extensionInfo.frontPort, ChromeEventType.TAB_CREATED, {
+      tab,
+      windowId: tab.windowId,
+    });
+  });
+
+  chrome.tabs.onMoved.addListener((_, moveInfo) => {
+    if (!extensionInfo.frontPort) return;
+
+    const { windowId } = moveInfo;
+
+    sendMessage(extensionInfo.frontPort, ChromeEventType.TAB_MOVED, {
+      windowId,
+      moveInfo,
+    });
+  });
+
+  chrome.tabs.onRemoved.addListener((tabId, { isWindowClosing, windowId }) => {
+    if (!extensionInfo.frontPort) return;
+
+    if (isWindowClosing) {
+      sendMessage(extensionInfo.frontPort, ChromeEventType.WINDOW_CLOSED, {
+        windowId,
+        tabId,
+      });
+    } else {
+      sendMessage(extensionInfo.frontPort, ChromeEventType.TAB_CLOSED, {
+        windowId,
+        tabId,
+      });
+    }
+  });
+
+  chrome.tabs.onUpdated.addListener((_, changeInfo, tab) => {
+    if (!extensionInfo.frontPort) return;
+
+    if (tab.url?.match(extensionInfo.id)) return;
+
+    if (changeInfo.status !== 'complete') return;
+
+    sendMessage(extensionInfo.frontPort, ChromeEventType.TAB_UPDATED, { tab });
+  });
+
+  chrome.tabs.onActivated.addListener((activeInfo) => {
+    if (!extensionInfo.frontPort) return;
+
+    const { tabId, windowId } = activeInfo;
+
+    if (windowId === extensionInfo.frontWinId) return;
+
+    sendMessage(extensionInfo.frontPort, ChromeEventType.ACTIVE_CHANGED, {
+      tabId,
+      windowId,
+    });
+  });
+}
+
+function storageEventsHandler() {
+  chrome.storage.onChanged.addListener((changes) => {
+    if (!extensionInfo.frontPort) return;
+
+    if ('theme-mode' in changes) {
+      sendMessage(extensionInfo.frontPort, UserSettingsEventType.THEME_MODE);
+    }
+
+    if ('size-mode' in changes) {
+      sendMessage(extensionInfo.frontPort, UserSettingsEventType.SIZE_MODE);
+    }
+  });
+}
+
+init();
+
+createConnection();
+
+startFront();
+
+windowEventsHandler();
+tabEventsHandler();
+storageEventsHandler();

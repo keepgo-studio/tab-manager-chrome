@@ -1,23 +1,20 @@
 declare global {
-  interface CurrentTab extends ChromeTab {
-    textContent: string;
+  interface IContent {
+    title: string,
+    url: string,
+    textContent: string
   }
 
-  interface CurrentWindow extends ChromeWindow {
-    tabs: ChromeTab[];
-  }
+  interface IContentMapping {
+    [windowId: number]: IContent
+  }  
 
   interface SaveWindow extends ChromeWindow {
     category: string;
   }
 
-  interface StorageSaveForm {
-    key: string;
-    window: CurrentWindow;
-  }
-
-  interface CurrentWindowMapping {
-    [windowId: number]: CurrentWindow
+  interface IChromeWindowMapping {
+    [windowId: number]: ChromeWindow
   }
 
   type TThemeMode = "dark" | "light" | "system";

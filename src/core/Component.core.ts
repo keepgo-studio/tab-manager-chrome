@@ -5,6 +5,7 @@ import UserSettings from '../store/local-storage';
 import { globalStyles } from '../shared/styles';
 import {
   ChromeEventType,
+  FrontInitEventType,
   MessageEventType,
   UserSettingsEventType,
   UsersEventType,
@@ -16,7 +17,9 @@ export class Component extends LitElement {
    */
   static styles = globalStyles;
 
-  sendToFront(msg: IFrontMessage<UsersEventType | MessageEventType>) {
+  sendToFront(
+    msg: IFrontMessage<UsersEventType | MessageEventType | FrontInitEventType>
+  ) {
     window.dispatchEvent(new CustomEvent(msg.command, { detail: msg }));
   }
 
@@ -53,7 +56,7 @@ export abstract class EventComponent extends Component {
     detail,
   }: CustomEvent<
     | IPortMessage<ChromeEventType>
-    | IFrontMessage<UsersEventType | MessageEventType>
+    | IFrontMessage<UsersEventType | MessageEventType | FrontInitEventType>
   >): void;
 
   constructor() {

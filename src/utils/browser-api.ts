@@ -61,7 +61,7 @@ export function closeWindow(windowId: number) {
 }
 
 export function createNewWindow(
-  tabs: CurrentTab[],
+  tabs: ChromeTab[],
   config: Partial<{
     type: chrome.windows.createTypeEnum;
     top: number;

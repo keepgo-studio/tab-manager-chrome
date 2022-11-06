@@ -5,11 +5,11 @@ import './views/search/Search';
 import './views/message/Message.styled';
 
 import {
-  AppEventType,
   ChromeEventType,
   MessageEventType,
   UserSettingsEventType,
   UsersEventType,
+  FrontInitEventType,
 } from './shared/events';
 
 /**
@@ -70,8 +70,8 @@ export default class App {
   sendTo(
     elem: Element,
     msg:
-      | IPortMessage<AppEventType | ChromeEventType>
-      | IFrontMessage<UsersEventType | MessageEventType>
+      | IPortMessage<FrontInitEventType | ChromeEventType>
+      | IFrontMessage<UsersEventType | MessageEventType | FrontInitEventType>
   ) {
     elem.dispatchEvent(
       new CustomEvent(FRONT_EVENT_NAME, {
@@ -96,5 +96,14 @@ export default class App {
 
   resizeApp(width: number, height: number) {
     window.resizeTo(width, height);
+  }
+
+  initWindowId() {
+    const runtimeMsg: IRuntimeMessage<FrontInitEventType> = {
+      sender: 'front',
+      command: FrontInitEventType.RESET_WINDOW_ID,
+      data: {}
+    };
+    chrome.runtime.sendMessage(runtimeMsg);
   }
 }

@@ -1,31 +1,32 @@
-import App from "./app";
-import { setDocumentTitle } from "./utils/utils";
-import { FrontRouter, PortRouter } from "./router";
-import { connectToBack } from "./utils/browser-api";
+import App from './app';
+import { setDocumentTitle } from './utils/utils';
+import { FrontRouter, PortRouter } from './router';
+import { connectToBack } from './utils/browser-api';
 
 setDocumentTitle(chrome.runtime.getManifest().description ?? 'tab-manager');
 
 window.onload = () => {
   // connect to worker
   let port = connectToBack('front');
-  
-  chrome.runtime.sendMessage('sending windowId to background script')
 
+  // start app
   const app = new App();
 
+  // init router
   const pr = new PortRouter(app, port);
   const fr = new FrontRouter(app);
 
+  // start port's router (back <-> front)
   pr.active();
-  
-  fr.activeMessageEvent();
-  fr.activeUserEvent();
 
+  // start front's router (front <-> component)
+  fr.activeUserEvent();
+  fr.activeMessageEvent();
+  fr.activeInitEvent();
+
+  // retry connection if this window had disconnected with various reasons (e.g timeout)
   port.onDisconnect.addListener(() => {
-    /**
-     * retry connection if this window had disconnected with various reasons (e.g timeout)
-     */
-    console.log("[main.ts]:", "reconnection");
+    console.log('[main.ts]:', 'reconnection');
     location.reload();
   });
 };

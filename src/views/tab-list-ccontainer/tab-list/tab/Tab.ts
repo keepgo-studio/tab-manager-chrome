@@ -30,7 +30,7 @@ class Tab extends EventlessComponent {
   appMode!: TAppMode;
 
   @property({ hasChanged: () => true})
-  tabData!: CurrentTab;
+  tabData!: ChromeTab;
 
   @property()
   isWindowFocused = false;

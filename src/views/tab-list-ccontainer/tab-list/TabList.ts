@@ -29,7 +29,7 @@ class TabList extends EventlessComponent {
   appMode!: TAppMode;
 
   @property({ type: Object, hasChanged: () => true })
-  winData!: CurrentWindow;
+  winData!: ChromeWindow;
 
   constructor() {
     super();
@@ -86,7 +86,7 @@ class TabList extends EventlessComponent {
   }
 
   render() {
-    if (typeof this.winData === 'undefined' || this.winData.tabs.length === 0)
+    if (typeof this.winData === 'undefined' || this.winData.tabs!.length === 0)
       return html``;
 
     switch (this.sizeMode) {
@@ -119,7 +119,7 @@ function miniRender(self: TabList) {
       <app-tab
         .appMode=${self.appMode}
         .idx=${0}
-        .tabData=${self.winData.tabs[0]}
+        .tabData=${self.winData.tabs![0]}
         .isWindowFocused=${self.winData.focused}
       ></app-tab>
 
@@ -143,7 +143,7 @@ function miniRender(self: TabList) {
     </div>
   `;
 
-  const restTabs = self.winData.tabs.slice(1);
+  const restTabs = self.winData.tabs!.slice(1);
   const restTabsHtml = html`
     <div
       class="rest"

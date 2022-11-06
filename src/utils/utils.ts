@@ -48,7 +48,7 @@ export function getSize(mode: TSizeMode) {
 }
 
 export function arrayToMap(list: Array<any>): Object {
-  return list.reduce((acc:CurrentWindowMapping,curr)=> (acc[curr.id!]=curr,acc), {});
+  return list.reduce((acc:IChromeWindowMapping,curr)=> (acc[curr.id!]=curr,acc), {});
 }
 
 export function sendToFront(msg: IFrontMessage<UsersEventType | MessageEventType>) {
