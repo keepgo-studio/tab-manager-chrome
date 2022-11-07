@@ -5,21 +5,24 @@ export interface Typegen0 {
   internalEvents: {
     'xstate.init': { type: 'xstate.init' };
   };
-  invokeSrcNameMap: {
-    'updating contents': 'done.invoke.Search.Update map:invocation[0]';
-  };
+  invokeSrcNameMap: {};
   missingImplementations: {
     actions: never;
     services: never;
     guards: never;
     delays: never;
   };
-  eventsCausingActions: {};
-  eventsCausingServices: {
-    'updating contents': 'update';
+  eventsCausingActions: {
+    request: 'request to worker';
   };
+  eventsCausingServices: {};
   eventsCausingGuards: {};
   eventsCausingDelays: {};
-  matchesStates: 'Search mode' | 'Update map' | 'idle';
+  matchesStates:
+    | 'Search mode'
+    | 'idle'
+    | 'idle.Preparing'
+    | 'idle.Ready'
+    | { idle?: 'Preparing' | 'Ready' };
   tags: never;
 }

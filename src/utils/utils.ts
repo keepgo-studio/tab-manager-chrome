@@ -54,3 +54,19 @@ export function arrayToMap(list: Array<any>): Object {
 export function sendToFront(msg: IFrontMessage<UsersEventType | MessageEventType>) {
   window.dispatchEvent(new CustomEvent(msg.command, { detail: msg }));
 }
+
+export function extractTextContentFromHtml(html: string) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+
+  // remove all unnecessary tags
+  doc.querySelectorAll('style').forEach(e => e.remove());
+  doc.querySelectorAll('script').forEach(e => e.remove());
+
+  // remove all unnecessary spaces
+  return doc.body.textContent?.replace(/[\n\r]+|[\s]{2,}/g, ' ');
+}
+
+export function sumArr(arr: Array<number>) {
+  return arr.reduce((a, b) => a + b, 0);
+}

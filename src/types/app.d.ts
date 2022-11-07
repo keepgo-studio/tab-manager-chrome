@@ -4,9 +4,9 @@ declare global {
     url: string,
     textContent: string
   }
-
+  
   interface IContentMapping {
-    [windowId: number]: IContent
+    [tabId: number]: IContent
   }  
 
   interface SaveWindow extends ChromeWindow {

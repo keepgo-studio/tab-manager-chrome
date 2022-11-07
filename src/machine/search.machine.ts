@@ -1,77 +1,63 @@
 import { createMachine } from "xstate";
-import { crawlTextContent } from "../utils/searching";
-
-export interface ContentMap {
-  [tabId: number]: IContent;
-}
+import { ISearchWorkerMessage, sendToWorker } from "../views/search/search.shared";
 
 export const searchMachine =
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUwEMBOBjAFgOgEsIAbMAYgFcAHCNAFzAG0AGAXUVCoHtYC6CuAOw4gAHogCMADgkAaEAE9JAVmZ4AnJq3atAFgC+++aky5CJclmIEsAawAENoS3ZIQ3XvyEjxCCQDZdeSUEACYAZikNHRj1AyMQE2x8JNx7AFsuCEtrO0csZzYRDz4BYTdfUIB2KND1fykq1WYW1v9gySl-aNjteON0ZLwAVRp6MAy0KjIIITBCQQA3Llt51PxR2gZJqgQCJa4sejKXF2KeUu8KyUCOhClwwwTBLLgRdfNSc88yn0RdUJ3UKhZR4XS9PqGAamFKDNKZbLfS7lUC+XTMKp4cJNVq4tpA8LhPD+EmksmkqGJOEbMbbdJTJFeFFif4YrE4vG49qKRDqTHkgUkynrRm-a4IAC03JCUqe+iAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUwEMBOBjAFgOgEsIAbMPABQzAAdMCA7KAYmIHs0IACNY4zgFzQAjWJyysAttVL9IAbQAMAXUShqrWAX4FW9VSAAeiAEwKFeAOwA2AKxXjNgDQgAnibt4bxgL7fnqTFxCEjAmLGICLABrTkjdRRUkEHVNbV19IwQ7AEY8bIcFAGYFG2yLGwsADmznNwRjKys8ysbWtsaLX390bHwiUiYqAEcAVzh+AVZOAHdWDCiwDAT9FK0dPSTM42zcwvKFbK8bSqqATgUrWsRKwrwFHz8QAN68Z9xOCVYIUPDImLj6Mskqs0htQJkcnkCsVSuUqjVXCZsgAWZrtdGdLogehfOD6N59EIUKi0DAMKArDRrdKbRAWCxXeoVO4PbqBQmkPAAJXQEDqaipoIyiGRxgseQs2ROTkRTPF9yxBOCpEpqXWwvqp0Z2SslU82VOhqNxtOlUVPSCBI+uNV1LBhkQVnOeFMhUONlhFWqjOMxluBxNgbNjwJtqFtIQAFoDYzIzY8KazEnk0nkb5fEA */
   createMachine({
-    context: {
-      contentPerTab: {},
-    },
-    tsTypes: {} as import('./search.machine.typegen').Typegen0,
-    schema: {
-      context: {} as {
-        contentPerTab: ContentMap;
-      },
-      services: {} as {
-        'updating contents': {
-          data: void;
-        };
-      },
-      events: {} as
-        | { type: 'update'; allWindows: IChromeWindowMapping }
-        | { type: 'click icon' }
-    },
-    initial: 'idle',
-    states: {
-      idle: {
-        on: {
-          update: {
-            target: 'Update map',
-          },
-          'click icon': {
-            target: 'Search mode',
-          },
-        },
-      },
-      'Search mode': {
-        on: {
-          'click icon': {
-            target: 'idle',
-          },
-        },
-      },
-      'Update map': {
-        invoke: {
-          src: 'updating contents',
-          onDone: [
-            {
-              target: 'idle',
+  tsTypes: {} as import('./search.machine.typegen').Typegen0,
+  schema: {
+    events: {} as
+      | {
+          type: 'request to worker';
+          worker: Worker;
+          allWindows: IChromeWindowMapping;
+        }
+      | { type: 'click icon' }
+      | { type: 'load all tabs completed' }
+  },
+  initial: 'idle',
+  states: {
+    idle: {
+      initial: 'Preparing',
+      states: {
+        Preparing: {
+          on: {
+            'load all tabs completed': {
+              target: 'Ready',
             },
-          ],
+          },
+        },
+        Ready: {},
+      },
+      on: {
+        'click icon': {
+          target: 'Search mode',
+        },
+        'request to worker': {
+          actions: 'request',
         },
       },
     },
-    id: 'Search',
-  }, {
-    services: {
-      'updating contents': async (context, event) => {
-        Object.values(event.allWindows).forEach(win => {
-          win.tabs.forEach(async (tab: ChromeTab) => {
-            if (tab.id! in context.contentPerTab) return;
+    'Search mode': {
+      on: {
+        'click icon': {
+          target: 'idle',
+        },
+      },
+    },
+  },
+  id: 'Search',
+}, {
+  actions: {
+    'request': (_, event) => {
+      const allTabList = Object.values(event.allWindows).map(win => win.tabs);
 
-            const textContent = await crawlTextContent(tab.url!);
-            
-            context.contentPerTab[tab.id!] = {
-              title: tab.title!,
-              url: tab.url!,
-              textContent: textContent || ''
-            } 
-          })
+      allTabList.forEach(tabList => tabList.forEach((tab: ChromeTab) => {
+        sendToWorker(event.worker, {
+          command: 'fetch text content for tab',
+          data: { tab }
         });
-      }
+      }))
     }
-  });
+  }
+});
