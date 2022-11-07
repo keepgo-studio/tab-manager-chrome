@@ -6,10 +6,10 @@ interface ITabManagerDB extends DBSchema {
     value: ChromeWindow;
   };
 
-  'content-map': {
-    key: number;
-    value: IContent
-  }
+  // 'content-map': {
+  //   key: number;
+  //   value: ITabContent
+  // }
 }
 
 class DBHandler {
@@ -83,39 +83,39 @@ class DBHandler {
       });
   }
   
-  async loadAllContents() {
-    return await this._db.getAll('content-map');
-  }
+  // async loadAllContents() {
+  //   return await this._db.getAll('content-map');
+  // }
 
-  async savingContent(windowId: number, content: IContent) {
-    const transaction = this._db.transaction('content-map', 'readwrite');
+  // async savingContent(windowId: number, content: ITabContent) {
+  //   const transaction = this._db.transaction('content-map', 'readwrite');
 
-    transaction.store.put(content, windowId);
+  //   transaction.store.put(content, windowId);
 
-    return await transaction.done
-      .then(() => {
-        console.log('[idb]: saving content complete');
-      })
-      .catch(err => {
-        console.error('[idb]: saving content had failed');
-        throw err;
-      });
-  }
+  //   return await transaction.done
+  //     .then(() => {
+  //       console.log('[idb]: saving content complete');
+  //     })
+  //     .catch(err => {
+  //       console.error('[idb]: saving content had failed');
+  //       throw err;
+  //     });
+  // }
 
-  async removingContent(windowId: number) {
-    const transaction = this._db.transaction('content-map', 'readwrite');
+  // async removingContent(windowId: number) {
+  //   const transaction = this._db.transaction('content-map', 'readwrite');
 
-    transaction.store.delete(windowId);
+  //   transaction.store.delete(windowId);
 
-    return transaction.done
-      .then(() => {
-        console.log('[idb]: saving content complete');
-      })
-      .catch(err => {
-        console.error('[idb]: removing content had failed');
-        throw err;
-      });
-  }
+  //   return transaction.done
+  //     .then(() => {
+  //       console.log('[idb]: saving content complete');
+  //     })
+  //     .catch(err => {
+  //       console.error('[idb]: removing content had failed');
+  //       throw err;
+  //     });
+  // }
 
   close() {
     this._db.close();

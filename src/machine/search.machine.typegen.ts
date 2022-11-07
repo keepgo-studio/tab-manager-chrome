@@ -3,26 +3,32 @@
 export interface Typegen0 {
   '@@xstate/typegen': true;
   internalEvents: {
+    'done.invoke.fetch actor': {
+      type: 'done.invoke.fetch actor';
+      data: unknown;
+      __tip: 'See the XState TS docs to learn how to strongly type this.';
+    };
+    'error.platform.fetch actor': {
+      type: 'error.platform.fetch actor';
+      data: unknown;
+    };
     'xstate.init': { type: 'xstate.init' };
   };
-  invokeSrcNameMap: {};
+  invokeSrcNameMap: {
+    'fetch and return': 'done.invoke.fetch actor';
+  };
   missingImplementations: {
     actions: never;
     services: never;
     guards: never;
     delays: never;
   };
-  eventsCausingActions: {
-    request: 'request to worker';
+  eventsCausingActions: {};
+  eventsCausingServices: {
+    'fetch and return': 'update';
   };
-  eventsCausingServices: {};
   eventsCausingGuards: {};
   eventsCausingDelays: {};
-  matchesStates:
-    | 'Search mode'
-    | 'idle'
-    | 'idle.Preparing'
-    | 'idle.Ready'
-    | { idle?: 'Preparing' | 'Ready' };
+  matchesStates: 'Loading' | 'Preparing' | 'Ready' | 'Search mode';
   tags: never;
 }

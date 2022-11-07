@@ -1,23 +1,23 @@
-type commandTypeWorker = 'fetch text content for tab' | 'sync content map' | 'input';
+type commandTypeWorker = 'fetch text content for all windows' | 'sync content map' | 'input';
 type commandTypeMain = 'return fetch data' | 'return search result';
 
 export interface ISearchWorkerMessage {
 	command: commandTypeWorker;
 	data: Partial<{
-		tab: ChromeTab;
-		contentMap: IContentMapping;
+		allWindwos: IChromeWindowMapping;
 		inputValue: string;
 	}>;
 }
 export interface ISearchMainMessage {
 	command: commandTypeMain;
 	data: Partial<{
-		tab: ChromeTab,
-		fetchData: string,
+		tabContent: ITabContent;
+
 		matchedInfo: Array<{
-			titleMatched: string,
-			urlMatched: string,
-			textContentMatched: string
+			tabId: number;
+			titleMatched: string;
+			urlMatched: string;
+			textContentMatched: string;
 		}>
 	}>;
 }

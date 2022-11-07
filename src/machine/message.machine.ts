@@ -51,8 +51,7 @@ export const messageMachine =
           sendToFront({
             discriminator: 'IFrontMessage',
             sender: '[xstate-message-machine]',
-            /** @type {MessageEventType} */
-            command: event.status,
+            command: event.status, /** @type {MessageEventType} */
             data: { message: event.command },
           });
         },

@@ -1,25 +1,25 @@
 declare global {
-  interface IContent {
-    title: string,
-    url: string,
-    textContent: string
+  interface ITabContent {
+    tabId: number;
+    windowId: number;
+    title: string;
+    url: string;
+    textContent: string;
   }
-  
-  interface IContentMapping {
-    [tabId: number]: IContent
-  }  
+
+  type TabContentMap = { [tabId: number]: ITabContent }
 
   interface SaveWindow extends ChromeWindow {
     category: string;
   }
 
   interface IChromeWindowMapping {
-    [windowId: number]: ChromeWindow
+    [windowId: number]: ChromeWindow;
   }
 
-  type TThemeMode = "dark" | "light" | "system";
+  type TThemeMode = 'dark' | 'light' | 'system';
 
-  type TSizeMode = "mini" | "tablet" | "side";
+  type TSizeMode = 'mini' | 'tablet' | 'side';
 }
 
 export {};

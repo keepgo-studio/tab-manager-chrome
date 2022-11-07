@@ -5,7 +5,6 @@ import { EventComponent } from '../../core/Component.core';
 import { searchMachine } from '../../machine/search.machine';
 import { FrontInitEventType } from '../../shared/events';
 import { ISearchMainMessage } from './search.shared';
-import { extractTextContentFromHtml, sumArr } from '../../utils/utils';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 
 import styles from './Search.scss';
@@ -21,9 +20,9 @@ class SearchPage extends LitElement {
 class Search extends EventComponent {
   _service = interpret(searchMachine);
   _worker = new Worker(new URL('./search.worker.ts', import.meta.url));
-  _contentMap: IContentMapping = {};
+  _contentList: Array<ITabContent> = [];
 
-  _tabMaxCnt?: number;
+  _tabContentMap: TabContentMap = {};
 
   @state()
   _state = searchMachine.initialState;
@@ -33,15 +32,12 @@ class Search extends EventComponent {
 
     switch (command) {
       case FrontInitEventType.SET_WINDOWS_CONTENT:
-        this._service.send({
-          type: 'request to worker',
-          allWindows: data.allWindows!,
-          worker: this._worker
-        })
-        
-        // get all tab count to check loading all content is completed
-        this._tabMaxCnt = 0;
-        this._tabMaxCnt = sumArr(Object.values(data.allWindows!).map(win => win.tabs!.length));
+        if (!this._state.matches('Loading')) {
+          this._service.send({
+            type: 'update',
+            allWindows: data.allWindows!,
+          })        
+        }
         break;
     }
   }
@@ -56,35 +52,31 @@ class Search extends EventComponent {
   constructor() {
     super();
 
-    this._service.onTransition((s) => this._state = s).start();
+    this._service.onTransition((s) => {
+      if (s.changed) {
+        this._state = s;
+  
+        this._tabContentMap = s.context.tabContentMap;
+  
+        console.log(s.value);
+      }
+    }).start();
 
     this._worker.onmessage = (e) => {
       const { command, data }: ISearchMainMessage = e.data
-  
-      switch (command) {
-        case 'return fetch data':
-          const { tab, fetchData } = data;
-          
-          this._contentMap[tab!.id!] = {
-            title: tab?.title || '',
-            url: tab?.url || '',
-            textContent: extractTextContentFromHtml(fetchData!) || ''
-          };
-
-          if (Object.values(this._contentMap).length === this._tabMaxCnt) {
-            this._service.send('load all tabs completed');
-          }
-          break;
-      }
     };
     
+  }
+
+  clickHandler() {
+    this._service.send('click icon');
   }
 
   render() {
     return html`
         <app-search-page></app-search-page>
 
-        <div id="search-icon" status=${this._state.matches('idle.Ready') ? 'ready' : 'preparing'}>
+        <div id="search-icon" status=${this._state.matches('Ready') ? 'ready' : 'preparing'}>
           <div class="preparing">
             ${unsafeHTML(LoadingSvg)}
           </div>
