@@ -207,12 +207,7 @@ function tabEventsHandler() {
   chrome.tabs.onRemoved.addListener((tabId, { isWindowClosing, windowId }) => {
     if (!extensionInfo.frontPort) return;
 
-    if (isWindowClosing) {
-      sendMessage(extensionInfo.frontPort, ChromeEventType.WINDOW_CLOSED, {
-        windowId,
-        tabId,
-      });
-    } else {
+    if (!isWindowClosing) {
       sendMessage(extensionInfo.frontPort, ChromeEventType.TAB_CLOSED, {
         windowId,
         tabId,
