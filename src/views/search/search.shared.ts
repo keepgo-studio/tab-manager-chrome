@@ -1,27 +1,30 @@
-type commandTypeWorker = 'fetch text content for all windows' | 'sync content map' | 'input';
-type commandTypeMain = 'return fetch data' | 'return search result';
+type commandTypeToWorker = 'request searching';
+type commandTypeToMain = 'return search data';
 
-export interface ISearchWorkerMessage {
-	command: commandTypeWorker;
-	data: Partial<{
-		allWindwos: IChromeWindowMapping;
-		inputValue: string;
-	}>;
-}
-export interface ISearchMainMessage {
-	command: commandTypeMain;
-	data: Partial<{
-		tabContent: ITabContent;
-
-		matchedInfo: Array<{
-			tabId: number;
-			titleMatched: string;
-			urlMatched: string;
-			textContentMatched: string;
-		}>
-	}>;
+export interface IMessageToWorker {
+  command: commandTypeToWorker;
+  data: Partial<{
+    contentMap: TabContentMap;
+    input: string;
+  }>;
 }
 
-export function sendToWorker(worker: Worker, msg: ISearchWorkerMessage) {
-	worker.postMessage(msg);
+export interface IMatchedInfo {
+	tabId: number;
+	titleMatched: string;
+	urlMatched: string;
+	textContentMatched: string;
 }
+
+export interface IMessageToMain {
+  command: commandTypeToMain;
+  data: {
+    matchedList: Array<IMatchedInfo>;
+  };
+}
+
+export function sendToWorker(worker: Worker, msg: IMessageToWorker) {
+  worker.postMessage(msg);
+}
+
+export const MAX_INPUT = 30;

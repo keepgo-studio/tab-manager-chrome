@@ -14,10 +14,8 @@ import './SearchPage';
 
 @customElement('app-search')
 class Search extends EventComponent {
-  _service = interpret(searchMachine);
-  _contentList: Array<ITabContent> = [];
-
-  _tabContentMap: TabContentMap = {};
+  private _service = interpret(searchMachine);
+  private _contentMap: TabContentMap = {};
 
   @state()
   _state = searchMachine.initialState;
@@ -53,7 +51,7 @@ class Search extends EventComponent {
       .onTransition((s) => {
         if (s.changed) {
           this._state = s;
-          this._tabContentMap = s.context.tabContentMap;
+          this._contentMap = s.context.contentMap;
         }
       })
       .start();
@@ -67,6 +65,7 @@ class Search extends EventComponent {
     return html`
       <app-search-page
         .visible=${this._state.matches('Search mode')}
+        .contentMap=${this._contentMap}
       ></app-search-page>
 
       <div

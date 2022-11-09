@@ -10,7 +10,7 @@ export const searchMachine =
   createMachine(
     {
   context: {
-    tabContentMap: {},
+    contentMap: {},
   },
   tsTypes: {} as import('./search.machine.typegen').Typegen0,
   schema: {
@@ -23,7 +23,7 @@ export const searchMachine =
       | { type: 'error' }
       | { type: 'click icon' },
     context: {} as {
-      tabContentMap: TabContentMap;
+      contentMap: TabContentMap;
     },
   },
   predictableActionArguments: true,
@@ -78,33 +78,36 @@ export const searchMachine =
     {
       services: {
         'fetch and return': async (context, event) => {
-          const { tabContentMap } = context;
+          const { contentMap: contentMap } = context;
 
           const allTabs = Object.values(event.allWindows)
             .map((win) => win.tabs)
             .flat();
 
-          const newTabContentMap: TabContentMap = {};
+          const newContentMap: TabContentMap = {};
 
           const promises = allTabs.map(async (tab) => {
             // won't fetch data if url of tab is duplicated
             if (
-              tab.id in tabContentMap &&
-              tab.url === tabContentMap[tab.id].url
+              tab.id in contentMap &&
+              tab.url === contentMap[tab.id].url
             ) {
-              newTabContentMap[tab.id] = tabContentMap[tab.id];
+              newContentMap[tab.id] = contentMap[tab.id];
               return;
             }
 
             let textContent = '';
 
             if (checkUrlValid(tab.url)) {
-              textContent = (await fetchTextContent(tab)) || '';
-
-              textContent = extractTextContentFromHtml(textContent);
+              try {
+                textContent = (await fetchTextContent(tab)) || '';
+                textContent = extractTextContentFromHtml(textContent);
+              } catch (err) {
+                console.error(err);
+              }
             }
 
-            newTabContentMap[tab.id] = {
+            newContentMap[tab.id] = {
               tabId: tab.id,
               textContent,
               title: tab.title,
@@ -115,7 +118,7 @@ export const searchMachine =
 
           await Promise.all(promises);
 
-          context.tabContentMap = newTabContentMap;
+          context.contentMap = newContentMap;
         },
       },
     }
