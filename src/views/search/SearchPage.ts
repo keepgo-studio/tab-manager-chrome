@@ -1,4 +1,4 @@
-import { css, html, LitElement, PropertyValueMap, unsafeCSS } from 'lit';
+import { css, html, PropertyValueMap, unsafeCSS } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { EventlessComponent } from '../../core/Component.core';
@@ -9,24 +9,23 @@ import {
   IMessageToMain,
   IMessageToWorker,
   MAX_INPUT,
+  TabContentMap,
 } from './search.shared';
 import { repeat } from 'lit/directives/repeat.js';
-import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 
 import styles from './SearchPage.scss';
 
 import '../components/TextField';
+import './SearchPageTab';
 
 const fadeInObserver = new FadeIn({ 'transition-duration': 500 });
-
-@customElement('app-search-page-tab') 
-class SearchPageTab extends LitElement {
-
-}
 
 @customElement('app-search-page')
 class SearchPage extends EventlessComponent {
   _worker = new Worker(new URL('./search.worker.ts', import.meta.url));
+
+  @property()
+  allWindows: IChromeWindowMapping = {};
 
   @property()
   contentMap: TabContentMap = {};
@@ -39,6 +38,9 @@ class SearchPage extends EventlessComponent {
 
   @query('app-text-field')
   textField?: Element;
+
+  @query('.tab-container')
+  tabContainer?: Element;
 
   static get styles() {
     return css`
@@ -86,12 +88,15 @@ class SearchPage extends EventlessComponent {
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
   ): void {
     fadeInObserver.detach(this.textField!);
+    fadeInObserver.detach(this.tabContainer!);
+
     fadeInObserver.attach(this.textField!);
+    fadeInObserver.attach(this.tabContainer!);
   }
 
   render() {
-    console.log(this.contentMap);
-    return html` <section
+    return html` 
+    <section
       class="container"
       style=${styleMap({
         display: this.visible ? 'block' : 'none',
@@ -100,20 +105,29 @@ class SearchPage extends EventlessComponent {
       <div class="filter"></div>
 
       <app-text-field
+        .width=${'100%'}
+        .height=${44}
+        .inputStyle=${'round'}
         .placeholder=${'탭 검색하기'}
         .maxlength=${MAX_INPUT}
       ></app-text-field>
 
-      <div class="matched-container">
+      <div class="tab-container">
+        <div class="screen">
         ${repeat(
           this.matchedList,
           (matchedInfo) => matchedInfo.tabId,
           (matchedInfo) => html`
-          <p>
-            ${unsafeHTML(JSON.stringify(matchedInfo))}
-          </p>
+            <app-search-page-tab
+              .tabData=${this.allWindows[matchedInfo.windowId].tabs?.find(
+                (tab) => tab.id === matchedInfo.tabId
+              )}
+              .matchedInfo=${matchedInfo}
+            >
+            </app-search-page-tab>
           `
         )}
+        </div>
       </div>
     </section>`;
   }

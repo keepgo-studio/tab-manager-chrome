@@ -4,25 +4,34 @@ import { customElement, property } from 'lit/decorators.js';
 import styles from './TextField.scss';
 
 export const enum TextFieldEventType {
-  INPUT = 'text'
+  INPUT = 'text',
 }
 
-export type InputDetail = { value: 'string' }
+export type InputDetail = { value: 'string' };
 
 @customElement('app-text-field')
 class TextField extends LitElement {
   static styles = unsafeCSS(styles);
 
   @property()
+  width: number | '100%' = '100%';
+
+  @property()
+  height: number = 48;
+
+  @property()
+  inputStyle: 'normal' | 'round' = 'normal';
+
+  @property()
   placeholder = '';
 
-  @property() 
+  @property()
   maxlength = 30;
 
-	inputHandler(e: InputEvent) {
-		const target = e.currentTarget as HTMLInputElement;
+  inputHandler(e: InputEvent) {
+    const target = e.currentTarget as HTMLInputElement;
 
-		target.setAttribute('value', target.value)
+    target.setAttribute('value', target.value);
 
     const valEvent = new CustomEvent('textinput', {
       detail: { value: target.value },
@@ -32,22 +41,54 @@ class TextField extends LitElement {
        */
       bubbles: false,
       composed: true,
-    })
+    });
 
     if (e.defaultPrevented) {
       e.preventDefault();
     }
     this.dispatchEvent(valEvent);
-	}
+  }
 
   protected render(): unknown {
-    return html`
-      <div class="input-container">
+    // 16 : 48 = font-size : height
+    const ratioFontSize = (this.height * 16) / 48;
 
+    // 16: 12 = ratioFontSize : focusedFontSize
+    const ratioFocusFontSize = (ratioFontSize * 12) / 16;
+
+    const inlintStlyeTag = html`
+      <style>
+        input {
+          width: ${typeof this.width === 'number'
+            ? `${this.width}px`
+            : this.width};
+          height: ${this.height}px;
+          font-size: ${ratioFontSize}px;
+          border-radius: ${this.inputStyle === 'normal' ? 4 : 999}px;
+        }
+        input,
+        .label .text {
+          font-size: ${ratioFontSize}px;
+        }
+        input:focus + .label .text {
+          font-size: ${ratioFocusFontSize}px;
+        }
+        input:focus + .label .text,
+        :not(input[value='']) + .label .text {
+          font-size: ${ratioFocusFontSize}px;
+          top: -5px;
+        }
+      </style>
+    `;
+
+    return html`
+      ${inlintStlyeTag}
+
+      <div class="input-container">
         <i></i>
 
         <input
-				  @input=${this.inputHandler}
+          @input=${this.inputHandler}
           type="text"
           id="search-input"
           name="text-field"

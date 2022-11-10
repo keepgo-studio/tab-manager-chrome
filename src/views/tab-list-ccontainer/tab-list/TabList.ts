@@ -13,7 +13,6 @@ import './tab/Tab';
 
 @customElement('app-tab-list')
 class TabList extends EventlessComponent {
-
   uiService;
 
   @state()
@@ -47,7 +46,7 @@ class TabList extends EventlessComponent {
         },
       })
     )
-      .onTransition((s) => this.state = s)
+      .onTransition((s) => (this.state = s))
       .start();
   }
 
@@ -75,14 +74,11 @@ class TabList extends EventlessComponent {
     this.uiService.send('Toggle');
   }
 
-  protected firstUpdated(
-    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
-  ): void {
-    setTimeout(() => {
-      this.renderRoot
-        .querySelector('.node-container')
-        ?.classList.add('appear-animation');
-    }, 20);
+  protected updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
+    
+    this.renderRoot
+      .querySelector('.node-container')
+      ?.classList.add('appear-animation');
   }
 
   render() {
@@ -101,7 +97,6 @@ class TabList extends EventlessComponent {
 }
 
 function miniRender(self: TabList) {
-
   const dialogHtml = html`
     <app-tab-list-menu
       .mode=${self.appMode}
@@ -115,7 +110,6 @@ function miniRender(self: TabList) {
 
   const firstTabHtml = html`
     <div class="first">
-
       <app-tab
         .appMode=${self.appMode}
         .idx=${0}
@@ -176,17 +170,14 @@ function miniRender(self: TabList) {
       @mouseenter=${self.handleMouseEnter}
       @mouseleave=${self.handleMouseLeave}
     >
+      <div
+        class="mode-decorator"
+        style=${styleMap({
+          display: self.appMode === 'save' ? 'initial' : 'none',
+        })}
+      ></div>
 
-    <div
-      class="mode-decorator"
-      style=${styleMap({ display: self.appMode === 'save' ? 'initial' : 'none' })}
-    ></div>
-
-    ${firstTabHtml} 
-    
-    ${restTabsHtml} 
-    
-    ${dialogHtml}
+      ${firstTabHtml} ${restTabsHtml} ${dialogHtml}
     </div>
   `;
 }

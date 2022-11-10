@@ -29,6 +29,12 @@ export interface Typegen0 {
   };
   eventsCausingGuards: {};
   eventsCausingDelays: {};
-  matchesStates: 'Loading' | 'Preparing' | 'Ready' | 'Search mode';
+  matchesStates:
+    | 'Loading'
+    | 'Search mode'
+    | 'Search mode.Ready'
+    | 'Search mode.Start'
+    | 'Search mode.prev'
+    | { 'Search mode'?: 'Ready' | 'Start' };
   tags: never;
 }

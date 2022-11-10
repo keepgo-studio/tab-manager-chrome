@@ -4,71 +4,71 @@ import {
   extractTextContentFromHtml,
   fetchTextContent,
 } from '../utils/utils';
+import { TabContentMap } from '../views/search/search.shared';
 
 export const searchMachine =
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUwEMBOBjAFgOgAUMwAHTASwDsoBiAVxIjQBcwBtABgF1FQSB7WOWbl+lXiAAeiAIwB2DnjkA2AKzKAzKpkAWDspkBOAEwAaEAE9ExjQA48hx7duPDM1XI2HbAXx-nUTFw8QOwcAAIAW34IMBosABtyLABrcOSxTh4kEAEhETEJaQRlOWM8bXUFLWUOYx0NcysEGQ0dB1c9Q1LVDg5VPwD0MJDh3CiYuIYmViyJPOFRcRzivQ0HZWdVDQVbHXVjOSbZGRk8HVavVR05T09DHUGQUOCAGX40CCpaCDEwPCoADd+Cl-gAzMDMcZoLDMfgYOY5BYFZagYqlcqVUocGp1BrHFq2ZQdbzeOrGGRE2xyJ4vfDvT7fGhgDAYeF4EgJFhg+GRPAQqERGFwhHceaCRaFFayBRKNSabR6AwmAmU4muIkaGQcOQ6InGWljfAAJXQEAs9EYLHYYqREpRRUQcl6Dn0xm6Ou6FzMlmsdhJtlUvRU1I0GkNQRNZotiWSaQylERfHtS0dCE87Xl7tqm1s9R0BLzJO8XhkxlsujLfn8IEok3gOTphGIZAw33F+VT0oQOh9zSM6zDGmMfRM7j6vhrTbpE1iHclqKkiG09mzzmUym8lK1hcMeCH5c2ZbLtjqEZGDK+1HnDu7Wj3vcpChuckM2hUqtfeFsYYpbR0DTDns57BKanzNMmnZSmiiChko-5aDYeZyDIqp6MWHDUt6mEeCBOA3l2MEIAAtMoBKkXgfRUdRNE0tWQA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUwEMBOBjAFgOgBkB7NCASwDsoBiCIisPSgNyIGtGAzMAF1wAI0WHkQwBtAAwBdRKAAORWGR5l6skAA9EANgBMARgA0IAJ6J9E7XgAsATnu3dAZgDsliQFZrLgL4-jqJi4eIHYOPwAtkQQjMg8mDzUWAA2ZFhs-Gn0kjJIIApKKmp5WghOlngGABwuHsZmCNbWTnhVTu36VRIu1l7Wuh5+AehhISMCUTF4AEroECZJqemZWNnS6gXKqhTqpdoSEpWdtfWIHlVVre1Ond29TbpDIKG41ACuchBoPGA5G4pbYqgUr9U4ICxWQZPCjRODqF74YikShQf6Fba7cweKxVXRVfQDMEEpxPBFjILhSaxeIYHhowE7Eo6dqVWzaGp1UxnfQeGwOKreawEiy2UnjfAIyKwmZzBryAFFRnAxDlFyVbTYwlchAeZx4By2AU9YUSUX+Z7i8lhKVTOQYMDMemKzEIbRCo4csFOfH6-mCk22axiilWiawp0YpkIAaXaonbW6Ry++xGoUGU1B80IiNAzSIAC02iJarsDmcbn2Xl8fh8QA */
   createMachine(
     {
   context: {
     contentMap: {},
+    allWindows: {},
   },
   tsTypes: {} as import('./search.machine.typegen').Typegen0,
   schema: {
     services: {} as {
-      'fetch and return': { data: void };
+      'fetch and return': {
+        data: void;
+      };
     },
     events: {} as
+      | { type: 'init'; allWindows: IChromeWindowMapping }
       | { type: 'update'; allWindows: IChromeWindowMapping }
-      | { type: 'complete' }
-      | { type: 'error' }
       | { type: 'click icon' },
     context: {} as {
       contentMap: TabContentMap;
+      allWindows: IChromeWindowMapping;
     },
   },
   predictableActionArguments: true,
-  initial: 'Preparing',
+  on: {
+    update: {
+      target: '.Loading',
+    },
+  },
+  initial: 'Search mode',
   states: {
-    Preparing: {
-      on: {
-        update: {
-          target: 'Loading',
-        },
-      },
-    },
-    'Search mode': {
-      on: {
-        'click icon': {
-          target: 'Ready',
-        },
-        update: {
-          target: 'Loading',
-        },
-      },
-    },
     Loading: {
       invoke: {
         src: 'fetch and return',
         id: 'fetch actor',
         onDone: [
           {
-            target: 'Ready',
-          },
-        ],
-        onError: [
-          {
-            target: 'Preparing',
+            target: '#Search.Search mode.prev',
           },
         ],
       },
     },
-    Ready: {
-      on: {
-        update: {
-          target: 'Loading',
+    'Search mode': {
+      initial: 'Ready',
+      states: {
+        Start: {
+          on: {
+            'click icon': {
+              target: 'Ready',
+            },
+          },
         },
-        'click icon': {
-          target: 'Search mode',
+        Ready: {
+          on: {
+            'click icon': {
+              target: 'Start',
+            },
+          },
+        },
+        prev: {
+          history: 'shallow',
+          type: 'history',
         },
       },
     },
@@ -78,7 +78,7 @@ export const searchMachine =
     {
       services: {
         'fetch and return': async (context, event) => {
-          const { contentMap: contentMap } = context;
+          const { contentMap } = context;
 
           const allTabs = Object.values(event.allWindows)
             .map((win) => win.tabs)
@@ -119,6 +119,7 @@ export const searchMachine =
           await Promise.all(promises);
 
           context.contentMap = newContentMap;
+          context.allWindows = event.allWindows;
         },
       },
     }

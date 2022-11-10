@@ -11,7 +11,7 @@ abstract class AnimationComponent {
   constructor(config: TStyleConfig) {
     this.styleConfig = config;
     this.io = new IntersectionObserver(this.callback.bind(this), {
-      threshold: 1,
+      threshold: 0.1,
     });
   }
 

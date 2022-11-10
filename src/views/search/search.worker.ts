@@ -5,6 +5,7 @@ import {
   IMessageToMain,
   IMessageToWorker,
   MAX_INPUT,
+  TabContentMap,
 } from './search.shared';
 
 function sendToMain(msg: IMessageToMain) {
@@ -13,38 +14,43 @@ function sendToMain(msg: IMessageToMain) {
   self.postMessage(_msg);
 }
 
-function get100CharsWithHighLight(
+const RETURN_CHARS = MAX_INPUT + 10;
+
+function getNCharsWithHighLight(
+  N: number,
   startIndex: number,
   endIndex: number,
   str: string
 ) {
+  const halfN = N / 2;
+
   const midIndex = (startIndex + endIndex) / 2;
 
-  let char100 = '';
-  if (midIndex < 50) {
-    char100 = str.slice(0, 100);
+  let charN = '';
+  if (midIndex < halfN) {
+    charN = str.slice(0, N);
 
-    char100 =
-      char100.slice(0, startIndex) +
+    charN =
+      charN.slice(0, startIndex) +
       '<b>' +
-      char100.slice(startIndex, endIndex) +
+      charN.slice(startIndex, endIndex) +
       '</b>' +
-      char100.slice(endIndex);
+      charN.slice(endIndex);
   } else {
-    char100 = str.slice(midIndex - 50, midIndex + 50);
+    charN = str.slice(midIndex - halfN, midIndex + halfN);
 
-    startIndex -= midIndex - 50;
-    endIndex -= midIndex - 50;
+    startIndex -= midIndex - halfN;
+    endIndex -= midIndex - halfN - 1;
 
-    char100 =
-      char100.slice(midIndex - 50, startIndex) +
+    charN =
+      charN.slice(midIndex - halfN, startIndex) +
       '<b>' +
-      char100.slice(startIndex, endIndex) +
+      charN.slice(startIndex, endIndex) +
       '</b>' +
-      char100.slice(endIndex);
+      charN.slice(endIndex);
   }
 
-  return char100;
+  return charN;
 }
 
 async function search(contentMap: TabContentMap, searchString: string) {
@@ -65,13 +71,15 @@ async function search(contentMap: TabContentMap, searchString: string) {
 
         const result: IMatchedInfo = {
           tabId: tabContent.tabId,
+          windowId: tabContent.windowId,
           titleMatched: '',
           urlMatched: '',
           textContentMatched: '',
         };
 
         if (titleMatchedIndex !== undefined) {
-          result.titleMatched = get100CharsWithHighLight(
+          result.titleMatched = getNCharsWithHighLight(
+            RETURN_CHARS,
             titleMatchedIndex,
             titleMatchedIndex + l,
             tabContent.title
@@ -80,7 +88,8 @@ async function search(contentMap: TabContentMap, searchString: string) {
         }
 
         if (urlMatchedIndex !== undefined) {
-          result.urlMatched = get100CharsWithHighLight(
+          result.urlMatched = getNCharsWithHighLight(
+            RETURN_CHARS,
             urlMatchedIndex,
             urlMatchedIndex + l,
             tabContent.url
@@ -89,7 +98,8 @@ async function search(contentMap: TabContentMap, searchString: string) {
         }
 
         if (textContentMatchedIndex !== undefined) {
-          result.textContentMatched = get100CharsWithHighLight(
+          result.textContentMatched = getNCharsWithHighLight(
+            RETURN_CHARS,
             textContentMatchedIndex,
             textContentMatchedIndex + l,
             tabContent.textContent
@@ -113,7 +123,6 @@ self.onmessage = async (e) => {
 
   switch (command) {
     case 'request searching':
-      console.log(data.contentMap);
       const matchedList = await search(data.contentMap!, data.input!);
       sendToMain({
         command: 'return search data',

@@ -24,7 +24,7 @@
         height: 18px;
     }
 
-    &[status=preparing] {
+    &[status=loading] {
         cursor: not-allowed;
         background: rgba(98, 99, 105, 0.83);
 
@@ -37,7 +37,7 @@
         cursor: pointer;
         background: rgba(78, 99, 247, 0.83);
 
-        .preparing {
+        .loading {
             display: none;
         }
     }
