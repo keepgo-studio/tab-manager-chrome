@@ -123,7 +123,12 @@ self.onmessage = async (e) => {
 
   switch (command) {
     case 'request searching':
-      const matchedList = await search(data.contentMap!, data.input!);
+      let matchedList:IMatchedInfo[] = [];
+      
+      if (data.input !== '') {
+        matchedList = await search(data.contentMap!, data.input!);
+      }
+
       sendToMain({
         command: 'return search data',
         data: {

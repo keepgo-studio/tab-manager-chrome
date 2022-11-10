@@ -70,7 +70,10 @@ export async function fetchTextContent(tab: ChromeTab) {
   try {
     text = await fetch(tab.url, {
       method: 'GET',
-      headers: { Accept: 'text/html' },
+      headers: { 
+        Accept: 'text/html',
+        'User-agent': 'Mozilla/5.0'
+      },
     })
       .then((respond) => respond.text())
       .then((html) => html);

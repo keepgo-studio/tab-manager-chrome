@@ -7,7 +7,7 @@ import {
 import { TabContentMap } from '../views/search/search.shared';
 
 export const searchMachine =
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUwEMBOBjAFgOgBkB7NCASwDsoBiCIisPSgNyIGtGAzMAF1wAI0WHkQwBtAAwBdRKAAORWGR5l6skAA9EANgBMARgA0IAJ6J9E7XgAsATnu3dAZgDsliQFZrLgL4-jqJi4eIHYOPwAtkQQjMg8mDzUWAA2ZFhs-Gn0kjJIIApKKmp5WghOlngGABwuHsZmCNbWTnhVTu36VRIu1l7Wuh5+AehhISMCUTF4AEroECZJqemZWNnS6gXKqhTqpdoSEpWdtfWIHlVVre1Ond29TbpDIKG41ACuchBoPGA5G4pbYqgUr9U4ICxWQZPCjRODqF74YikShQf6Fba7cweKxVXRVfQDMEEpxPBFjILhSaxeIYHhowE7Eo6dqVWzaGp1UxnfQeGwOKreawEiy2UnjfAIyKwmZzBryAFFRnAxDlFyVbTYwlchAeZx4By2AU9YUSUX+Z7i8lhKVTOQYMDMemKzEIbRCo4csFOfH6-mCk22axiilWiawp0YpkIAaXaonbW6Ry++xGoUGU1B80IiNAzSIAC02iJarsDmcbn2Xl8fh8QA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUwEMBOBjAFgOgBkB7NCASwDsoBiCIisPSgNyIGtGAzMAF1wAI0WHkQwBtAAwBdRKAAORWGR5l6skAA9EANgBMARgA0IAJ6J9E7XgAsATnu3dAZgDsliQFZrLgL4-jqJi4hCTkVNRgGBiieHIANmg8nKIAtnjcfDiCwqKSMkggCkoqagVaCB4WeAAc2k5Ottra1k4SunXaxmYI+rV4Lq36tvraQy7VltZ+AejY+IFz-ClEEIzIPJg81FhxZFhs-Hv0eepFyqoU6uWtVgbVLh5diNYtNfVOvRIu1l7Wuh7TEALYLArLLVZ4ABK6AgJm2u32hywx2kp0U51KoHK2gkEjwdweTwq1Wqb3qn2+v10gNB1AArnIIIkwCcCmcSpcys9dESLFYAYCKCs4OpQSFSJQoGjihcruYPFZqrpqvp-rznDTZiCtWDhXh1ptpRjOVidPV8Y17o9TIhKh4bA5qt5rKqLLZNUF5jqlnroaRuvJ0Ry5QhWi58doFWqbRVnHgHLYnd9XRJ3f4gTr9d7wYw5BgwMwjcGuQhmvp8b1CTGnCr447nSnbFN02LQT7VkXZSX-qSCdburpbE48LjR20fnomh65p3MZpEABaTox-ThuwOF58pyR6zaPx+IA */
   createMachine(
     {
   context: {
@@ -43,6 +43,11 @@ export const searchMachine =
         src: 'fetch and return',
         id: 'fetch actor',
         onDone: [
+          {
+            target: '#Search.Search mode.prev',
+          },
+        ],
+        onError: [
           {
             target: '#Search.Search mode.prev',
           },

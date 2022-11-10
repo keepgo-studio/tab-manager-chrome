@@ -24,6 +24,8 @@ const fadeInObserver = new FadeIn({ 'transition-duration': 500 });
 class SearchPage extends EventlessComponent {
   _worker = new Worker(new URL('./search.worker.ts', import.meta.url));
 
+  _value = '';
+
   @property()
   allWindows: IChromeWindowMapping = {};
 
@@ -54,6 +56,17 @@ class SearchPage extends EventlessComponent {
 
     this.addEventListener('textinput', this.textInputHandler as EventListener);
 
+    this.addEventListener('render', () => {
+      const msg: IMessageToWorker = {
+        command: 'request searching',
+        data: {
+          contentMap: this.contentMap,
+          input: this._value,
+        },
+      };
+      this._worker.postMessage(msg);
+    });
+
     this._worker.onmessage = (e) => {
       const { command, data } = e.data as IMessageToMain;
 
@@ -72,7 +85,7 @@ class SearchPage extends EventlessComponent {
       e.preventDefault();
     }
 
-    if (!value) return;
+    this._value = value;
 
     const msg: IMessageToWorker = {
       command: 'request searching',
@@ -95,8 +108,7 @@ class SearchPage extends EventlessComponent {
   }
 
   render() {
-    return html` 
-    <section
+    return html` <section
       class="container"
       style=${styleMap({
         display: this.visible ? 'block' : 'none',
@@ -114,19 +126,26 @@ class SearchPage extends EventlessComponent {
 
       <div class="tab-container">
         <div class="screen">
-        ${repeat(
-          this.matchedList,
-          (matchedInfo) => matchedInfo.tabId,
-          (matchedInfo) => html`
-            <app-search-page-tab
-              .tabData=${this.allWindows[matchedInfo.windowId].tabs?.find(
-                (tab) => tab.id === matchedInfo.tabId
-              )}
-              .matchedInfo=${matchedInfo}
-            >
-            </app-search-page-tab>
-          `
-        )}
+          ${repeat(
+            this.matchedList,
+            (matchedInfo) => matchedInfo.tabId,
+            (matchedInfo) => html`
+              <app-search-page-tab
+                .tabData=${this.allWindows[matchedInfo.windowId].tabs?.find(
+                  (tab) => tab.id === matchedInfo.tabId
+                )}
+                .matchedInfo=${matchedInfo}
+              >
+              </app-search-page-tab>
+            `
+          )}
+          ${this._value !== '' && this.matchedList.length === 0
+            ? html`
+                <div class="undefined">
+                  <p><b>"${this._value}"</b>를 탭들에서 찾을 수 없습니다 😢</p>
+                </div>
+              `
+            : ''}
         </div>
       </div>
     </section>`;

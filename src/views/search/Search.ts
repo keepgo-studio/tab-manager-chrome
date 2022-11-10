@@ -1,5 +1,5 @@
 import { css, html, unsafeCSS } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
+import { customElement, query, state } from 'lit/decorators.js';
 import { interpret } from 'xstate';
 import { EventComponent } from '../../core/Component.core';
 import { searchMachine } from '../../machine/search.machine';
@@ -22,6 +22,9 @@ class Search extends EventComponent {
 
   @state()
   _state = searchMachine.initialState;
+
+  @query('app-search-page')
+  appSearchPage?: Element;
 
   eventListener({
     detail,
@@ -64,6 +67,8 @@ class Search extends EventComponent {
   }
 
   render() {
+    this.appSearchPage?.dispatchEvent(new CustomEvent('render'));
+
     return html`
       <app-search-page
         .allWindows=${this._allWindows}
