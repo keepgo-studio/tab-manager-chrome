@@ -1,8 +1,7 @@
 import { html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { classMap } from 'lit/directives/class-map.js'
-import { EventComponent } from '../../core/Component.core';
-import { UsersEventType } from '../../shared/events';
+import { EventComponent } from '@src/core/Component.core';
+import { UsersEventType } from '@src/shared/events';
 
 const styled = css`
   main {

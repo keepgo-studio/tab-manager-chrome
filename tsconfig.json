@@ -19,6 +19,12 @@
     "noImplicitAny": true,
     "noUnusedParameters": true,
     "strictNullChecks": true,
+    "baseUrl": ".",
+    "paths": {
+      "@public/*": ["public/*"],
+      "@src/*": ["src/*"],
+      "@views/*": ["src/views/*"]
+    }
   },
 
   "include": ["./src"],

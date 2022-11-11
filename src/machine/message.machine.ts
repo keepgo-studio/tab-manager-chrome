@@ -3,8 +3,8 @@ import {
   ChromeEventType,
   MessageEventType,
   UsersEventType,
-} from '../shared/events';
-import { sendToFront } from '../utils/utils';
+} from '@src/shared/events';
+import { sendToFront } from '@src/utils/utils';
 
 export const enum MessageStyle {
   'top',

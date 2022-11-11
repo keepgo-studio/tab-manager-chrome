@@ -1,7 +1,7 @@
 import { css, html } from "lit";
 import { customElement, query, state } from "lit/decorators.js";
-import { EventComponent } from "../../core/Component.core";
-import { MessageEventType, UsersEventType } from "../../shared/events";
+import { EventComponent } from "@src/core/Component.core";
+import { MessageEventType, UsersEventType } from "@src/shared/events";
 
 const enum MessageStyle {
 	top="top",

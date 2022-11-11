@@ -1,5 +1,5 @@
 import { LitElement } from 'lit';
-import { MessageEventType, UsersEventType } from '../shared/events';
+import { MessageEventType, UsersEventType } from '@src/shared/events';
 
 export function isUserDarkMode() {
   if (
@@ -38,6 +38,8 @@ export function getSize(mode: TSizeMode) {
       Math.sqrt(Math.pow(frontWidth, 2) + Math.pow(diagnol, 2))
     );
   } else if (mode === 'tablet') {
+    frontWidth = 826;
+    frontHeight = 640;
   } else if (mode === 'side') {
   }
 

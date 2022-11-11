@@ -1,8 +1,9 @@
-import './views/navbar/Navbar.styled';
-import './views/main/Main.styled';
-import './views/tab-list-ccontainer/TabListContainer.styled';
-import './views/search/Search';
-import './views/message/Message.styled';
+import '@views/navbar/Navbar.styled';
+import '@views/main/Main.styled';
+import '@views/tab-list-container/TabListContainer.styled'
+import '@views/message/Message.styled';
+import '@views/search/Search';
+import '@views/setting/Setting';
 
 import {
   ChromeEventType,
@@ -49,6 +50,8 @@ export default class App {
     <app-search></app-search>
 
     <app-message></app-message>
+
+    <app-setting></app-setting>
   `;
 
     this.elemMap = {

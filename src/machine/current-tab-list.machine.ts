@@ -1,8 +1,8 @@
 import { ActorRef, assign, createMachine, spawn } from 'xstate';
 import { send } from 'xstate/lib/actions';
-import { ChromeEventType, MessageEventType } from '../shared/events';
-import { getAllChromeWindow } from '../utils/browser-api';
-import { arrayToMap } from '../utils/utils';
+import { ChromeEventType, MessageEventType } from '@src/shared/events';
+import { getAllChromeWindow } from '@src/utils/browser-api';
+import { arrayToMap } from '@src/utils/utils';
 import { messageMachine } from './message.machine';
 
 export const currentTabListMachine =

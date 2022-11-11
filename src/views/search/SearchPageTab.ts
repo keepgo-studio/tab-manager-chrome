@@ -1,10 +1,9 @@
 import { css, html, unsafeCSS } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import { Component } from '../../core/Component.core';
-import { UsersEventType } from '../../shared/events';
-import { focusTab } from '../../utils/browser-api';
-import { ThreeDotModes } from '../components/ThreeDot';
+import { Component } from '@src/core/Component.core';
+import { focusTab } from '@src/utils/browser-api';
+import { ThreeDotModes } from '@views/components/ThreeDot';
 import { IMatchedInfo } from './search.shared';
 
 import styles from './SearchPageTab.scss';

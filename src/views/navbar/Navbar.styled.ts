@@ -1,7 +1,7 @@
 import { css, html, TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { EventlessComponent } from '../../core/Component.core';
-import { UsersEventType } from '../../shared/events';
+import { EventlessComponent } from '@src/core/Component.core';
+import { UsersEventType } from '@src/shared/events';
 
 const styled = css`
   nav {
@@ -85,7 +85,7 @@ class Navbar extends EventlessComponent {
       id: 'profile',
       path: './img/person_round-light.png',
       clickHandler: () => {
-        // alert
+        
       },
     },
   ];

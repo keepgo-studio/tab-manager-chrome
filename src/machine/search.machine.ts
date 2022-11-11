@@ -3,8 +3,8 @@ import {
   checkUrlValid,
   extractTextContentFromHtml,
   fetchTextContent,
-} from '../utils/utils';
-import { TabContentMap } from '../views/search/search.shared';
+} from '@src/utils/utils';
+import { TabContentMap } from '@src/views/search/search.shared';
 
 export const searchMachine =
   /** @xstate-layout N4IgpgJg5mDOIC5QGUwEMBOBjAFgOgBkB7NCASwDsoBiCIisPSgNyIGtGAzMAF1wAI0WHkQwBtAAwBdRKAAORWGR5l6skAA9EANgBMARgA0IAJ6J9E7XgAsATnu3dAZgDsliQFZrLgL4-jqJi4hCTkVNRgGBiieHIANmg8nKIAtnjcfDiCwqKSMkggCkoqagVaCB4WeAAc2k5Ottra1k4SunXaxmYI+rV4Lq36tvraQy7VltZ+AejY+IFz-ClEEIzIPJg81FhxZFhs-Hv0eepFyqoU6uWtVgbVLh5diNYtNfVOvRIu1l7Wuh7TEALYLArLLVZ4ABK6AgJm2u32hywx2kp0U51KoHK2gkEjwdweTwq1Wqb3qn2+v10gNB1AArnIIIkwCcCmcSpcys9dESLFYAYCKCs4OpQSFSJQoGjihcruYPFZqrpqvp-rznDTZiCtWDhXh1ptpRjOVidPV8Y17o9TIhKh4bA5qt5rKqLLZNUF5jqlnroaRuvJ0Ry5QhWi58doFWqbRVnHgHLYnd9XRJ3f4gTr9d7wYw5BgwMwjcGuQhmvp8b1CTGnCr447nSnbFN02LQT7VkXZSX-qSCdburpbE48LjR20fnomh65p3MZpEABaTox-ThuwOF58pyR6zaPx+IA */

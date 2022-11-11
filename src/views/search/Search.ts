@@ -1,16 +1,16 @@
 import { css, html, unsafeCSS } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
 import { interpret } from 'xstate';
-import { EventComponent } from '../../core/Component.core';
-import { searchMachine } from '../../machine/search.machine';
-import { FrontInitEventType } from '../../shared/events';
+import { EventComponent } from '@src/core/Component.core';
+import { searchMachine } from '@src/machine/search.machine';
+import { FrontInitEventType } from '@src/shared/events';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { TabContentMap } from './search.shared';
 
 import styles from './Search.scss';
-import LoadingSvg from '../../../public/img/spin-1s-200px.svg';
-import SearchSvg from '../../../public/img/search.svg';
-import CloseSvg from '../../../public/img/close.svg';
+import LoadingSvg from '@public/img/spin-1s-200px.svg';
+import SearchSvg from '@public/img/search.svg';
+import CloseSvg from '@public/img/close.svg';
 
 import './SearchPage';
 

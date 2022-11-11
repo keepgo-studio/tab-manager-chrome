@@ -1,10 +1,10 @@
 import { css, html, PropertyValueMap, unsafeCSS } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
-import { EventlessComponent } from '../../../core/Component.core';
+import { EventlessComponent } from '@src/core/Component.core';
 import { styleMap } from 'lit/directives/style-map.js';
 import { interpret } from 'xstate';
-import { tabListUiMachine } from '../../../machine/tab-list-ui.machine';
+import { tabListUiMachine } from '@src/machine/tab-list-ui.machine';
 
 import stylesMini from './TabList-mini.scss';
 

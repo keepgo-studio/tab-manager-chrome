@@ -1,15 +1,15 @@
 import { LitElement } from 'lit';
 import { state } from 'lit/decorators.js';
-import { FRONT_EVENT_NAME, USER_SETTINGS_CHNAGED } from '../app';
-import UserSettings from '../store/local-storage';
-import { globalStyles } from '../shared/styles';
+import { FRONT_EVENT_NAME, USER_SETTINGS_CHNAGED } from '@src/app';
+import UserSettings from '@src/store/local-storage';
+import { globalStyles } from '@src/shared/styles';
 import {
   ChromeEventType,
   FrontInitEventType,
   MessageEventType,
   UserSettingsEventType,
   UsersEventType,
-} from '../shared/events';
+} from '@src/shared/events';
 
 export class Component extends LitElement {
   /**

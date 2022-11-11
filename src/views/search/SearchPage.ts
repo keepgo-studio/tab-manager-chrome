@@ -1,9 +1,9 @@
 import { css, html, PropertyValueMap, unsafeCSS } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
-import { EventlessComponent } from '../../core/Component.core';
-import { FadeIn } from '../../utils/animate';
-import { InputDetail } from '../components/TextField';
+import { EventlessComponent } from '@src/core/Component.core';
+import { FadeIn } from '@src/utils/animate';
+import { InputDetail } from '@views/components/TextField';
 import {
   IMatchedInfo,
   IMessageToMain,
@@ -15,7 +15,7 @@ import { repeat } from 'lit/directives/repeat.js';
 
 import styles from './SearchPage.scss';
 
-import '../components/TextField';
+import '@views/components/TextField';
 import './SearchPageTab';
 
 const fadeInObserver = new FadeIn({ 'transition-duration': 500 });

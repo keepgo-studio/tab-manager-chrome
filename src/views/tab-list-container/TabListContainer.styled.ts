@@ -1,20 +1,20 @@
 import { css, html, unsafeCSS } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { EventComponent } from '../../core/Component.core';
+import { EventComponent } from '@src/core/Component.core';
 import { repeat } from 'lit/directives/repeat.js';
 import { interpret } from 'xstate';
-import { currentTabListMachine } from '../../machine/current-tab-list.machine';
-import { savedTabListMachine } from '../../machine/saved-tab-list.machine';
+import { currentTabListMachine } from '@src/machine/current-tab-list.machine';
+import { savedTabListMachine } from '@src/machine/saved-tab-list.machine';
 import {
   ChromeEventType,
   FrontInitEventType,
   UsersEventType,
-} from '../../shared/events';
+} from '@src/shared/events';
 
 import styles from './TabListContainer.scss';
 
 import './tab-list/TabList';
-import { createNewWindow } from '../../utils/browser-api';
+import { createNewWindow } from '@src/utils/browser-api';
 
 @customElement('app-tab-list-container')
 class TabListContainer extends EventComponent {

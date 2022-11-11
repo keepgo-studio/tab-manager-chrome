@@ -1,9 +1,9 @@
 import { css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { EventlessComponent } from '../../../core/Component.core';
-import { UsersEventType } from '../../../shared/events';
-import { closeWindow } from '../../../utils/browser-api';
-import { Confirm } from '../../dialog/Confirm.styled';
+import { EventlessComponent } from '@src/core/Component.core';
+import { UsersEventType } from '@src/shared/events';
+import { closeWindow } from '@src/utils/browser-api';
+import { Confirm } from '@src/views/dialog/Confirm.styled';
 
 const styled = css`
   .dialog-container {

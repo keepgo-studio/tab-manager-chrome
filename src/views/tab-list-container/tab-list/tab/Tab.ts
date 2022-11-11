@@ -1,15 +1,15 @@
 import { interpret } from 'xstate';
-import { EventlessComponent } from '../../../../core/Component.core';
+import { EventlessComponent } from '@src/core/Component.core';
 import { customElement, property, state } from 'lit/decorators.js';
-import { tabUiMachine } from '../../../../machine/tab-ui.machine';
+import { tabUiMachine } from '@src/machine/tab-ui.machine';
 import { css, html, unsafeCSS } from 'lit';
-import { ThreeDotModes } from '../../../components/ThreeDot';
+import { ThreeDotModes } from '@src/views/components/ThreeDot';
 import { styleMap } from 'lit/directives/style-map.js';
 
 import styles from './Tab.scss';
-import { focusTab, removeTab } from '../../../../utils/browser-api';
-import { UsersEventType } from '../../../../shared/events';
-import { Confirm } from '../../../dialog/Confirm.styled';
+import { focusTab, removeTab } from '@src/utils/browser-api';
+import { UsersEventType } from '@src/shared/events';
+import { Confirm } from '@src/views/dialog/Confirm.styled';
 
 @customElement('app-tab')
 class Tab extends EventlessComponent {

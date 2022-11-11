@@ -4,9 +4,9 @@ import {
   spawn,
 } from 'xstate';
 import { send, sendParent } from 'xstate/lib/actions';
-import { MessageEventType, UsersEventType } from '../shared/events';
-import db from '../store/indexed-db';
-import { arrayToMap } from '../utils/utils';
+import { MessageEventType, UsersEventType } from '@src/shared/events';
+import db from '@src/store/indexed-db';
+import { arrayToMap } from '@src/utils/utils';
 import { messageMachine } from './message.machine';
 
 export type DBGuards = UsersEventType | 'get all data';

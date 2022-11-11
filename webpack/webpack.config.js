@@ -22,6 +22,12 @@ module.exports = {
     modules: ["node_modules"],
 
     extensions: [".ts", ".js"],
+
+    alias: {
+      "@public": path.resolve(__dirname, "..", "public"),
+      "@src": path.resolve(__dirname, "..", "src"),
+      "@views": path.resolve(__dirname, "..", "src", "views"),
+    }
   },
 
   module: {

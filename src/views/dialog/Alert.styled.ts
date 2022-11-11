@@ -1,6 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { customElement, query, state } from "lit/decorators.js";
-import { DialogComponent } from "../../core/Dialog.core";
+import { DialogComponent } from "@src/core/Dialog.core";
 
 const styled = css`
 * {
