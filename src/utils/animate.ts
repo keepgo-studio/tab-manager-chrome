@@ -1,9 +1,8 @@
-import { LitElement } from 'lit';
-
 type TStyleConfig = Partial<{
   'transition-duration': number;
 }>;
-abstract class AnimationComponent {
+
+abstract class Animation {
   protected io;
 
   protected styleConfig: TStyleConfig = {};
@@ -19,38 +18,6 @@ abstract class AnimationComponent {
     entries: Array<IntersectionObserverEntry>,
     observer: IntersectionObserver
   ): void;
-  abstract attach(component: LitElement): void;
-}
-
-export class FadeIn extends AnimationComponent {
-  setDefaultCss() {
-    return `
-      position: relative;
-      transition: ease ${this.styleConfig['transition-duration']}ms;
-      top: 15px;
-      opacity: 0;
-      z-index: 10;
-    `;
-  }
-
-  fadeInCss() {
-    return `
-      ${this.setDefaultCss()}
-
-      top:0;
-      opacity: 1;
-    `;
-  }
-
-  callback(entries: Array<IntersectionObserverEntry>) {
-    entries.forEach((entry: IntersectionObserverEntry) => {
-      if (entry.isIntersecting) {
-        entry.target.setAttribute('style', this.fadeInCss());
-      } else {
-        entry.target.setAttribute('style', this.setDefaultCss());
-      }
-    });
-  }
 
   attach(component: Element) {
     this.io.observe(component);
@@ -58,5 +25,57 @@ export class FadeIn extends AnimationComponent {
 
   detach(component: Element) {
     this.io.unobserve(component);
+  }
+}
+
+export class FadeInOut extends Animation {
+  setDefaultCss(elem: HTMLElement) {
+    elem.style['position'] = 'relative';
+    elem.style[
+      'transition'
+    ] = `ease ${this.styleConfig['transition-duration']}ms`;
+    elem.style['top'] = '15px';
+    elem.style['opacity'] = '0';
+    elem.style['zIndex'] = '10';
+  }
+
+  fadeInCss(elem: HTMLElement) {
+    elem.style['top'] = '0';
+    elem.style['opacity'] = '1';
+  }
+
+  callback(entries: Array<IntersectionObserverEntry>) {
+    entries.forEach((entry: IntersectionObserverEntry) => {
+      if (entry.isIntersecting) {
+        this.fadeInCss(entry.target as HTMLElement);
+      } else {
+        this.setDefaultCss(entry.target as HTMLElement);
+      }
+    });
+  }
+}
+
+export class ZoomInOut extends Animation {
+  setDefaultCss(elem: HTMLElement) {
+    elem.style[
+      'transition'
+    ] = `ease ${this.styleConfig['transition-duration']}ms`;
+    elem.style['transform'] = 'scale(1.1)';
+    elem.style['opacity'] = '0';
+  }
+
+  ZoomInCss(elem: HTMLElement) {
+    elem.style['transform'] = '';
+    elem.style['opacity'] = '1';
+  }
+
+  callback(entries: IntersectionObserverEntry[]): void {
+    entries.forEach((entry: IntersectionObserverEntry) => {
+      if (entry.isIntersecting) {
+        this.ZoomInCss(entry.target as HTMLElement);
+      } else {
+        this.setDefaultCss(entry.target as HTMLElement);
+      }
+    });
   }
 }

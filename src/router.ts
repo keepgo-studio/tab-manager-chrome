@@ -65,7 +65,7 @@ export class FrontRouter {
 
   attachEvent(
     command: UsersEventType | FrontInitEventType | MessageEventType,
-    target: Element
+    target:Element
   ) {
     const _app = this._app;
 
@@ -80,7 +80,7 @@ export class FrontRouter {
 
   activeUserEvent() {
     for (const command in UsersEventType) {
-      let target: Element;
+      let target:Element;
 
       switch (command) {
         case UsersEventType.CHANGE_MODE:
@@ -92,6 +92,8 @@ export class FrontRouter {
         case UsersEventType.DELETE_SAVED_TAB:
           target = this._app.elemMap.savedTabListContainer;
           break;
+        case UsersEventType.OPEN_SETTING:
+          target = this._app.elemMap.setting;
       }
 
       this.attachEvent(command as UsersEventType, target!);
@@ -102,7 +104,7 @@ export class FrontRouter {
     const _app = this._app;
 
     for (const command in FrontInitEventType) {
-      let target: Element;
+      let target:Element;
 
       switch (command) {
         case FrontInitEventType.SET_WINDOWS_CONTENT:
@@ -121,7 +123,7 @@ export class FrontRouter {
     const _app = this._app;
 
     for (const command in MessageEventType) {
-      let target: Element;
+      let target:Element;
 
       switch (command) {
         case MessageEventType.SUCCESS:

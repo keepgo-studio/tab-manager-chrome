@@ -58,23 +58,17 @@ const globalCss = css`
     --light-mode-background: #F9F9F9;
   }
 
-  main search-component{
-    position: absolute;
-    bottom: 0;
-    right:0;
-  }
-
   @media(prefers-color-scheme: dark) {
-    body {
-        color: #fff;
-        background-color: var(--dark-mode-background);
+    * {
+      color: #000;
+      background-color: var(--light-mode-background);
     }
   }
-
+  
   @media (perfers-color-scheme: light) {
-    body {
-        color: #000;
-        background-color: var(--light-mode-background);
+    * {
+      color: #fff;
+      background-color: var(--dark-mode-background);
     }
     
   }

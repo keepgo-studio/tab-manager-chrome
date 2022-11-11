@@ -1,6 +1,6 @@
 /**
  *   "dark-mode": TThemeMode;
- *   "outer-height": number;
+ *   "lang-mode": TLangMode;
  *   "size-mode": TSizeMode;
  */
 class UserSettings {
@@ -11,11 +11,11 @@ class UserSettings {
     return await chrome.storage.local.set({ 'dark-mode': mode });
   }
 
-  static async getOuterHeight() {
-    return (await chrome.storage.local.get('outer-height'))['outer-height'];
+  static async getLangMode() {
+    return (await chrome.storage.local.get('lang-mode'))['lang-mode'];
   }
-  static async setOuterHeight(h = 120) {
-    return await chrome.storage.local.set({ 'outer-height': h });
+  static async setLangMode(mode: TLangMode = 'ko') {
+    return await chrome.storage.local.set({ 'lang-mode': mode });
   }
 
   static async getSizeMode() {

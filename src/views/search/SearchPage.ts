@@ -2,7 +2,7 @@ import { css, html, PropertyValueMap, unsafeCSS } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { EventlessComponent } from '@src/core/Component.core';
-import { FadeIn } from '@src/utils/animate';
+import { FadeInOut } from '@src/utils/animate';
 import { InputDetail } from '@views/components/TextField';
 import {
   IMatchedInfo,
@@ -18,7 +18,7 @@ import styles from './SearchPage.scss';
 import '@views/components/TextField';
 import './SearchPageTab';
 
-const fadeInObserver = new FadeIn({ 'transition-duration': 500 });
+const fadeInObserver = new FadeInOut({ 'transition-duration': 500 });
 
 @customElement('app-search-page')
 class SearchPage extends EventlessComponent {
@@ -97,9 +97,7 @@ class SearchPage extends EventlessComponent {
     this._worker.postMessage(msg);
   }
 
-  protected updated(
-    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
-  ): void {
+  protected updated() {
     fadeInObserver.detach(this.textField!);
     fadeInObserver.detach(this.tabContainer!);
 

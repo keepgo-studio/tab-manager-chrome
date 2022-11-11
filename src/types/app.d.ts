@@ -10,6 +10,8 @@ declare global {
   type TThemeMode = 'dark' | 'light' | 'system';
 
   type TSizeMode = 'mini' | 'tablet' | 'side';
+
+  type TLangMode = 'ko' | 'en' | 'ja' | 'zh'
 }
 
 export {};

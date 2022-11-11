@@ -59,7 +59,7 @@ export class Confirm extends DialogComponent {
   confirmMsg = '';
 
   @query('#dialog')
-  dialog: Element | undefined;
+  dialog:Element | undefined;
 
   static styles = styled;
 

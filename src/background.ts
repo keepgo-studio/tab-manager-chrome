@@ -4,10 +4,14 @@ import {
   UserSettingsEventType,
   FrontInitEventType,
 } from './shared/events';
+import UserSettings from './store/local-storage';
 import { getSize } from './utils/utils';
 
 console.log('background is running');
 
+(async () => {
+  console.log(await UserSettings.getSizeMode());
+})();
 const size = getSize('mini');
 
 const extensionInfo: {
@@ -47,7 +51,9 @@ function sendMessage(
   port.postMessage(msg);
 }
 
-function init() {
+async function init() {
+  const setInitialSetting = await UserSettings.getSizeMode();
+
   chrome.runtime.onInstalled.addListener(() => {
     // chrome.windows.create(
     //   {
@@ -66,6 +72,8 @@ function init() {
     //   })
     // })
   });
+
+
 }
 
 /**

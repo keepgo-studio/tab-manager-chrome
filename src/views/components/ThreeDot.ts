@@ -1,6 +1,6 @@
 import { css, html, LitElement, unsafeCSS } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import styles from "./three-dots.css";
+import styles from "./ThreeDot.css";
 
 export enum ThreeDotModes {
   'dot-elastic'='dot-elastic',

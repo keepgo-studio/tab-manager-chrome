@@ -20,7 +20,8 @@ export const enum ChromeEventType {
 }
 export const enum UserSettingsEventType {
   THEME_MODE="theme-mode",
-  SIZE_MODE="size-mode"
+  SIZE_MODE="size-mode",
+  LANG_MODE="lang-mode"
 }
 
 // --------------------------------------------------
@@ -34,7 +35,8 @@ export enum UsersEventType {
   SAVE_WINDOW="SAVE_WINDOW",
   OPEN_SAVED_WINDOW="OPEN_SAVED_WINDOW",
   DELETE_SAVED_WINDOW="DELETE_SAVED_WINDOW",
-  DELETE_SAVED_TAB="DELETE_SAVED_TAB"
+  DELETE_SAVED_TAB="DELETE_SAVED_TAB",
+  OPEN_SETTING="OPEN_SETTING",
 }
 export enum MessageEventType {
   SUCCESS="SUCCESS",

@@ -22,16 +22,17 @@ export const FRONT_EVENT_NAME = 'from-main';
 export const USER_SETTINGS_CHNAGED = 'user-settings-changed';
 
 interface IElemMap {
-  navbar: Element;
-  appMain: Element;
-  currentTabListContainer: Element;
-  savedTabListContainer: Element;
-  search: Element;
-  message: Element;
+  navbar:Element;
+  appMain:Element;
+  currentTabListContainer:Element;
+  savedTabListContainer:Element;
+  search:Element;
+  message:Element;
+  setting:Element;
 }
 
 export default class App {
-  private _main: Element;
+  private _main:Element;
 
   public elemMap: IElemMap;
 
@@ -65,13 +66,14 @@ export default class App {
       )![1],
       search: this._main.querySelector('app-search')!,
       message: this._main.querySelector('app-message')!,
+      setting: this._main.querySelector('app-setting')!,
     };
 
     document.body.appendChild(this._main);
   }
 
   sendTo(
-    elem: Element,
+    elem:Element,
     msg:
       | IPortMessage<FrontInitEventType | ChromeEventType>
       | IFrontMessage<UsersEventType | MessageEventType | FrontInitEventType>

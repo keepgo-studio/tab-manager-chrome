@@ -24,10 +24,13 @@ export class Component extends LitElement {
   }
 
   @state()
-  themeMode: TThemeMode = 'system';
+  themeMode: TThemeMode = 'light';
 
   @state()
   sizeMode: TSizeMode = 'mini';
+
+  @state()
+  langMode: TLangMode = 'ko';
 
   async userEventsListener({
     detail,
@@ -38,6 +41,10 @@ export class Component extends LitElement {
 
     if (detail.command === UserSettingsEventType.THEME_MODE) {
       this.themeMode = await UserSettings.geThemeMode();
+    }
+    
+    if (detail.command === UserSettingsEventType.LANG_MODE) {
+      this.langMode = await UserSettings.getLangMode();
     }
   }
 

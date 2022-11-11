@@ -85,7 +85,12 @@ class Navbar extends EventlessComponent {
       id: 'profile',
       path: './img/person_round-light.png',
       clickHandler: () => {
-        
+        this.sendToFront({
+          discriminator: 'IFrontMessage',
+          sender: this.tagName,
+          command: UsersEventType.OPEN_SETTING,
+          data: {}
+        })
       },
     },
   ];
