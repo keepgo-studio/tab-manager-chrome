@@ -8,6 +8,9 @@ export const enum AppLifeCycleEventType {
   SET_SIZE="SET_SIZE",
   TERMINATE="TERMINATE",
 }
+export const enum AppEventType {
+  USER_SETTINGS_CHNAGED="USER_SETTINGS_CHNAGED"
+}
 export const enum ChromeEventType {
   WINDOW_CREATED="WINDOW_CREATED",
   WINDOW_CLOSED="WINDOW_CLOSED",
@@ -17,11 +20,6 @@ export const enum ChromeEventType {
   TAB_CLOSED="TAB_CLOSED",
   FOCUS_CHANGED="FOCUS_CHANGED",
   ACTIVE_CHANGED="ACTIVE_CHANGED",
-}
-export const enum UserSettingsEventType {
-  THEME_MODE="theme-mode",
-  SIZE_MODE="size-mode",
-  LANG_MODE="lang-mode"
 }
 
 // --------------------------------------------------

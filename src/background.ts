@@ -1,17 +1,13 @@
 import {
+  AppEventType,
   AppLifeCycleEventType,
   ChromeEventType,
-  UserSettingsEventType,
   FrontInitEventType,
 } from './shared/events';
-import UserSettings from './store/local-storage';
 import { getSize } from './utils/utils';
 
 console.log('background is running');
 
-(async () => {
-  console.log(await UserSettings.getSizeMode());
-})();
 const size = getSize('mini');
 
 const extensionInfo: {
@@ -34,7 +30,7 @@ const extensionInfo: {
 
 function sendMessage(
   port: RuntimePort | undefined,
-  command: ChromeEventType | AppLifeCycleEventType | UserSettingsEventType,
+  command: ChromeEventType | AppLifeCycleEventType | AppEventType,
   data?: Partial<IBackData>
 ) {
   if (!port) return;
@@ -42,7 +38,7 @@ function sendMessage(
   const msg:
     | IPortMessage<ChromeEventType>
     | IPortMessage<AppLifeCycleEventType>
-    | IPortMessage<UserSettingsEventType> = {
+    | IPortMessage<AppEventType> = {
     discriminator: 'IPortMessage',
     command,
     data: data ?? {},
@@ -51,10 +47,9 @@ function sendMessage(
   port.postMessage(msg);
 }
 
-async function init() {
-  const setInitialSetting = await UserSettings.getSizeMode();
 
-  chrome.runtime.onInstalled.addListener(() => {
+async function init() {
+  chrome.runtime.onInstalled.addListener(async () => {
     // chrome.windows.create(
     //   {
     //     focused: true,
@@ -70,10 +65,8 @@ async function init() {
     //       chrome.tabs.reload(tab.id);
     //     })
     //   })
-    // })
+    // })  
   });
-
-
 }
 
 /**
@@ -85,6 +78,8 @@ function createConnection() {
       case 'front':
         if (!extensionInfo.frontPort) {
           extensionInfo.frontPort = port;
+
+          console.log('connected to front');
 
           extensionInfo.frontPort.onDisconnect.addListener(() => {
             extensionInfo.frontPort = undefined;
@@ -251,13 +246,23 @@ function storageEventsHandler() {
   chrome.storage.onChanged.addListener((changes) => {
     if (!extensionInfo.frontPort) return;
 
+    let userSettings: TUserSettingMap = {};
+
     if ('theme-mode' in changes) {
-      sendMessage(extensionInfo.frontPort, UserSettingsEventType.THEME_MODE);
+      userSettings.theme = changes['theme-mode'].newValue as TThemeMode;
     }
 
     if ('size-mode' in changes) {
-      sendMessage(extensionInfo.frontPort, UserSettingsEventType.SIZE_MODE);
+      userSettings.size = changes['size-mode'].newValue as TSizeMode;
     }
+
+    if ('lang-mode' in changes) {
+      userSettings.lang = changes['lang-mode'].newValue as TLangMode;
+    }
+
+    sendMessage(extensionInfo.frontPort, AppEventType.USER_SETTINGS_CHNAGED, {
+      userSettings,
+    });
   });
 }
 

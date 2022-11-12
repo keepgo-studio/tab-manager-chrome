@@ -1,13 +1,12 @@
 import { LitElement } from 'lit';
-import { state } from 'lit/decorators.js';
-import { FRONT_EVENT_NAME, USER_SETTINGS_CHNAGED } from '@src/app';
+import { FRONT_EVENT_NAME } from '@src/app';
 import UserSettings from '@src/store/local-storage';
 import { globalStyles } from '@src/shared/styles';
 import {
+  AppEventType,
   ChromeEventType,
   FrontInitEventType,
   MessageEventType,
-  UserSettingsEventType,
   UsersEventType,
 } from '@src/shared/events';
 
@@ -23,38 +22,52 @@ export class Component extends LitElement {
     window.dispatchEvent(new CustomEvent(msg.command, { detail: msg }));
   }
 
-  @state()
-  themeMode: TThemeMode = 'light';
+  userSetting: TUserSettingMap = {};
 
-  @state()
-  sizeMode: TSizeMode = 'mini';
-
-  @state()
-  langMode: TLangMode = 'ko';
-
-  async userEventsListener({
-    detail,
-  }: CustomEvent<IPortMessage<UserSettingsEventType>>) {
-    if (detail.command === UserSettingsEventType.SIZE_MODE) {
-      this.sizeMode = await UserSettings.getSizeMode();
+  userEventsListener({ detail }: CustomEvent<TUserSettingMap>) {
+    if (detail.lang) {
+      this.userSetting.lang = detail.lang;
     }
+    if (detail.size) {
+      this.userSetting.size = detail.size;
+    }
+    if (detail.theme) {
+      this.userSetting.theme = detail.theme;
+    }
+    this.requestUpdate();
+  }
 
-    if (detail.command === UserSettingsEventType.THEME_MODE) {
-      this.themeMode = await UserSettings.geThemeMode();
-    }
-    
-    if (detail.command === UserSettingsEventType.LANG_MODE) {
-      this.langMode = await UserSettings.getLangMode();
-    }
+  connectedCallback(): void {
+    super.connectedCallback();
+
+    UserSettings.getAllSettings().then(setting => {
+      this.userSetting.lang = setting['lang-mode']
+      this.userSetting.size = setting['size-mode']
+      this.userSetting.theme = setting['theme-mode']
+
+      this.requestUpdate();
+    })
+
+    this.addEventListener(
+      AppEventType.USER_SETTINGS_CHNAGED,
+      this.userEventsListener as EventListener
+    );
+
+    UserSettings.attachToObserver(this);
+  }
+
+  disconnectedCallback(): void {
+    this.removeEventListener(
+      AppEventType.USER_SETTINGS_CHNAGED,
+      this.userEventsListener as EventListener
+    );
+
+    UserSettings.detachFromObserver(this);
+    super.disconnectedCallback();
   }
 
   constructor() {
     super();
-
-    this.addEventListener(
-      USER_SETTINGS_CHNAGED,
-      this.userEventsListener as unknown as EventListener
-    );
   }
 }
 
@@ -66,14 +79,26 @@ export abstract class EventComponent extends Component {
     | IFrontMessage<UsersEventType | MessageEventType | FrontInitEventType>
   >): void;
 
-  constructor() {
-    super();
+  connectedCallback(): void {
+    super.connectedCallback();
 
     this.addEventListener(
       FRONT_EVENT_NAME,
       this.eventListener as EventListener
     );
   }
+
+  disconnectedCallback(): void {
+    this.removeEventListener(
+      FRONT_EVENT_NAME,
+      this.eventListener as EventListener
+    );
+    super.disconnectedCallback();
+  }
 }
 
-export abstract class EventlessComponent extends Component {}
+export abstract class EventlessComponent extends Component {
+  constructor() {
+    super();
+  }
+}

@@ -10,6 +10,7 @@ declare global {
       fromIndex: number;
       toIndex: number;
     };
+    userSettings: TUserSettingMap;
   }
 
   interface IFrontData {

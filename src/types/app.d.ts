@@ -12,6 +12,12 @@ declare global {
   type TSizeMode = 'mini' | 'tablet' | 'side';
 
   type TLangMode = 'ko' | 'en' | 'ja' | 'zh'
+
+  type TUserSettingMap = Partial<{
+    size: TSizeMode;
+    theme: TThemeMode;
+    lang: TLangMode;
+  }>
 }
 
 export {};

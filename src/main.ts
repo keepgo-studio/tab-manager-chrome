@@ -5,7 +5,7 @@ import { connectToBack } from './utils/browser-api';
 
 setDocumentTitle(chrome.runtime.getManifest().description ?? 'tab-manager');
 
-window.onload = () => {
+window.onload = async () => {
   // connect to worker
   let port = connectToBack('front');
 
@@ -23,6 +23,8 @@ window.onload = () => {
   fr.activeUserEvent();
   fr.activeMessageEvent();
   fr.activeInitEvent();
+
+  await app.initApp();
 
   // retry connection if this window had disconnected with various reasons (e.g timeout)
   port.onDisconnect.addListener(() => {

@@ -1,10 +1,10 @@
 import App from './app';
 import {
+  AppEventType,
   AppLifeCycleEventType,
   ChromeEventType,
   FrontInitEventType,
   MessageEventType,
-  UserSettingsEventType,
   UsersEventType,
 } from './shared/events';
 
@@ -23,7 +23,7 @@ export class PortRouter {
         msg:
           | IPortMessage<ChromeEventType>
           | IPortMessage<AppLifeCycleEventType>
-          | IPortMessage<UserSettingsEventType>
+          | IPortMessage<AppEventType>
       ) => {
         console.log('[main]:', msg.command, msg.data);
         switch (msg.command) {
@@ -47,9 +47,8 @@ export class PortRouter {
             this._app.sendTo(this._app.elemMap.currentTabListContainer, msg);
             break;
 
-          case UserSettingsEventType.SIZE_MODE:
-          case UserSettingsEventType.THEME_MODE:
-            this._app.sendUserSetting(msg);
+          case AppEventType.USER_SETTINGS_CHNAGED:
+            this._app.updateUserSetting(msg);
         }
       }
     );

@@ -11,6 +11,7 @@ import SettingSvg from '@public/img/setting.svg';
 import CloseRoundSvg from '@public/img/close-round.svg';
 
 import '@views/components/SelectField';
+import UserSettings from '@src/store/local-storage';
 
 const ZoomInObserver = new ZoomInOut({ 'transition-duration': 300 });
 
@@ -55,7 +56,10 @@ class Setting extends EventComponent {
   constructor() {
     super();
 
-    this.addEventListener('selected', this.themeSelectHandler as EventListener);
+    this.addEventListener(
+      'selected',
+      this.themeSelectHandler as unknown as EventListener
+    );
   }
   closeClickHandler() {
     ZoomInObserver.setDefaultCss(this.section! as HTMLElement);
@@ -70,12 +74,23 @@ class Setting extends EventComponent {
     ZoomInObserver.attach(this.section!);
   }
 
-  themeSelectHandler(e: CustomEvent) {
+  async themeSelectHandler(e: CustomEvent) {
     const { selectedThemeMode } = e.detail;
 
-    console.log(selectedThemeMode);
+    await UserSettings.setThemeMode(selectedThemeMode);
   }
 
+  async sizeClickHandler(e: Event) {
+    const target = e.currentTarget as Element;
+
+    await UserSettings.setSizeMode(target.id as TSizeMode);
+  }
+
+  async langClickHandler(e: Event) {
+    const target = e.currentTarget as Element;
+
+    await UserSettings.setLangMode(target.id as TLangMode);
+  }
   render() {
     return html`
       <section
@@ -96,7 +111,7 @@ class Setting extends EventComponent {
               <h1>Theme mode</h1>
 
               <app-select-field
-                .selected=${this.themeMode}
+                .selected=${this.userSetting.theme}
                 .optionList=${this._themeList}
               ></app-select-field>
             </li>
@@ -110,9 +125,11 @@ class Setting extends EventComponent {
                   (sizeMap) => sizeMap.mode,
                   (sizeMap) => html`
                     <li
-                      class="${this.sizeMode === sizeMap.mode
+                      id=${sizeMap.mode}
+                      class="${this.userSetting.size === sizeMap.mode
                         ? 'selected'
                         : ''}"
+                      @click=${this.sizeClickHandler}
                     >
                       <img src="${sizeMap.imgSrc}" />
                       <p>${sizeMap.mode}</p>
@@ -130,9 +147,9 @@ class Setting extends EventComponent {
                   this._langListMap,
                   (langMap) => langMap.mode,
                   (langMap) => html`
-                    <li>
+                    <li id=${langMap.mode} @click=${this.langClickHandler}>
                       <div
-                        class="select-box ${this.langMode === langMap.mode
+                        class="select-box ${this.userSetting.lang === langMap.mode
                           ? 'selected'
                           : ''}"
                       >

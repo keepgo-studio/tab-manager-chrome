@@ -29,7 +29,7 @@ class Tab extends EventlessComponent {
   @property()
   appMode!: TAppMode;
 
-  @property({ hasChanged: () => true})
+  @property({ hasChanged: () => true })
   tabData!: ChromeTab;
 
   @property()
@@ -52,7 +52,7 @@ class Tab extends EventlessComponent {
     this.uiService = interpret(
       tabUiMachine.withConfig({
         actions: {
-          'open tab or open saved window with new window':async () => {
+          'open tab or open saved window with new window': async () => {
             if (this.appMode === 'normal') {
               focusTab(this.tabData.windowId, this.tabData.id!, {
                 top: 0,
@@ -60,39 +60,42 @@ class Tab extends EventlessComponent {
                 width: window.screen.width / 2,
                 height: window.screen.height - 24,
                 state: 'normal',
-              })
-            } else if (this.appMode === 'save'){
-
-              if (!(await new Confirm('저장된 창을 여시겠습니까?').show())) return;
+              });
+            } else if (this.appMode === 'save') {
+              if (!(await new Confirm('저장된 창을 여시겠습니까?').show()))
+                return;
 
               this.sendToFront({
                 discriminator: 'IFrontMessage',
                 sender: this.tagName,
                 command: UsersEventType.OPEN_SAVED_WINDOW,
                 data: { windowId: this.tabData.windowId },
-              })
+              });
             }
           },
 
-          'remove the tab or remove the tab from idb':async () => {
+          'remove the tab or remove the tab from idb': async () => {
             if (this.appMode === 'normal') {
-              removeTab(this.tabData.id!)
+              removeTab(this.tabData.id!);
             } else if (this.appMode === 'save') {
-
-              if (!(await new Confirm('해당 탭을 삭제하시겠습니까?').show())) return;
+              if (!(await new Confirm('해당 탭을 삭제하시겠습니까?').show()))
+                return;
 
               this.sendToFront({
                 discriminator: 'IFrontMessage',
                 sender: this.tagName,
                 command: UsersEventType.DELETE_SAVED_TAB,
-                data: { tabId: this.tabData.id, windowId: this.tabData.windowId },
-              })
+                data: {
+                  tabId: this.tabData.id,
+                  windowId: this.tabData.windowId,
+                },
+              });
             }
           },
         },
       })
     )
-      .onTransition((s) => this.state = s)
+      .onTransition((s) => (this.state = s))
       .start();
   }
 
@@ -124,13 +127,13 @@ class Tab extends EventlessComponent {
 
   render() {
     if (this.tabData === undefined) return html``;
-
-    switch (this.sizeMode) {
+    
+    switch (this.userSetting.size) {
       case 'mini':
         if (this.idx === 0) {
-          return miniFirstTabRender(this);
+          return this.miniFirstTabRender();
         } else {
-          return miniTabRender(this);
+          return this.miniTabRender();
         }
       case 'side':
         return;
@@ -138,80 +141,81 @@ class Tab extends EventlessComponent {
         return;
     }
   }
-}
 
-function miniFirstTabRender(self: Tab) {
-  return html`
-    <div
-      class="first-tab-container"
-      @click=${self.tabClickHandler}
-      @mouseenter=${self.tabMouseEnterHandler}
-      @mouseleave=${self.tabMouseLeaveHandler}
-    >
-      <div class="first-fav-icon-container">
-        ${self.tabData.favIconUrl
-          ? html`<img src="${self.tabData.favIconUrl}" />`
-          : html`<three-dot
-              width=${5}
-              height=${5}
-              mode=${ThreeDotModes['dot-flashing']}
-            ></three-dot>`}
-      </div>
-
-      <div class="first-text-container">
-        <h1
-          style=${self.appMode === 'normal' 
-            && self.isWindowFocused 
-            && self.tabData.active
-            ? styleMap(self.active)
-            : ''}
-        >
-          ${self.tabData.title}
-        </h1>
-
-        <a>${self.tabData.url}</a>
-      </div>
-    </div>
-  `;
-}
-
-function miniTabRender(self: Tab) {
-  
-  return html`
-    <div
-      class="rest-tab-container"
-      @click=${self.tabClickHandler}
-      @mouseenter=${self.tabMouseEnterHandler}
-      @mouseleave=${self.tabMouseLeaveHandler}
-    >
-      <div class="rest-fav-icon-container">
-        ${self.tabData.favIconUrl !== undefined
-          ? html`<img src=${self.tabData.favIconUrl} />`
-          : html`<three-dot
-              width=${2}
-              height=${2}
-              mode=${ThreeDotModes['dot-flashing']}
-            ></three-dot>`}
-      </div>
-
-      <div class="rest-text-container">
-        <a
-          style=${self.appMode === 'normal' && self.isWindowFocused && self.tabData.active
-            ? styleMap(self.active)
-            : ''}
-          >${self.tabData.title}</a
-        >
-      </div>
-
-      <button
-        @click=${self.tabDeleteHandler}
-        style=${styleMap({
-          display: self.state.matches('Hover') ? 'flex' : 'none',
-          opacity: self.state.matches('Hover.Opened') ? '1' : '0',
-        })}
+  miniFirstTabRender() {
+    return html`
+      <div
+        class="first-tab-container"
+        @click=${this.tabClickHandler}
+        @mouseenter=${this.tabMouseEnterHandler}
+        @mouseleave=${this.tabMouseLeaveHandler}
       >
-        <p>X</p>
-      </button>
-    </div>
-  `;
+        <div class="first-fav-icon-container">
+          ${this.tabData.favIconUrl
+            ? html`<img src="${this.tabData.favIconUrl}" />`
+            : html`<three-dot
+                width=${5}
+                height=${5}
+                mode=${ThreeDotModes['dot-flashing']}
+              ></three-dot>`}
+        </div>
+
+        <div class="first-text-container">
+          <h1
+            style=${this.appMode === 'normal' &&
+            this.isWindowFocused &&
+            this.tabData.active
+              ? styleMap(this.active)
+              : ''}
+          >
+            ${this.tabData.title}
+          </h1>
+
+          <a>${this.tabData.url}</a>
+        </div>
+      </div>
+    `;
+  }
+
+  miniTabRender() {
+    return html`
+      <div
+        class="rest-tab-container"
+        @click=${this.tabClickHandler}
+        @mouseenter=${this.tabMouseEnterHandler}
+        @mouseleave=${this.tabMouseLeaveHandler}
+      >
+        <div class="rest-fav-icon-container">
+          ${this.tabData.favIconUrl !== undefined
+            ? html`<img src=${this.tabData.favIconUrl} />`
+            : html`<three-dot
+                width=${2}
+                height=${2}
+                mode=${ThreeDotModes['dot-flashing']}
+              ></three-dot>`}
+        </div>
+
+        <div class="rest-text-container">
+          <a
+            style=${this.appMode === 'normal' &&
+            this.isWindowFocused &&
+            this.tabData.active
+              ? styleMap(this.active)
+              : ''}
+            >${this.tabData.title}</a
+          >
+        </div>
+
+        <button
+          @click=${this.tabDeleteHandler}
+          style=${styleMap({
+            display: this.state.matches('Hover') ? 'flex' : 'none',
+            opacity: this.state.matches('Hover.Opened') ? '1' : '0',
+          })}
+        >
+          <p>X</p>
+        </button>
+      </div>
+    `;
+  }
 }

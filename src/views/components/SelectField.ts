@@ -46,6 +46,8 @@ class SelectField extends LitElement {
       e.preventDefault();
     }
     this.dispatchEvent(selectEvent);
+
+    this.clicked = false;
   }
 
   protected render() {

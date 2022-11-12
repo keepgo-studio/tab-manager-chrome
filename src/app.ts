@@ -1,17 +1,18 @@
-import '@views/navbar/Navbar.styled';
-import '@views/main/Main.styled';
-import '@views/tab-list-container/TabListContainer.styled'
-import '@views/message/Message.styled';
-import '@views/search/Search';
-import '@views/setting/Setting';
-
 import {
   ChromeEventType,
   MessageEventType,
-  UserSettingsEventType,
   UsersEventType,
   FrontInitEventType,
+  AppEventType,
 } from './shared/events';
+import UserSettings from './store/local-storage';
+
+import '@views/navbar/Navbar.styled';
+import '@views/main/Main.styled';
+import '@views/tab-list-container/TabListContainer.styled';
+import '@views/message/Message.styled';
+import '@views/search/Search';
+import '@views/setting/Setting';
 
 /**
  * app class is managing routes endpoints and attach components to index.html
@@ -19,20 +20,18 @@ import {
 
 export const FRONT_EVENT_NAME = 'from-main';
 
-export const USER_SETTINGS_CHNAGED = 'user-settings-changed';
-
 interface IElemMap {
-  navbar:Element;
-  appMain:Element;
-  currentTabListContainer:Element;
-  savedTabListContainer:Element;
-  search:Element;
-  message:Element;
-  setting:Element;
+  navbar: Element;
+  appMain: Element;
+  currentTabListContainer: Element;
+  savedTabListContainer: Element;
+  search: Element;
+  message: Element;
+  setting: Element;
 }
 
 export default class App {
-  private _main:Element;
+  private _main: Element;
 
   public elemMap: IElemMap;
 
@@ -72,8 +71,26 @@ export default class App {
     document.body.appendChild(this._main);
   }
 
+  async initApp() {
+    const theme = await UserSettings.geThemeMode();
+    const lang = await UserSettings.getLangMode();
+    const size = await UserSettings.getSizeMode();
+
+    if (theme === undefined) {
+      await UserSettings.setThemeMode('light');
+    }
+
+    if (lang === undefined) {
+      await UserSettings.setLangMode('ko');
+    }
+
+    if (size === undefined) {
+      await UserSettings.setSizeMode('mini');
+    }
+  }
+
   sendTo(
-    elem:Element,
+    elem: Element,
     msg:
       | IPortMessage<FrontInitEventType | ChromeEventType>
       | IFrontMessage<UsersEventType | MessageEventType | FrontInitEventType>
@@ -85,14 +102,8 @@ export default class App {
     );
   }
 
-  sendUserSetting(msg: IPortMessage<UserSettingsEventType>) {
-    Object.values(this.elemMap).forEach((elem) => {
-      elem.dispatchEvent(
-        new CustomEvent(USER_SETTINGS_CHNAGED, {
-          detail: msg,
-        })
-      );
-    });
+  updateUserSetting(msg: IPortMessage<AppEventType>) {
+    UserSettings.pushUpdateToEntries(msg.data.userSettings!);
   }
 
   closeApp() {
@@ -107,7 +118,7 @@ export default class App {
     const runtimeMsg: IRuntimeMessage<FrontInitEventType> = {
       sender: 'front',
       command: FrontInitEventType.RESET_WINDOW_ID,
-      data: {}
+      data: {},
     };
     chrome.runtime.sendMessage(runtimeMsg);
   }

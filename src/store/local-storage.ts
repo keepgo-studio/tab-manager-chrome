@@ -1,14 +1,37 @@
 /**
- *   "dark-mode": TThemeMode;
+ *   "theme-mode": TThemeMode;
  *   "lang-mode": TLangMode;
  *   "size-mode": TSizeMode;
  */
+
+import { AppEventType } from "@src/shared/events";
+
+
 class UserSettings {
-  static async geThemeMode() {
-    return (await chrome.storage.local.get('dark-mode'))['dark-mode'];
+  static entries: Element[] = [];
+
+  static attachToObserver(elem: Element) {
+    this.entries.push(elem);
   }
-  static async seThemeMode(mode: TThemeMode = 'system') {
-    return await chrome.storage.local.set({ 'dark-mode': mode });
+
+  static pushUpdateToEntries(userSettings: TUserSettingMap) {
+    this.entries.forEach((elem) =>
+      elem.dispatchEvent(
+        new CustomEvent(AppEventType.USER_SETTINGS_CHNAGED, { detail: userSettings })
+      )
+    );
+  }
+  
+  static detachFromObserver(elem: Element) {
+    this.entries = this.entries.filter(_elem => _elem !== elem);
+  }
+
+  static async geThemeMode() {
+    return (await chrome.storage.local.get('theme-mode'))['theme-mode'];
+  }
+  
+  static async setThemeMode(mode: TThemeMode = 'system') {
+    return await chrome.storage.local.set({ 'theme-mode': mode });
   }
 
   static async getLangMode() {
@@ -23,6 +46,15 @@ class UserSettings {
   }
   static async setSizeMode(sizeMode: TSizeMode = 'mini') {
     return await chrome.storage.local.set({ 'size-mode': sizeMode });
+  }
+
+  static async getAllSettings() {
+    return await chrome.storage.local.get([
+      'size-mode',
+      'lang-mode',
+      'theme-mode'
+    ]);
+
   }
 }
 

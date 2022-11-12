@@ -70,7 +70,10 @@
     li {
       padding: 10px 1rem;
       display: inline-block;
-      cursor: pointer;  
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
 
       &:hover {
         background-color: #e3e3e3;

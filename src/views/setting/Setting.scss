@@ -110,7 +110,7 @@
             &.selected {
               box-shadow: 0px 1px 8px 4px rgba(61, 115, 255, 0.3);
               background-color: #3d73ff;
-              color: #fff;
+              p { color: #fff; }
             }
             img {
               margin-bottom: 6px;
