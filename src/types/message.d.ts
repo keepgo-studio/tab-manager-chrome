@@ -42,7 +42,11 @@ declare global {
   interface IRuntimeMessage<T> {
     sender: 'front' | 'back' | 'content';
     readonly command: T;
-    readonly data: Partial<{ textContent: string }>;
+    readonly data: Partial<{ 
+      textContent: string;
+      screenWidth: number;
+      screenHeight: number;
+    }>;
   }
 }
 

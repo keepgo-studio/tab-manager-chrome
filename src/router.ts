@@ -28,8 +28,7 @@ export class PortRouter {
         console.log('[main]:', msg.command, msg.data);
         switch (msg.command) {
           case AppLifeCycleEventType.SET_SIZE:
-            const { extensionWidth, extensionHeight } = msg.data;
-            this._app.resizeApp(extensionWidth!, extensionHeight!);
+            this._app.resizeApp();
             break;
 
           case AppLifeCycleEventType.TERMINATE:
@@ -49,6 +48,7 @@ export class PortRouter {
 
           case AppEventType.USER_SETTINGS_CHNAGED:
             this._app.updateUserSetting(msg);
+            this._app.resizeApp();
         }
       }
     );
@@ -64,7 +64,7 @@ export class FrontRouter {
 
   attachEvent(
     command: UsersEventType | FrontInitEventType | MessageEventType,
-    target:Element
+    target: Element
   ) {
     const _app = this._app;
 
@@ -79,7 +79,7 @@ export class FrontRouter {
 
   activeUserEvent() {
     for (const command in UsersEventType) {
-      let target:Element;
+      let target: Element;
 
       switch (command) {
         case UsersEventType.CHANGE_MODE:
@@ -103,7 +103,7 @@ export class FrontRouter {
     const _app = this._app;
 
     for (const command in FrontInitEventType) {
-      let target:Element;
+      let target: Element;
 
       switch (command) {
         case FrontInitEventType.SET_WINDOWS_CONTENT:
@@ -122,7 +122,7 @@ export class FrontRouter {
     const _app = this._app;
 
     for (const command in MessageEventType) {
-      let target:Element;
+      let target: Element;
 
       switch (command) {
         case MessageEventType.SUCCESS:

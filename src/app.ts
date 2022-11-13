@@ -33,6 +33,8 @@ interface IElemMap {
 export default class App {
   private _main: Element;
 
+  private _userSetting: TUserSettingMap = {};
+
   public elemMap: IElemMap;
 
   constructor() {
@@ -87,6 +89,10 @@ export default class App {
     if (size === undefined) {
       await UserSettings.setSizeMode('mini');
     }
+
+    this._userSetting.lang = lang;
+    this._userSetting.size = size;
+    this._userSetting.theme = theme;
   }
 
   sendTo(
@@ -103,6 +109,17 @@ export default class App {
   }
 
   updateUserSetting(msg: IPortMessage<AppEventType>) {
+    if (msg.data.userSettings!.theme !== undefined) {
+      this._userSetting.theme = msg.data.userSettings!.theme;
+    }
+
+    if (msg.data.userSettings!.lang !== undefined) {
+      this._userSetting.lang = msg.data.userSettings!.lang;
+    }
+
+    if (msg.data.userSettings!.size !== undefined) {
+      this._userSetting.size = msg.data.userSettings!.size;
+    }
     UserSettings.pushUpdateToEntries(msg.data.userSettings!);
   }
 
@@ -110,7 +127,9 @@ export default class App {
     window.close();
   }
 
-  resizeApp(width: number, height: number) {
+  async resizeApp() {
+     const data = await UserSettings.getSizeValues();
+     const { width, height } = data[this._userSetting.size!];
     window.resizeTo(width, height);
   }
 

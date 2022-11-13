@@ -4,11 +4,9 @@ import {
   ChromeEventType,
   FrontInitEventType,
 } from './shared/events';
-import { getSize } from './utils/utils';
+import UserSettings from './store/local-storage';
 
 console.log('background is running');
-
-const size = getSize('mini');
 
 const extensionInfo: {
   id: string;
@@ -18,14 +16,10 @@ const extensionInfo: {
    * the window's script will request connection to background
    */
   frontWinId: number | undefined;
-  frontWidth: number;
-  frontHeight: number;
 } = {
   id: chrome.runtime.id,
   frontPort: undefined,
   frontWinId: undefined,
-  frontWidth: size.frontWidth,
-  frontHeight: size.frontHeight,
 };
 
 function sendMessage(
@@ -47,25 +41,24 @@ function sendMessage(
   port.postMessage(msg);
 }
 
-
 async function init() {
   chrome.runtime.onInstalled.addListener(async () => {
-    // chrome.windows.create(
-    //   {
-    //     focused: true,
-    //     type: "normal",
-    //     url: "https://keepgo-studio.github.io/tab-manager-homepage/",
-    //     state: "maximized",
-    //   },
-    // );
-    // chrome.windows.getAll({ populate: true, windowTypes: ['normal']}, allWindows => {
-    //   allWindows.forEach(win => {
-    //     win.tabs?.forEach(tab => {
-    //       if (tab.id === undefined) return;
-    //       chrome.tabs.reload(tab.id);
-    //     })
-    //   })
-    // })  
+    
+    const data = await UserSettings.getSizeValues();
+
+    const mode = await UserSettings.getSizeMode();
+
+    if (!mode) {
+      await UserSettings.setSizeMode('mini');
+    }
+    if (!data) {
+      chrome.windows.create({
+        focused: true,
+        type: 'normal',
+        url: 'https://keepgo-studio.github.io/tab-manager-homepage/',
+        state: 'normal',
+      });
+    }
   });
 }
 
@@ -99,11 +92,11 @@ function createConnection() {
   });
 
   chrome.runtime.onMessage.addListener(
-    (
+    async (
       msg: IRuntimeMessage<FrontInitEventType | ChromeEventType>,
       senderInfo
     ) => {
-      const { command, sender } = msg;
+      const { command, sender, data } = msg;
 
       switch (sender) {
         case 'front':
@@ -111,13 +104,19 @@ function createConnection() {
             extensionInfo.frontWinId = senderInfo.tab!.windowId;
           }
           break;
+        case 'content':
+          if (command === FrontInitEventType.SET_SIZE_SETTING) {
+            const { screenWidth, screenHeight } = data;
+
+            await UserSettings.setAllSizeValues(screenWidth!, screenHeight!);
+          }
       }
     }
   );
 }
 
 function startFront() {
-  chrome.action.onClicked.addListener(() => {
+  chrome.action.onClicked.addListener(async () => {
     // open web
     if (extensionInfo.frontWinId) {
       /**
@@ -125,12 +124,16 @@ function startFront() {
        */
       chrome.windows.update(extensionInfo.frontWinId, { focused: true });
     } else {
+      const data = await UserSettings.getSizeValues();
+      const mode = await UserSettings.getSizeMode();
+
+      const { width, height } = data[mode];
       chrome.windows.create({
         focused: true,
         type: 'panel',
         url: 'index.html',
-        width: extensionInfo.frontWidth,
-        height: extensionInfo.frontHeight,
+        width: width,
+        height: height,
         left: 20,
         top: 20,
       });
@@ -164,10 +167,7 @@ function windowEventsHandler() {
 
     if (win.id !== extensionInfo.frontWinId) return;
 
-    sendMessage(extensionInfo.frontPort, AppLifeCycleEventType.SET_SIZE, {
-      extensionWidth: extensionInfo.frontWidth,
-      extensionHeight: extensionInfo.frontHeight,
-    });
+    sendMessage(extensionInfo.frontPort, AppLifeCycleEventType.SET_SIZE, {});
   });
 
   chrome.windows.onFocusChanged.addListener((windowId) => {
