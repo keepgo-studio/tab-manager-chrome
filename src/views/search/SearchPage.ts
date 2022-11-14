@@ -17,6 +17,7 @@ import styles from './SearchPage.scss';
 
 import '@views/components/TextField';
 import './SearchPageTab';
+import GlobalLangMap from '@src/data/lang';
 
 const fadeInObserver = new FadeInOut({ 'transition-duration': 500 });
 
@@ -118,7 +119,7 @@ class SearchPage extends EventlessComponent {
         .width=${'100%'}
         .height=${44}
         .inputStyle=${'round'}
-        .placeholder=${'탭 검색하기'}
+        .placeholder=${GlobalLangMap[this.userSetting.lang!].Search.placeholder}
         .maxlength=${MAX_INPUT}
       ></app-text-field>
 
@@ -140,7 +141,7 @@ class SearchPage extends EventlessComponent {
           ${this._value !== '' && this.matchedList.length === 0
             ? html`
                 <div class="undefined">
-                  <p><b>"${this._value}"</b>를 탭들에서 찾을 수 없습니다 😢</p>
+                  <p><b>"${this._value}"</b>${GlobalLangMap[this.userSetting.lang!].Search.errorMessage} 😢</p>
                 </div>
               `
             : ''}

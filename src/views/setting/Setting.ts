@@ -12,6 +12,7 @@ import CloseRoundSvg from '@public/img/close-round.svg';
 
 import '@views/components/SelectField';
 import UserSettings from '@src/store/local-storage';
+import GlobalLangMap from '@src/data/lang';
 
 const ZoomInObserver = new ZoomInOut({ 'transition-duration': 300 });
 
@@ -108,7 +109,7 @@ class Setting extends EventComponent {
 
           <ul class="setting-list">
             <li class="li-theme">
-              <h1>Theme mode</h1>
+              <h1>${GlobalLangMap[this.userSetting.lang!].Setting.themeHeader}</h1>
 
               <app-select-field
                 .selected=${this.userSetting.theme}
@@ -117,7 +118,7 @@ class Setting extends EventComponent {
             </li>
 
             <li class="li-size">
-              <h1>Size mode</h1>
+              <h1>${GlobalLangMap[this.userSetting.lang!].Setting.sizeHeader}</h1>
 
               <ol>
                 ${repeat(
@@ -140,7 +141,7 @@ class Setting extends EventComponent {
             </li>
 
             <li class="li-lang">
-              <h1>Language</h1>
+              <h1>${GlobalLangMap[this.userSetting.lang!].Setting.langHeader}</h1>
 
               <ol>
                 ${repeat(

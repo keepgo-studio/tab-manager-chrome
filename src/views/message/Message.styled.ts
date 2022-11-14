@@ -2,6 +2,7 @@ import { css, html } from "lit";
 import { customElement, query, state } from "lit/decorators.js";
 import { EventComponent } from "@src/core/Component.core";
 import { MessageEventType, UsersEventType } from "@src/shared/events";
+import GlobalLangMap from "@src/data/lang";
 
 const enum MessageStyle {
 	top="top",
@@ -54,33 +55,6 @@ const styled = css`
 		
 	}
 `;
-
-function convertToMessage(command: UsersEventType, status: MessageEventType) {
-	let lastStr = '';
-
-	if (status === MessageEventType.FAILED) {
-		lastStr = '실패하였습니다'
-	} else {
-		lastStr = '성공하였습니다'
-	}
-
-	let mainSentense = '';
-	switch(command){
-		case UsersEventType.DELETE_SAVED_TAB:
-			mainSentense = '저장된 탭을 삭제하는데에';
-			break;
-		case UsersEventType.DELETE_SAVED_WINDOW:
-			mainSentense = '저장된 창을 삭제하는데에';
-			break;
-		case UsersEventType.OPEN_SAVED_WINDOW:
-			mainSentense = '저장된 창을 여는데에'
-			break;
-		case UsersEventType.SAVE_WINDOW:
-			mainSentense = '창을 저장하는데에'
-	}
-	
-	return mainSentense + ' ' + lastStr;
-}
 /** 
  * Message only gets data from message.machine.ts
  * */ 
@@ -91,11 +65,38 @@ class Message extends EventComponent {
 
 	private sto: any | undefined = undefined;
 	
+	convertToMessage(command: UsersEventType, status: MessageEventType) {
+		let lastStr = '';
+	
+		if (status === MessageEventType.FAILED) {
+			lastStr = GlobalLangMap[this.userSetting.lang!].Message.FAILED;
+		} else {
+			lastStr = GlobalLangMap[this.userSetting.lang!].Message.SUCCESS;
+		}
+	
+		let mainSentense = '';
+		switch(command){
+			case UsersEventType.DELETE_SAVED_TAB:
+				mainSentense = GlobalLangMap[this.userSetting.lang!].Message.DELETE_SAVED_TAB;
+				break;
+			case UsersEventType.DELETE_SAVED_WINDOW:
+				mainSentense = GlobalLangMap[this.userSetting.lang!].Message.DELETE_SAVED_WINDOW;
+				break;
+			case UsersEventType.OPEN_SAVED_WINDOW:
+				mainSentense = GlobalLangMap[this.userSetting.lang!].Message.OPEN_SAVED_WINDOW;
+				break;
+			case UsersEventType.SAVE_WINDOW:
+				mainSentense = GlobalLangMap[this.userSetting.lang!].Message.SAVE_WINDOW;
+		}
+		
+		return mainSentense + ' ' + lastStr;
+	}
+
 	eventListener({ detail, }: CustomEvent<IFrontMessage<MessageEventType>>): void {
 		const { message } = detail.data;
 
 		// this.msgStyle = msgStyle; // needed to add later
-		this.msg = convertToMessage(message as UsersEventType, detail.command);
+		this.msg = this.convertToMessage(message as UsersEventType, detail.command);
 
 		this.messageDiv.setAttribute(detail.command, '');
 
