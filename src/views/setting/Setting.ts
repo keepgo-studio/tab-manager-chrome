@@ -99,6 +99,7 @@ class Setting extends EventComponent {
         style=${styleMap({
           display: this.visible ? 'flex' : 'none',
         })}
+        sizeMode=${this.userSetting.size}
       >
         <div class="close-container">
           <i @click=${this.closeClickHandler}> ${unsafeHTML(CloseRoundSvg)} </i>

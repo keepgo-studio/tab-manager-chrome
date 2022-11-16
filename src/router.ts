@@ -49,6 +49,7 @@ export class PortRouter {
           case AppEventType.USER_SETTINGS_CHNAGED:
             this._app.updateUserSetting(msg);
             this._app.resizeApp();
+            break;
         }
       }
     );

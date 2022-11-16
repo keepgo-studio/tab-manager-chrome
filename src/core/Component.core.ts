@@ -75,7 +75,7 @@ export abstract class EventComponent extends Component {
   abstract eventListener({
     detail,
   }: CustomEvent<
-    | IPortMessage<ChromeEventType>
+    | IPortMessage<ChromeEventType | AppEventType>
     | IFrontMessage<UsersEventType | MessageEventType | FrontInitEventType>
   >): void;
 

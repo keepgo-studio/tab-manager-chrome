@@ -16,10 +16,12 @@ const extensionInfo: {
    * the window's script will request connection to background
    */
   frontWinId: number | undefined;
+  command: 'open-search' | 'normal';
 } = {
   id: chrome.runtime.id,
   frontPort: undefined,
   frontWinId: undefined,
+  command: 'normal',
 };
 
 function sendMessage(
@@ -43,7 +45,6 @@ function sendMessage(
 
 async function init() {
   chrome.runtime.onInstalled.addListener(async () => {
-    
     const data = await UserSettings.getSizeValues();
 
     const mode = await UserSettings.getSizeMode();
@@ -71,8 +72,6 @@ function createConnection() {
       case 'front':
         if (!extensionInfo.frontPort) {
           extensionInfo.frontPort = port;
-
-          console.log('connected to front');
 
           extensionInfo.frontPort.onDisconnect.addListener(() => {
             extensionInfo.frontPort = undefined;
@@ -115,6 +114,22 @@ function createConnection() {
   );
 }
 
+async function actionApp() {
+  const data = await UserSettings.getSizeValues();
+  const mode = await UserSettings.getSizeMode();
+
+  const { width, height } = data[mode];
+
+  return await chrome.windows.create({
+    focused: true,
+    type: 'panel',
+    url: 'index.html',
+    width: width,
+    height: height,
+    left: 20,
+    top: 20,
+  });
+}
 function startFront() {
   chrome.action.onClicked.addListener(async () => {
     // open web
@@ -124,19 +139,7 @@ function startFront() {
        */
       chrome.windows.update(extensionInfo.frontWinId, { focused: true });
     } else {
-      const data = await UserSettings.getSizeValues();
-      const mode = await UserSettings.getSizeMode();
-
-      const { width, height } = data[mode];
-      chrome.windows.create({
-        focused: true,
-        type: 'panel',
-        url: 'index.html',
-        width: width,
-        height: height,
-        left: 20,
-        top: 20,
-      });
+      await actionApp();
     }
   });
 }
@@ -266,6 +269,17 @@ function storageEventsHandler() {
   });
 }
 
+function commandEventHandler() {
+  chrome.commands.onCommand.addListener(async () => {
+    if (extensionInfo.frontPort) {
+      chrome.windows.update(extensionInfo.frontWinId!, { focused: true });
+    } else {
+      await actionApp();
+      extensionInfo.command = 'open-search';
+    }
+  });
+}
+
 init();
 
 createConnection();
@@ -275,3 +289,4 @@ startFront();
 windowEventsHandler();
 tabEventsHandler();
 storageEventsHandler();
+commandEventHandler();

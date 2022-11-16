@@ -12,6 +12,11 @@
   background-color: rgba(255, 255, 255, 80%);
   padding: 0 2rem;
 
+  .close-container,
+  .setting-container {
+    max-width: 300px;
+  }
+
   .close-container {
     text-align: right;
     width: 100%;
@@ -92,8 +97,8 @@
           justify-content: space-between;
 
           li {
-            width: 80px;
-            height: 80px;
+            width: 79px;
+            height: 79px;
             display: flex;
             justify-content: center;
             flex-direction: column;
@@ -173,5 +178,11 @@
         }
       }
     }
+  }
+}
+
+.container[sizeMode='side'] {
+  .setting-list {
+    height: fit-content;
   }
 }

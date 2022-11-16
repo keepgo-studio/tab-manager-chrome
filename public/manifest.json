@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "manifest_version": 3,
 
-  "permissions": ["activeTab", "storage", "tabs"],
+  "permissions": ["activeTab", "storage", "tabs", "commands"],
 
   "background": {
     "service_worker": "background.js"
@@ -35,5 +35,14 @@
       "matches": ["https://keepgo-studio.github.io/tab-manager-homepage/"],
       "js": ["content-script.js"]
     }
-  ]
+  ],
+
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S",
+        "mac": "Command+Shift+S"
+      }
+    }
+  }
 }

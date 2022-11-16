@@ -98,7 +98,7 @@ export default class App {
   sendTo(
     elem: Element,
     msg:
-      | IPortMessage<FrontInitEventType | ChromeEventType>
+      | IPortMessage<FrontInitEventType | ChromeEventType | AppEventType>
       | IFrontMessage<UsersEventType | MessageEventType | FrontInitEventType>
   ) {
     elem.dispatchEvent(

@@ -107,6 +107,7 @@ class SearchPage extends EventlessComponent {
   }
 
   render() {
+
     return html` <section
       class="container"
       style=${styleMap({

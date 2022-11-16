@@ -9,7 +9,7 @@ export const enum AppLifeCycleEventType {
   TERMINATE="TERMINATE",
 }
 export const enum AppEventType {
-  USER_SETTINGS_CHNAGED="USER_SETTINGS_CHNAGED"
+  USER_SETTINGS_CHNAGED="USER_SETTINGS_CHNAGED",
 }
 export const enum ChromeEventType {
   WINDOW_CREATED="WINDOW_CREATED",

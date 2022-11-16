@@ -88,6 +88,7 @@ class TextField extends LitElement {
         <i></i>
 
         <input
+          autofocus
           @input=${this.inputHandler}
           type="text"
           id="search-input"
