@@ -54,3 +54,21 @@
     }
   }
 }
+
+.container[sizeMode='tablet'] {
+  .tab-container {
+
+    .screen {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      height: fit-content;
+
+      app-search-page-tab {
+        margin: 1rem;
+      }
+    }
+  }
+}
+.container[sizeMode='side'] {
+  
+}

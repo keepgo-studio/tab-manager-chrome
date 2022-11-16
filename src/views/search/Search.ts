@@ -3,7 +3,7 @@ import { customElement, query, state } from 'lit/decorators.js';
 import { interpret } from 'xstate';
 import { EventComponent } from '@src/core/Component.core';
 import { searchMachine } from '@src/machine/search.machine';
-import { FrontInitEventType } from '@src/shared/events';
+import { AppEventType, FrontInitEventType } from '@src/shared/events';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { TabContentMap } from './search.shared';
 
@@ -13,6 +13,7 @@ import SearchSvg from '@public/img/search.svg';
 import CloseSvg from '@public/img/close.svg';
 
 import './SearchPage';
+import { consoleLitComponent } from '@src/utils/utils';
 
 @customElement('app-search')
 class Search extends EventComponent {
@@ -28,9 +29,12 @@ class Search extends EventComponent {
 
   eventListener({
     detail,
-  }: CustomEvent<IFrontMessage<FrontInitEventType>>): void {
+  }: CustomEvent<
+    IFrontMessage<FrontInitEventType> | IPortMessage<AppEventType>
+  >): void {
     const { command, data } = detail;
 
+    consoleLitComponent(this, command, data);
     switch (command) {
       case FrontInitEventType.SET_WINDOWS_CONTENT:
         this._service.send({

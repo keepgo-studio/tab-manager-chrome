@@ -38,6 +38,7 @@ class SearchPageTab extends Component {
       <div 
         class="matched-tab-container"
         @click=${this.clickHandler}
+        sizeMode=${this.userSetting.size}
       >
         <div class="fav-icon-container">
           ${this.tabData.favIconUrl

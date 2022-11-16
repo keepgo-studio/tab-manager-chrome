@@ -108,11 +108,13 @@ class SearchPage extends EventlessComponent {
 
   render() {
 
-    return html` <section
+    return html` 
+    <section
       class="container"
       style=${styleMap({
         display: this.visible ? 'block' : 'none',
       })}
+      sizeMode=${this.userSetting.size}
     >
       <div class="filter"></div>
 
