@@ -1,4 +1,4 @@
-import { html, LitElement, unsafeCSS } from 'lit';
+import { html, unsafeCSS } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
@@ -7,9 +7,10 @@ import { styleMap } from 'lit/directives/style-map.js';
 import styles from './SelectField.scss';
 import ArrowBackSvg from '@public/img/arrow-back.svg';
 import CheckCircleSvg from '@public/img/check-circle.svg';
+import { EventlessComponent } from '@src/core/Component.core';
 
 @customElement('app-select-field')
-class SelectField extends LitElement {
+class SelectField extends EventlessComponent {
   @property()
   selected = '';
 
@@ -52,7 +53,7 @@ class SelectField extends LitElement {
 
   protected render() {
     return html`
-      <div class="container">
+      <div class="container" theme=${this.userSetting.theme}>
         <div class="select-header" @click=${this.headerClickHandler}>
           <span>
             <b>${this.optionList.find((option) => option === this.selected)}</b>

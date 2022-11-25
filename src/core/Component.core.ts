@@ -9,6 +9,7 @@ import {
   MessageEventType,
   UsersEventType,
 } from '@src/shared/events';
+import { isUserDarkMode } from '@src/utils/utils';
 
 export class Component extends LitElement {
   /**
@@ -33,6 +34,15 @@ export class Component extends LitElement {
     }
     if (detail.theme) {
       this.userSetting.theme = detail.theme;
+
+      if (this.userSetting.theme === 'system') {
+        let mode: TThemeMode;
+
+        if (isUserDarkMode()) mode = 'dark';
+        else mode = 'light';
+
+        this.userSetting.theme = mode;
+      }
     }
     this.requestUpdate();
   }
@@ -45,6 +55,15 @@ export class Component extends LitElement {
       this.userSetting.size = setting['size-mode']
       this.userSetting.theme = setting['theme-mode']
 
+      if (this.userSetting.theme === 'system') {
+        let mode: TThemeMode;
+
+        if (isUserDarkMode()) mode = 'dark';
+        else mode = 'light';
+
+        this.userSetting.theme = mode;
+      }
+      
       this.requestUpdate();
     })
 

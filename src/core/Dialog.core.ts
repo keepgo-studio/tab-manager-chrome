@@ -1,7 +1,7 @@
-import { LitElement } from "lit";
 import { state } from "lit/decorators.js";
+import { Component } from "./Component.core";
 
-export class DialogComponent extends LitElement {
+export class DialogComponent extends Component {
 	@state()
   isConfirmed?: boolean;
 

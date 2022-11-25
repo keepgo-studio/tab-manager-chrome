@@ -25,6 +25,10 @@ const styled = css`
   .save {
     transform: translateX(-50%);
   }
+
+  main[theme='dark'] {
+    background-color: #333333;
+  }
 `;
 
 @customElement('app-main')
@@ -47,7 +51,7 @@ class Main extends EventComponent {
 
   render() {
     return html`
-      <main class=${this.mode}>
+      <main class=${this.mode} theme=${this.userSetting.theme}>
         <div class="container">
           <slot name="current-tab"></slot>
         </div>

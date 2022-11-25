@@ -58,24 +58,19 @@ const globalCss = css`
     --light-mode-background: #F9F9F9;
   }
 
-  @media(prefers-color-scheme: dark) {
-    * {
-      color: #000;
-      background-color: var(--light-mode-background);
-    }
+  :host[theme='dark'](*) {
+    color: #000;
+    fill: #000;
+    background-color: var(--light-mode-background);
   }
   
-  @media (perfers-color-scheme: light) {
-    * {
-      color: #fff;
-      background-color: var(--dark-mode-background);
-    }
-    
+  :host[theme='light'](*) {
+    color: #fff;
+    fill: #fff;
+    background-color: var(--dark-mode-background);
   }
 `;
 
 export const globalStyles = css`
   ${resetCss}
-
-  ${globalCss}
-`;
+  `;

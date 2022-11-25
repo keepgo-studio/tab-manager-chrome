@@ -3,7 +3,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { EventlessComponent } from '@src/core/Component.core';
 import { UsersEventType } from '@src/shared/events';
 import { closeWindow } from '@src/utils/browser-api';
-import { Confirm } from '@src/views/dialog/Confirm.styled';
+import { Confirm } from '@src/views/dialog/Confirm';
 
 const styled = css`
   .dialog-container {
@@ -22,6 +22,7 @@ const styled = css`
     );
     box-shadow: 0 2px 6px 1px rgba(0, 0, 0, 0.1);
     transition: ease 100ms;
+    cursor:pointer;
   }
 
   .dialog-container svg {

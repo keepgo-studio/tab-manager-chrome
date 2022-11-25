@@ -120,7 +120,8 @@ class Message extends EventComponent {
 	static styles = styled;
 
 	render() {
-		if (GlobalLangMap === undefined) return;''
+		if (this.userSetting.lang === undefined) this.userSetting.lang = 'en'
+		
 		switch(this.msgStyle) {
 			case MessageStyle.top:
 				return html`

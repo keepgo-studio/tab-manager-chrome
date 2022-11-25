@@ -1,4 +1,4 @@
-import { css, html, LitElement } from "lit";
+import { css, html } from "lit";
 import { customElement, query, state } from "lit/decorators.js";
 import { DialogComponent } from "@src/core/Dialog.core";
 
@@ -32,6 +32,9 @@ h1 {
   text-align: center;
   background-color: #fff;
   box-shadow: 0 1px 6px 2px rgba(0, 0, 0, 0.05);
+
+  line-height: 1.5em;
+  letter-spacing: 0.05em;
 }
 .container * {
   padding: 1.25rem;
@@ -41,13 +44,14 @@ h1 {
   border: none;
   cursor: pointer;
   width: 100%;
+  
 }
 .container button:hover {
   background-color: rgba(205, 205, 205, 0.5);
 }
 `;
 @customElement("app-alert")
-export class AppAlert extends DialogComponent {
+export class Alert extends DialogComponent {
   @state()
   isConfirmed?: boolean;
 

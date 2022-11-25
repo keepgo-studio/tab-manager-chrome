@@ -1,61 +1,90 @@
 .input-container {
   position: relative;
-}
+  
+  &[theme='dark'] {
+    .label {
+      color: #fff;
+    }
 
-input {
-  // height: 48px;
-  // width: 280px;
-  // border-radius: 4px;
-  border: 1px solid #c0c0c0;
-  box-sizing: border-box;
-  padding: 16px;
-}
-.label {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 16px;
-  display: flex;
-  align-items: center;
-  pointer-events: none;
-}
+    input {
+      color: #fff;
+      background-color: #333333;
 
-input,
-.label .text {
-  // font-size: 16px;
-  font-family: 'Segoe UI';
-}
+      &:focus {
+        border: 2px solid #fecc9d;
+      }
+    }
 
-input:focus {
-  outline: none;
-  border: 2px solid blue;
-}
-.text {
-  position: relative;
-  top: 0;
-}
+    input:focus + .label .text {
+      color: #fff;
+    }
 
-input:focus + .label .text {
-  // font-size: 12px;
-  // transform: translate(0, -50%);
-  background-color: white;
-  padding-left: 4px;
-  padding-right: 4px;
-  color: blue;
-}
+    input:focus + .label .text,
+    :not(input[value='']) + .label .text {
+      background-color: #333333;
+    }
 
-.label .text {
-  transition: all 0.15s ease-out;
-}
+    input:focus + .label .text {
+      color: #fecc9d;
+    }
+  }
 
-input:focus + .label .text, :not(input[value=""]) + .label .text {
+  input {
+    // height: 48px;
+    // width: 280px;
+    // border-radius: 4px;
+    border: 1px solid #c0c0c0;
+    box-sizing: border-box;
+    padding: 16px;
+  }
+  .label {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 16px;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  input,
+  .label .text {
+    // font-size: 16px;
+    font-family: 'Segoe UI';
+  }
+
+  input:focus {
+    outline: none;
+    border: 2px solid blue;
+  }
+  .text {
+    position: relative;
+    top: 0;
+  }
+
+  input:focus + .label .text {
+    // font-size: 12px;
+    // transform: translate(0, -50%);
+    background-color: white;
+    padding-left: 4px;
+    padding-right: 4px;
+    color: blue;
+  }
+
+  .label .text {
+    transition: all 0.15s ease-out;
+  }
+
+  input:focus + .label .text,
+  :not(input[value='']) + .label .text {
     // font-size: 12px;
     transform: translate(0, -150%);
     background-color: white;
     padding-left: 4px;
     padding-right: 4px;
   }
-  
+
   input:focus + .label .text {
     color: blue;
   }
+}

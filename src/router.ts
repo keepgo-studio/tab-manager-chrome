@@ -25,7 +25,7 @@ export class PortRouter {
           | IPortMessage<AppLifeCycleEventType>
           | IPortMessage<AppEventType>
       ) => {
-        console.log('[main]:', msg.command, msg.data);
+        // console.log('[main]:', msg.command, msg.data);
         switch (msg.command) {
           case AppLifeCycleEventType.SET_SIZE:
             this._app.resizeApp();

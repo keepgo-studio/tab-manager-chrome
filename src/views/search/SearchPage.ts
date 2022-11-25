@@ -107,6 +107,7 @@ class SearchPage extends EventlessComponent {
   }
 
   render() {
+    if (this.userSetting.lang === undefined) this.userSetting.lang = 'en'
 
     return html` 
     <section
@@ -115,6 +116,7 @@ class SearchPage extends EventlessComponent {
         display: this.visible ? 'block' : 'none',
       })}
       sizeMode=${this.userSetting.size}
+      theme=${this.userSetting.theme}
     >
       <div class="filter"></div>
 

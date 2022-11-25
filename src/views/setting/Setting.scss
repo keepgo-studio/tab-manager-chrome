@@ -20,7 +20,7 @@
   .close-container {
     text-align: right;
     width: 100%;
-    margin-bottom: .8rem;
+    margin-bottom: 0.8rem;
 
     svg {
       transition: ease 300ms;
@@ -115,7 +115,9 @@
             &.selected {
               box-shadow: 0px 1px 8px 4px rgba(61, 115, 255, 0.3);
               background-color: #3d73ff;
-              p { color: #fff; }
+              p {
+                color: #fff;
+              }
             }
             img {
               margin-bottom: 6px;
@@ -174,6 +176,42 @@
             img {
               display: block;
             }
+          }
+        }
+      }
+    }
+  }
+
+  &[theme='dark'] {
+    background-color: rgba(0, 0, 0, 50%);
+    color: #fff;
+
+    header {
+      > svg path {
+        fill: #fff;
+      }
+    }
+
+    .close-container {
+      svg path {
+        fill: #fff;
+      }
+    }
+    .setting-container {
+      background-color: #333333;
+    }
+
+    .setting-list {
+      .li-lang ol li {
+        background-color: #333333;
+
+        .select-box {
+          i {
+            border: #fff solid 0.5px;
+          }
+
+          &.selected i::before {
+            background-color: #fff;
           }
         }
       }

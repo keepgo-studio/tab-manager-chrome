@@ -26,14 +26,8 @@ window.onload = async () => {
 
   await app.initApp();
 
-  chrome.commands.onCommand.addListener(async command => {
-    console.log('main', command)
-    
-  })
-
   // retry connection if this window had disconnected with various reasons (e.g timeout)
   port.onDisconnect.addListener(() => {
-    console.log('[main.ts]:', 'reconnection');
     location.reload();
   });
 };

@@ -8,11 +8,12 @@
   background-color: #fff;
   border-radius: 7px;
   overflow: hidden;
-  
-  &, .select-header { 
+
+  &,
+  .select-header {
     border: 0.5px solid black;
   }
-  
+
   .select-header {
     border-radius: 6px 6px 0 0;
     cursor: pointer;
@@ -22,21 +23,21 @@
     grid-template-columns: auto 38px;
     vertical-align: middle;
     padding-left: 1rem;
-  
+
     &:hover {
       background-color: #e3e3e3;
     }
-  
+
     span,
-    button{
+    button {
       display: inline-block;
     }
-  
+
     span {
       display: flex;
       align-items: center;
     }
-  
+
     button {
       width: 100%;
       height: 100%;
@@ -46,7 +47,7 @@
       text-align: center;
       background-color: transparent;
       cursor: pointer;
-  
+
       svg {
         display: inline-block;
         width: 16px;
@@ -55,12 +56,13 @@
       }
 
       &[clicked='true'] {
-        svg { transform: rotate(90deg);}
+        svg {
+          transform: rotate(90deg);
+        }
       }
     }
   }
-  
-  
+
   .select-box {
     width: 100%;
     display: flex;
@@ -83,7 +85,42 @@
         font-weight: bold;
       }
 
-      i > svg { width: 16px; height: 16px;}
+      i > svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
+  // dark mode theme
+  &[theme='dark'] {
+    background-color: #333333;
+    color: #fff;
+
+    &,
+    .select-header {
+      border: 0.5px solid #fff;
+    }
+    .select-header {
+      &:hover {
+        background-color: #1d1d1d;
+      }
+      svg path{
+        fill: #fff;
+      }
+    }
+
+    .select-box {
+      li {
+        &:hover {
+          background-color: #1d1d1d;
+        }
+
+        i > svg {
+          width: 16px;
+          height: 16px;
+        }
+      }
     }
   }
 }

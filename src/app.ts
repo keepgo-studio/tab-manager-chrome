@@ -8,8 +8,8 @@ import {
 import UserSettings from './store/local-storage';
 
 import '@views/navbar/Navbar.styled';
-import '@views/main/Main.styled';
-import '@views/tab-list-container/TabListContainer.styled';
+import '@src/views/main/Main.styled';
+import '@src/views/tab-list-container/TabListContainer';
 import '@views/message/Message.styled';
 import '@views/search/Search';
 import '@views/setting/Setting';
@@ -128,8 +128,8 @@ export default class App {
   }
 
   async resizeApp() {
-     const data = await UserSettings.getSizeValues();
-     const { width, height } = data[this._userSetting.size!];
+    const data = await UserSettings.getSizeValues();
+    const { width, height } = data[this._userSetting.size!];
     window.resizeTo(width, height);
   }
 

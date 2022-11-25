@@ -13,6 +13,7 @@ import CloseRoundSvg from '@public/img/close-round.svg';
 import '@views/components/SelectField';
 import UserSettings from '@src/store/local-storage';
 import GlobalLangMap from '@src/data/lang';
+import { Alert } from '../dialog/Alert.styled';
 
 const ZoomInObserver = new ZoomInOut({ 'transition-duration': 300 });
 
@@ -78,6 +79,12 @@ class Setting extends EventComponent {
   async themeSelectHandler(e: CustomEvent) {
     const { selectedThemeMode } = e.detail;
 
+    if (selectedThemeMode === 'system') {
+      await new Alert(
+        GlobalLangMap[this.userSetting.lang!].Setting.themeAlert
+      ).show();
+    }
+
     await UserSettings.setThemeMode(selectedThemeMode);
   }
 
@@ -93,6 +100,8 @@ class Setting extends EventComponent {
     await UserSettings.setLangMode(target.id as TLangMode);
   }
   render() {
+    if (this.userSetting.lang === undefined) this.userSetting.lang = 'en';
+
     return html`
       <section
         class="container"
@@ -100,6 +109,7 @@ class Setting extends EventComponent {
           display: this.visible ? 'flex' : 'none',
         })}
         sizeMode=${this.userSetting.size}
+        theme=${this.userSetting.theme}
       >
         <div class="close-container">
           <i @click=${this.closeClickHandler}> ${unsafeHTML(CloseRoundSvg)} </i>
@@ -110,7 +120,9 @@ class Setting extends EventComponent {
 
           <ul class="setting-list">
             <li class="li-theme">
-              <h1>${GlobalLangMap[this.userSetting.lang!].Setting.themeHeader}</h1>
+              <h1>
+                ${GlobalLangMap[this.userSetting.lang!].Setting.themeHeader}
+              </h1>
 
               <app-select-field
                 .selected=${this.userSetting.theme}
@@ -119,7 +131,9 @@ class Setting extends EventComponent {
             </li>
 
             <li class="li-size">
-              <h1>${GlobalLangMap[this.userSetting.lang!].Setting.sizeHeader}</h1>
+              <h1>
+                ${GlobalLangMap[this.userSetting.lang!].Setting.sizeHeader}
+              </h1>
 
               <ol>
                 ${repeat(
@@ -142,7 +156,9 @@ class Setting extends EventComponent {
             </li>
 
             <li class="li-lang">
-              <h1>${GlobalLangMap[this.userSetting.lang!].Setting.langHeader}</h1>
+              <h1>
+                ${GlobalLangMap[this.userSetting.lang!].Setting.langHeader}
+              </h1>
 
               <ol>
                 ${repeat(
@@ -151,7 +167,8 @@ class Setting extends EventComponent {
                   (langMap) => html`
                     <li id=${langMap.mode} @click=${this.langClickHandler}>
                       <div
-                        class="select-box ${this.userSetting.lang === langMap.mode
+                        class="select-box ${this.userSetting.lang ===
+                        langMap.mode
                           ? 'selected'
                           : ''}"
                       >

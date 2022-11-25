@@ -15,72 +15,169 @@
   position: relative;
   z-index: 10;
   box-shadow: 0 1px 6px 2px rgba(0, 0, 0, 0.05);
-}
 
-.node-container:hover {
-  transform: scale(1.01);
-}
+  &:hover {
+    transform: scale(1.01);
+  }
 
-.first {
-  position: relative;
-  display: grid;
-  grid-template-columns: 90% 10%;
-}
+  .first {
+    position: relative;
+    display: grid;
+    grid-template-columns: 90% 10%;
+  }
 
-.mode-decorator {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 7px;
-  background-color: #FECC9D;
-  z-index: 10;
-}
+  .mode-decorator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 7px;
+    background-color: #fecc9d;
+    z-index: 10;
+    border-radius: 7px 0 0 7px;
+  }
 
-.button-container {
-  background-color: rgba(205, 205, 205, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  .button-container {
+    background-color: rgba(205, 205, 205, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 7px 7px 0;
+  }
 
-.button-container svg {
-  transition: ease 300ms;
-}
+  .button-container svg {
+    transition: ease 300ms;
+  }
 
-.rest {
-  z-index: 1;
-  background-color: #fff;
-  overflow-y: scroll;
+  .rest {
+    z-index: 1;
+    background-color: #fff;
+    overflow-y: scroll;
+    border-radius: 0 0 7px 7px;
+    /* 
+      since showing rest tab list shouldn't faster than node's growing height,
+      so I set short trasnition duration. 
+    */
+    transition-property: max-height, opacity;
+    transition: ease 250ms;
 
-  /* 
-    since showing rest tab list shouldn't faster than node's growing height,
-    so I set short trasnition duration. 
-  */
-  transition-property: max-height, opacity;
-  transition: ease 250ms;
+    width: 100%;
+    /*
+      you can find dynamic height in the function render()
+    */
 
-  width: 100%;
-  /*
-    you can find dynamic height in the function render()
-  */
+    ul {
+      padding: 1rem;
 
-  ul {
-    padding: 1rem;
+      /* set margin bottom for tabs except for last child */
+      li:not(:last-child) {
+        margin-bottom: 7px;
+      }
+    }
 
-    /* set margin bottom for tabs except for last child */
-    li:not(:last-child) {
-      margin-bottom: 7px;
+    &::-webkit-scrollbar {
+      width: 4px;
+      background-color: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #d9d9d9;
+      border-radius: 999px;
+    }
+  }
+
+  &[theme='dark'] {
+    background-color: #333333;
+    color: #fff;
+
+    .rest {
+      background-color: #333333;
+      color: #fff;
+    }
+
+    svg path {
+      fill: #fff;
     }
   }
 }
 
-.rest::-webkit-scrollbar {
-  width: 4px;
-  background-color: transparent;
-}
+.tablet-node-container {
+  position: relative;
+  width: fit-content;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px 1px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  transition: ease 300ms;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 30px auto;
 
-.rest::-webkit-scrollbar-thumb {
-  background-color: #d9d9d9;
-  border-radius: 999px;
+  .button-container {
+    width: 100%;
+    height: 30px;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 8px;
+    align-items: center;
+    box-shadow: 0 2px 6px 1px rgba(0, 0, 0, 0.1);
+
+    p {
+      max-width: 85%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 2px 0;
+      height: fit-content;
+    }
+
+    svg {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  ul {
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+
+    li {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 90px;
+      height: 90px;
+    }
+  }
+
+  .mode-decorator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 10px;
+    width: 100%;
+    border-radius: 10px 10px 0 0;
+    overflow: hidden;
+
+    &:before {
+      display: block;
+      content: '';
+      background-color: #fecc9d;;
+      width: 100%;
+      height: 4px;
+    }
+  }
+
+  &[theme='dark'] {
+    background-color: #333333;
+    color: #fff;
+
+    svg path {
+      fill: #fff;
+    }
+  }
 }

@@ -13,7 +13,7 @@ class Navbar extends EventlessComponent {
   icons = [
     {
       id: 'window',
-      path: './img/window-light.png',
+      path: './img/window',
       clickHandler: () => {
         this._mode = this._mode === 'normal' ? 'save' : 'normal';
 
@@ -27,20 +27,20 @@ class Navbar extends EventlessComponent {
     },
     {
       id: 'favicon',
-      path: './img/favicon-light.png',
+      path: './img/favicon',
       clickHandler: () => {},
     },
 
     {
       id: 'profile',
-      path: './img/person_round-light.png',
+      path: './img/person_round',
       clickHandler: () => {
         this.sendToFront({
           discriminator: 'IFrontMessage',
           sender: this.tagName,
           command: UsersEventType.OPEN_SETTING,
-          data: {}
-        })
+          data: {},
+        });
       },
     },
   ];
@@ -52,16 +52,29 @@ class Navbar extends EventlessComponent {
     `;
   }
 
+  pathChanger(path:string) {
+    if (this.userSetting.theme === 'dark') {
+      path += '-dark.png'
+    } else {
+      path += '-light.png'
+    }
+    return path;
+  }
+
   render(): TemplateResult {
     const menu = this.icons.map(
-      ({ id, path, clickHandler }) =>
+      ({ id, path, clickHandler }) => 
         html`
           <div id=${id} @click="${clickHandler}">
-            <img .src="${path}" />
+            <img .src="${this.pathChanger(path)}" />
           </div>
         `
     );
 
-    return html` <nav sizeMode=${this.userSetting.size}>${menu}</nav> `;
+    return html`
+      <nav theme=${this.userSetting.theme} sizeMode=${this.userSetting.size}>
+        ${menu}
+      </nav>
+    `;
   }
 }

@@ -58,16 +58,18 @@ class UserSettings {
   }
 
   static async setAllSizeValues(screenWidth: number, screenHeight: number) {
+    const widthConstant = 16;
+
     const diagnol = 517.7;
-    const miniWidth = 367;
+    const miniWidth = 351 + widthConstant;
     const miniHeight = Math.round(
       Math.sqrt(Math.pow(miniWidth, 2) + Math.pow(diagnol, 2))
     );
 
-    const tabletWidth = 826;
+    const tabletWidth = 704 + widthConstant;
     const tabletHeight = 640;
 
-    const sideWidth = screenWidth / 2;
+    const sideWidth = screenWidth / 2 + widthConstant;
     const sideHeight = screenHeight;
 
     await chrome.storage.local.set({

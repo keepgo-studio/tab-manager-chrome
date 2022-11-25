@@ -30,6 +30,7 @@
     height: 100%;
 
     .screen {
+      position: relative;
       height: 100%;
       overflow: scroll;
       padding: 0 12px;
@@ -53,22 +54,54 @@
       }
     }
   }
-}
 
-.container[sizeMode='tablet'] {
-  .tab-container {
+  &[theme='dark'] {
+    color: #fff;
 
-    .screen {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      height: fit-content;
+    .filter {
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+  }
 
-      app-search-page-tab {
-        margin: 1rem;
+  &[sizeMode='tablet'] {
+    .tab-container {
+  
+      .screen {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+  
+        app-search-page-tab {
+          margin: 1rem;
+        }
+        
+      }
+
+      .undefined {
+        position: absolute;
+        top:0;
+        left:50%;
+        transform: translateX(-50%);
       }
     }
   }
-}
-.container[sizeMode='side'] {
+  &[sizeMode='side'] {
+    .tab-container {
   
+      .screen {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+  
+        app-search-page-tab {
+          margin: 1rem;
+        }
+      }
+
+      .undefined {
+        position: absolute;
+        top:0;
+        left:50%;
+        transform: translateX(-50%);
+      }
+    }
+  }
 }

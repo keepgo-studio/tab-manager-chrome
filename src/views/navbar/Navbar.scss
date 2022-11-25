@@ -7,63 +7,70 @@ nav {
   position: relative;
 
   background-color: #fff;
-}
 
-#profile,
-#favicon,
-#window {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-}
+  #profile,
+  #favicon,
+  #window {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+  #profile:hover,
+  #window:hover {
+    background-color: rgba(202, 202, 202, 0.3);
+    cursor: pointer;
+  }
 
-#profile:hover,
-#window:hover {
-  background-color: rgba(202, 202, 202, 0.3);
-  cursor: pointer;
-}
+  #profile {
+    width: 50px;
+  }
+  #profile img {
+    width: 30px;
+    height: fit-content;
+  }
 
-#profile {
-  width: 50px;
-}
-#profile img {
-  width: 30px;
-  height: fit-content;
-}
+  #favicon {
+    flex: 1;
+  }
+  #favicon img {
+    width: 148px;
+    height: fit-content;
+  }
 
-#favicon {
-  flex: 1;
-}
-#favicon img {
-  width: 148px;
-  height: fit-content;
-}
+  #window {
+    width: 50px;
+  }
+  #window img {
+    width: 18px;
+    height: fit-content;
+  }
 
-#window {
-  width: 50px;
-}
-#window img {
-  width: 18px;
-  height: fit-content;
-}
-
-nav[sizeMode='side'] {
+  &[sizeMode='side'] {
     display: grid;
     grid-template-columns: 1fr 50px 50px;
 
     #favicon {
-        grid-column: 1 / 2;
-        grid-row: 1;
-        justify-content: start;  
-        padding-left: 2rem;
+      grid-column: 1 / 2;
+      grid-row: 1;
+      justify-content: start;
+      padding-left: 2rem;
     }
     #window {
-        grid-column: 2 / 3;
+      grid-column: 2 / 3;
     }
     #profile {
-        grid-column: 3 / 4;
+      grid-column: 3 / 4;
     }
+  }
+
+  &[theme='dark'] {
+    background-color: #333333;
+
+    #profile:hover,
+    #window:hover {
+      background-color: rgba(202, 202, 202, 0.3);
+      cursor: pointer;
+    }
+  }
 }
-
-

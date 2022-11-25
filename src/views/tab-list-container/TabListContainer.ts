@@ -21,8 +21,7 @@ class TabListContainer extends EventComponent {
   eventListener({
     detail,
   }: CustomEvent<
-    | IFrontMessage<UsersEventType>
-    | IPortMessage<ChromeEventType>
+    IFrontMessage<UsersEventType> | IPortMessage<ChromeEventType>
   >): void {
     const { command, data } = detail;
 
@@ -33,9 +32,8 @@ class TabListContainer extends EventComponent {
           data,
         });
 
-        
         break;
-        
+
       case 'IPortMessage':
         this._currentService!.send('Update list', {
           command,
@@ -61,56 +59,55 @@ class TabListContainer extends EventComponent {
       this._currentService = interpret(currentTabListMachine);
 
       this._currentService
-          .onTransition((s) => {
-
-            if (s.matches('Get all data.Failed')) {
-              this._currentService!.send('Retry');
-            }
-            else if (s.matches('idle')) {
-              this.sendToFront({
-                discriminator: 'IFrontMessage',
-                sender: this.tagName,
-                command: FrontInitEventType.SET_WINDOWS_CONTENT,
-                data: { allWindows: s.context.data }
-              })
-              
-              this.windowMap = { ...s.context.data };
-            }
-          })
-          .start();
-    } else {
-      this._savedService = interpret(savedTabListMachine.withConfig({
-        actions: {
-          "open new window": (_, event) => {
-            const { windowId } = event.data;
-            
-            if (windowId === undefined) {
-              console.error('no window Id');
-              return;
-            }
-
-            createNewWindow(this.windowMap[windowId].tabs as ChromeTab[], {
-              focused: true,
-              top: 0,
-              left: window.screen.width / 2,
-              width: window.screen.width / 2,
-              height: window.screen.height - 24,
-              type: 'normal'
+        .onTransition((s) => {
+          if (s.matches('Get all data.Failed')) {
+            this._currentService!.send('Retry');
+          } else if (s.matches('idle')) {
+            this.sendToFront({
+              discriminator: 'IFrontMessage',
+              sender: this.tagName,
+              command: FrontInitEventType.SET_WINDOWS_CONTENT,
+              data: { allWindows: s.context.data },
             });
+
+            this.windowMap = { ...s.context.data };
           }
-        }
-      }));
+        })
+        .start();
+    } else {
+      this._savedService = interpret(
+        savedTabListMachine.withConfig({
+          actions: {
+            'open new window': (_, event) => {
+              const { windowId } = event.data;
+
+              if (windowId === undefined) {
+                console.error('no window Id');
+                return;
+              }
+
+              createNewWindow(this.windowMap[windowId].tabs as ChromeTab[], {
+                focused: true,
+                top: 0,
+                left: window.screen.width / 2,
+                width: window.screen.width / 2,
+                height: window.screen.height - 24,
+                type: 'normal',
+              });
+            },
+          },
+        })
+      );
 
       this._savedService
-          .onTransition((s) => {
+        .onTransition((s) => {
+          if (s.changed) {
+            this.windowMap = { ...s.context.data };
+          }
+        })
+        .start();
 
-            if (s.changed) {
-              this.windowMap = { ...s.context.data };
-            }
-          })
-          .start();
-
-        this._savedService.send('LOCAL.OPEN');
+      this._savedService.send('LOCAL.OPEN');
     }
   }
 
@@ -125,12 +122,17 @@ class TabListContainer extends EventComponent {
     if (this.windowMap === undefined) return html`<section></section>`;
 
     return html`
-      <section class=${this._mode}>
+      <section
+        class=${this._mode}
+        sizeMode=${this.userSetting.size}
+        theme=${this.userSetting.theme}
+      >
         ${repeat(
           Object.values(this.windowMap),
           (win) => win.id,
           (win) => html`
-            <app-tab-list .appMode=${this._mode} .winData=${win}> </app-tab-list>
+            <app-tab-list .appMode=${this._mode} .winData=${win}>
+            </app-tab-list>
           `
         )}
       </section>

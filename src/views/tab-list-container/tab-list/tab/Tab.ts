@@ -9,7 +9,7 @@ import { styleMap } from 'lit/directives/style-map.js';
 import styles from './Tab.scss';
 import { focusTab, removeTab } from '@src/utils/browser-api';
 import { UsersEventType } from '@src/shared/events';
-import { Confirm } from '@src/views/dialog/Confirm.styled';
+import { Confirm } from '@src/views/dialog/Confirm';
 
 @customElement('app-tab')
 class Tab extends EventlessComponent {
@@ -107,11 +107,19 @@ class Tab extends EventlessComponent {
     this.uiService.send('remove');
   }
 
-  faviconErrorHandler(e: Event) {
+  faviconErrorHandler(e: Event, size: 'large' | 'small') {
     const elem = e.currentTarget as Element;
     const newElem = document.createElement('three-dot');
-    newElem.setAttribute('width', '5');
-    newElem.setAttribute('height', '5');
+
+    let width = '0';
+    let height = '0';
+    if (size === 'large') {
+      width = '5'; height = '5';
+    } else if (size ==='small') {
+      width = '2'; height = '2';
+    }
+    newElem.setAttribute('width', width);
+    newElem.setAttribute('height', height);
     newElem.setAttribute('mode', 'dot-flashing');
 
     elem.parentNode!.replaceChild(newElem, elem);
@@ -127,7 +135,7 @@ class Tab extends EventlessComponent {
 
   render() {
     if (this.tabData === undefined) return html``;
-    
+
     switch (this.userSetting.size) {
       case 'mini':
         if (this.idx === 0) {
@@ -136,9 +144,9 @@ class Tab extends EventlessComponent {
           return this.miniTabRender();
         }
       case 'side':
-        return;
+        return this.tabletRender();
       case 'tablet':
-        return;
+        return this.tabletRender();
     }
   }
 
@@ -152,7 +160,10 @@ class Tab extends EventlessComponent {
       >
         <div class="first-fav-icon-container">
           ${this.tabData.favIconUrl
-            ? html`<img src="${this.tabData.favIconUrl}" />`
+            ? html`<img
+                src="${this.tabData.favIconUrl}"
+                @error=${(e: Event) => this.faviconErrorHandler(e, 'large')}
+              />`
             : html`<three-dot
                 width=${5}
                 height=${5}
@@ -187,7 +198,10 @@ class Tab extends EventlessComponent {
       >
         <div class="rest-fav-icon-container">
           ${this.tabData.favIconUrl !== undefined
-            ? html`<img src=${this.tabData.favIconUrl} />`
+            ? html`<img
+                src=${this.tabData.favIconUrl}
+                @error=${(e: Event) => this.faviconErrorHandler(e, 'small')}
+              />`
             : html`<three-dot
                 width=${2}
                 height=${2}
@@ -205,6 +219,39 @@ class Tab extends EventlessComponent {
             >${this.tabData.title}</a
           >
         </div>
+
+        <button
+          @click=${this.tabDeleteHandler}
+          style=${styleMap({
+            display: this.state.matches('Hover') ? 'flex' : 'none',
+            opacity: this.state.matches('Hover.Opened') ? '1' : '0',
+          })}
+        >
+          <p>X</p>
+        </button>
+      </div>
+    `;
+  }
+
+  tabletRender() {
+    return html`
+      <div
+        class="tablet-tab-container"
+        @click=${this.tabClickHandler}
+        @mouseenter=${this.tabMouseEnterHandler}
+        @mouseleave=${this.tabMouseLeaveHandler}
+        theme=${this.userSetting.theme}
+      >
+        ${this.tabData.favIconUrl
+          ? html`<img 
+            src="${this.tabData.favIconUrl}" 
+            @error=${(e: Event) => this.faviconErrorHandler(e, 'large')}
+            />`
+          : html`<three-dot
+              width=${5}
+              height=${5}
+              mode=${ThreeDotModes['dot-flashing']}
+            ></three-dot>`}
 
         <button
           @click=${this.tabDeleteHandler}

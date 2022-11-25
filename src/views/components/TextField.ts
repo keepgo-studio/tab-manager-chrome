@@ -1,4 +1,5 @@
-import { html, LitElement, unsafeCSS } from 'lit';
+import { EventlessComponent } from '@src/core/Component.core';
+import { html, unsafeCSS } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
 import styles from './TextField.scss';
@@ -10,7 +11,7 @@ export const enum TextFieldEventType {
 export type InputDetail = { value: 'string' };
 
 @customElement('app-text-field')
-class TextField extends LitElement {
+class TextField extends EventlessComponent {
   static styles = unsafeCSS(styles);
 
   @property()
@@ -84,7 +85,7 @@ class TextField extends LitElement {
     return html`
       ${inlintStlyeTag}
 
-      <div class="input-container">
+      <div class="input-container" theme=${this.userSetting.theme}>
         <i></i>
 
         <input
