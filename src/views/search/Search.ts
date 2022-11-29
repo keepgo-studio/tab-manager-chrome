@@ -70,6 +70,25 @@ class Search extends EventComponent {
     this._service.send('click icon');
   }
 
+  private _keyDownEventHandler(e: KeyboardEvent) {
+    if (!this._state.matches('Search mode.Start')) return;
+
+    if (e.code === 'Escape') {
+      this._service.send('click icon')
+    }
+  }
+
+  connectedCallback(): void {
+    super.connectedCallback();
+
+    window.addEventListener('keydown',this._keyDownEventHandler.bind(this));
+  }
+
+  disconnectedCallback(): void {
+    window.removeEventListener('keydown',this._keyDownEventHandler);
+
+    super.disconnectedCallback();
+  }
   render() {
     this.appSearchPage?.dispatchEvent(new CustomEvent('render'));
 
