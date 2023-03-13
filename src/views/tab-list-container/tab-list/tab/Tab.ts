@@ -197,7 +197,7 @@ class Tab extends EventlessComponent {
         @mouseleave=${this.tabMouseLeaveHandler}
       >
         <div class="rest-fav-icon-container">
-          ${this.tabData.favIconUrl !== undefined
+          ${this.tabData.favIconUrl
             ? html`<img
                 src=${this.tabData.favIconUrl}
                 @error=${(e: Event) => this.faviconErrorHandler(e, 'small')}

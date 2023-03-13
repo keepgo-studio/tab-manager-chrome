@@ -1,7 +1,7 @@
 {
   "name": "Tab Manager",
   "description": "Tab manager chrome extension",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "manifest_version": 3,
 
   "permissions": ["activeTab", "storage", "tabs", "commands"],
